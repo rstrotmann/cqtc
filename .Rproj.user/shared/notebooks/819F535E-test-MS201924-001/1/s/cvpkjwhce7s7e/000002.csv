@@ -1,0 +1,44 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmlmLjAwMSAlPiUgXG4gIHBsb3QoYW5hbHl0ZT1cIkhHQlwiLCBtZWFuPUYsIG1heF90aW1lID0gNTAwMCwgYWRtaW4gPSBcIk0xNzc0XCIsXG4gICAgICAgdGl0bGU9XCJIZW1vZ2xvYmluIG92ZXJ2aWV3XCIpICtcbiAgbGFicyhjYXB0aW9uPVwiVGltZSBheGlzIHRydW5jYXRlZCBhdCA1MDAwIGhcIilcblxubmlmLjAwMSAlPiUgXG4gIHBsb3QoYW5hbHl0ZT1cIkhHQlwiKVxuXG5uaWYuMDAxICU+JSBcbiAgcGxvdChhbmFseXRlPVwiUkJDXCIsIG1lYW49RiwgbWF4X3g9NTAwMCxcbiAgICAgICB0aXRsZT1cIlJlZCBibG9vZCBjZWxsIGNvdW50IG92ZXJ2aWV3XCIpICtcbiAgbGFicyhjYXB0aW9uPVwiVGltZSBheGlzIHRydW5jYXRlZCBhdCA1MDAwIGhcIilcblxubmlmLjAwMSAlPiUgXG4gIHBsb3QoYW5hbHl0ZT1cIlJFVElcIiwgbWVhbj1GLCBtYXhfeD01MDAwLFxuICAgICAgIHRpdGxlPVwiUmV0aWN1bG9jeXRlIGNvdW50IG92ZXJ2aWV3XCIpICtcbiAgbGFicyhjYXB0aW9uPVwiVGltZSBheGlzIHRydW5jYXRlZCBhdCA1MDAwIGhcIilcbmBgYCJ9 -->
+
+```r
+nif.001 %>% 
+  plot(analyte=\"HGB\", mean=F, max_time = 5000, admin = \"M1774\",
+       title=\"Hemoglobin overview\") +
+  labs(caption=\"Time axis truncated at 5000 h\")
+
+nif.001 %>% 
+  plot(analyte=\"HGB\")
+
+nif.001 %>% 
+  plot(analyte=\"RBC\", mean=F, max_x=5000,
+       title=\"Red blood cell count overview\") +
+  labs(caption=\"Time axis truncated at 5000 h\")
+
+nif.001 %>% 
+  plot(analyte=\"RETI\", mean=F, max_x=5000,
+       title=\"Reticulocyte count overview\") +
+  labs(caption=\"Time axis truncated at 5000 h\")
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+nif.001 %>% 
+  plot(analyte=\"HGB\", mean=F, max_time = 5000, admin = \"M1774\",
+       title=\"Hemoglobin overview\") +
+  labs(caption=\"Time axis truncated at 5000 h\")
+
+nif.001 %>% 
+  plot(analyte=\"HGB\")
+
+nif.001 %>% 
+  plot(analyte=\"RBC\", mean=F, max_x=5000,
+       title=\"Red blood cell count overview\") +
+  labs(caption=\"Time axis truncated at 5000 h\")
+
+nif.001 %>% 
+  plot(analyte=\"RETI\", mean=F, max_x=5000,
+       title=\"Reticulocyte count overview\") +
+  labs(caption=\"Time axis truncated at 5000 h\")
+```"

@@ -1,0 +1,50 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmlmLnBkIDwtIG5ld19uaWYoKSAlPiUgXG4gIGFkZF9hZG1pbmlzdHJhdGlvbihzZHRtLjAwMSwgXCJNMTc3NFwiKSAlPiUgXG4gIGFkZF9vYnNlcnZhdGlvbihzZHRtLjAwMSwgXCJQQ1wiLCBcIk0xNzc0XCIsIGFuYWx5dGUgPSBcIk0xNzc0XCIsIHNpbGVudCA9IHMpICU+JSBcbiAgYWRkX29ic2VydmF0aW9uKHNkdG0uMDAxLCBcImxiXCIsIFwiQ0EtMTUzXCIpICU+JSBcbiAgYWRkX29ic2VydmF0aW9uKHNkdG0uMDAxLCBcImxiXCIsIFwiQ0EyNDJcIikgJT4lIFxuICBhZGRfb2JzZXJ2YXRpb24oc2R0bS4wMDEsIFwibGJcIiwgXCJDQTcyLjRcIikgJT4lIFxuICBhZGRfb2JzZXJ2YXRpb24oc2R0bS4wMDEsIFwibGJcIiwgXCJMWU1DNDVcIikgJT4lIFxuICBhZGRfb2JzZXJ2YXRpb24oc2R0bS4wMDEsIFwibGJcIiwgXCJDQTEyNUFHXCIpICU+JSBcbiAgYWRkX29ic2VydmF0aW9uKHNkdG0uMDAxLCBcImxiXCIsIFwiQ0ExNV8zQUdcIikgJT4lIFxuICBhZGRfb2JzZXJ2YXRpb24oc2R0bS4wMDEsIFwibGJcIiwgXCJDQTE5XzlBR1wiKSAlPiUgXG4gIGFkZF9vYnNlcnZhdGlvbihzZHRtLjAwMSwgXCJsYlwiLCBcIkNBMjcyOUFHXCIpICU+JSBcbiAgYWRkX29ic2VydmF0aW9uKHNkdG0uMDAxLCBcImxiXCIsIFwiQ0VBXCIpICU+JSBcbiAgYWRkX29ic2VydmF0aW9uKHNkdG0uMDAxLCBcImxiXCIsIFwiTFlNQ0gyQVhcIikgJT4lIFxuICBhZGRfb2JzZXJ2YXRpb24oc2R0bS4wMDEsIFwibGJcIiwgXCJIRTRcIikgJT4lIFxuICBhZGRfb2JzZXJ2YXRpb24oc2R0bS4wMDEsIFwibGJcIiwgXCJOU0VcIikgJT4lIFxuICBhZGRfb2JzZXJ2YXRpb24oc2R0bS4wMDEsIFwibGJcIiwgXCJQU0FcIikgXG5cbmludmlzaWJsZShjYXB0dXJlLm91dHB1dChcbiAgcGxvdChzdW1tYXJ5KG5pZi5wZCkpXG4pKVxuYGBgIn0= -->
+
+```r
+nif.pd <- new_nif() %>% 
+  add_administration(sdtm.001, \"M1774\") %>% 
+  add_observation(sdtm.001, \"PC\", \"M1774\", analyte = \"M1774\", silent = s) %>% 
+  add_observation(sdtm.001, \"lb\", \"CA-153\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA242\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA72.4\") %>% 
+  add_observation(sdtm.001, \"lb\", \"LYMC45\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA125AG\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA15_3AG\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA19_9AG\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA2729AG\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CEA\") %>% 
+  add_observation(sdtm.001, \"lb\", \"LYMCH2AX\") %>% 
+  add_observation(sdtm.001, \"lb\", \"HE4\") %>% 
+  add_observation(sdtm.001, \"lb\", \"NSE\") %>% 
+  add_observation(sdtm.001, \"lb\", \"PSA\") 
+
+invisible(capture.output(
+  plot(summary(nif.pd))
+))
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+nif.pd <- new_nif() %>% 
+  add_administration(sdtm.001, \"M1774\") %>% 
+  add_observation(sdtm.001, \"PC\", \"M1774\", analyte = \"M1774\", silent = s) %>% 
+  add_observation(sdtm.001, \"lb\", \"CA-153\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA242\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA72.4\") %>% 
+  add_observation(sdtm.001, \"lb\", \"LYMC45\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA125AG\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA15_3AG\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA19_9AG\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CA2729AG\") %>% 
+  add_observation(sdtm.001, \"lb\", \"CEA\") %>% 
+  add_observation(sdtm.001, \"lb\", \"LYMCH2AX\") %>% 
+  add_observation(sdtm.001, \"lb\", \"HE4\") %>% 
+  add_observation(sdtm.001, \"lb\", \"NSE\") %>% 
+  add_observation(sdtm.001, \"lb\", \"PSA\") 
+
+invisible(capture.output(
+  plot(summary(nif.pd))
+))
+```"

@@ -1,0 +1,30 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmlmLmIxICU+JSBcbiAgcGxvdChhbmFseXRlID0gXCJOSVJBXCIsIHBvaW50cyA9IFQsIGxvZyA9IEYsXG4gICAgICAgdGl0bGU9XCJQYXJ0IEIxOiBOaXJhcGFyaWIgcGxhc21hIGNvbmNlbnRyYXRpb25zXCIpXG5cbm5pZi5iMSAlPiUgXG4gICMgZmlsdGVyKFRJTUUgPCAyNCkgJT4lIFxuICBmaWx0ZXIoREkgPT0gMSkgJT4lIFxuICBwbG90KGFuYWx5dGU9XCJOSVJBXCIsIHBvaW50cyA9IFQsIGxvZyA9IEYsIG1heF90aW1lID0gMjQsIHRpbWUgPSBcIlRBRkRcIixcbiAgICAgICBtZWFuID0gRiwgYWRtaW4gPSBcIk5JUkFcIixcbiAgICAgICB0aXRsZT1cIlBhcnQgQjE6IE5pcmFwYXJpYiBwbGFzbWEgY29uY2VudHJhdGlvbnNcIilcbmBgYCJ9 -->
+
+```r
+nif.b1 %>% 
+  plot(analyte = \"NIRA\", points = T, log = F,
+       title=\"Part B1: Niraparib plasma concentrations\")
+
+nif.b1 %>% 
+  # filter(TIME < 24) %>% 
+  filter(DI == 1) %>% 
+  plot(analyte=\"NIRA\", points = T, log = F, max_time = 24, time = \"TAFD\",
+       mean = F, admin = \"NIRA\",
+       title=\"Part B1: Niraparib plasma concentrations\")
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+nif.b1 %>% 
+  plot(analyte = \"NIRA\", points = T, log = F,
+       title=\"Part B1: Niraparib plasma concentrations\")
+
+nif.b1 %>% 
+  # filter(TIME < 24) %>% 
+  filter(DI == 1) %>% 
+  plot(analyte=\"NIRA\", points = T, log = F, max_time = 24, time = \"TAFD\",
+       mean = F, admin = \"NIRA\",
+       title=\"Part B1: Niraparib plasma concentrations\")
+```"

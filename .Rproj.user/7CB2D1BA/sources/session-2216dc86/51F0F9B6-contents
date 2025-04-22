@@ -1,0 +1,458 @@
+---
+title: "MS201924-0020 Data exploration"
+author: "Rainer Strotmann"
+date: "11-Apr-2024"
+output:
+  word_document: default
+  html_notebook: default
+---
+
+```{r echo=F, warning=F, info=F, message=F}
+library(tidyverse, quietly=T)
+library(knitr)
+# library(nif)
+library(stringr)
+
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=5, fig.align="center", comment=NA)
+```
+
+# DATA
+
+SDTM data as per the 20-Oct-2023 data transfer.
+
+```{r}
+sdtm.20 <- nif::read_sdtm(
+  "/Users/rainerstrotmann/Documents/Programming/R/nif-test/study data/MS201924-0020/240403",
+  c("dm", "vs", "ex", "pc", "lb", "ae")) %>%
+  add_analyte_mapping("M1774", "M1774") %>% 
+  add_analyte_mapping("M4076", "M4076") %>%
+  add_analyte_mapping("AVELUMAB", "AVELUMAB")
+```
+
+## Data cleaning
+
+Subject `r sdtm.0020$ex %>% filter(EXSTDTC=="2023-08") %>% pull(USUBJID) %>% as.character()`
+had a non-valid treatment start date in the following row of EX:
+
+`r sdtm.0020$ex %>% filter(EXSTDTC=="2023-08")`
+
+This entry was deleted before further analysis.
+
+Caution: In the SDTM/PC data, `PCSPEC` is not assigned for some entries! This needs
+to be fixed in the data set!
+
+```{r}
+# ex <- sdtm.0020$ex %>% 
+#   filter(EXSTDTC!="2023-08")
+# 
+# sdtm.0020$domains[["ex"]] <- ex
+# 
+# lb <- sdtm.0020$domains[["lb"]]
+# 
+# nif.0020 <- make_nif(sdtm.0020, spec=c("Plasma", "SERUM", ""), silent=T) %>% 
+#   mutate(reg_string=str_sub(ARM, -23, -2)) %>% 
+#   mutate(REG=case_match(reg_string, "2 weeks on/2 weeks off"~"2w2w",
+#                         "2 weeks on/1 weeks off"~"2w1w")) %>% 
+# #  mutate(DOSEREG=paste0(DOSE, "-", REG)) %>% 
+#   
+#   #add_lab_observation(lb, "HGB", 5, lbspec="SERUM") %>% 
+#   mutate(PART=substr(ACTARMCD, 1, 2)) %>% 
+#   add_bl_lab(sdtm.0020$domains[["lb"]], "CREAT", "SERUM") %>%
+#   mutate(BL_CRCL=egfr_mdrd(BL_CREAT, AGE, SEX, RACE, molar=T)) %>%
+#   index_nif() %>% 
+#   compress_nif(c(standard_nif_fields, "PART", "REG", "BL_CREAT", "BL_CRCL"))
+
+# nif.20 <- nif_auto(sdtm.20, keep = "ARM")
+
+ntl <- tribble(
+  ~PCTPT, ~NTIME,
+  "PRE-DOSE", 0,
+  "0.5H POST-DOSE", 0.5,
+  "1H POST-DOSE", 1,
+  "2H POST-DOSE", 2,
+  "3H POST-DOSE", 3,
+  "4H POST-DOSE", 4, 
+  "6H POST-DOSE", 6,
+  "8H POST-DOSE", 8,
+  "END OF INFUSION", 2,
+  "END OF STUDY INTERVENTION", NA,
+  "SAFETY FOLLOW-UP", NA,
+  "24H POST-DOSE", 24
+)
+
+nif_option(silent = T)
+
+nif.20 <- new_nif() %>% 
+  add_administration(sdtm.20, "M1774") %>% 
+  add_administration(sdtm.20, "M4076") %>% 
+  add_observation(sdtm.20, "pc", "M1774", NTIME_lookup = ntl) %>% 
+  add_observation(sdtm.20, "pc", "M4076", NTIME_lookup = ntl) %>% 
+  add_observation(sdtm.20, "lb", "HGB", parent = "M1774") %>% 
+  add_baseline(sdtm.20, "lb", "CREAT") %>% 
+  add_bl_crcl() %>% 
+  add_bl_renal() %>%
+  add_bl_odwg(sdtm.20, baseline_filter = "VISIT == 'SCREENING'") %>%
+  mutate(PART = substr(ACTARMCD, 1, 2)) 
+```
+
+```{r}
+dl <- nif.20 %>% 
+  as.data.frame() %>% 
+  filter(EVID==1) %>% 
+  group_by(USUBJID, ANALYTE) %>% 
+  mutate(min_time=min(TIME)) %>% 
+  mutate(start_dose=DOSE[TIME==min_time]) %>% 
+  distinct(USUBJID, ANALYTE, DL=start_dose)
+
+nif.all <- nif.0020 %>% 
+  as.data.frame() %>% 
+  left_join(dl, by=c("USUBJID", "ANALYTE")) %>%
+  mutate(DOSEREG=paste0(DL, "-", REG)) %>% 
+  group_by(USUBJID) %>% 
+  fill(DL, REG, DOSEREG, .direction = "downup") %>% 
+  new_nif()
+```
+
+
+# SUBJECT DISPOSITION
+
+```{r, fig.width=3, fig.height=3}
+print(summary(nif.20))
+invisible(capture.output(plot(summary(nif.20))))
+
+nif.all %>%
+  as.data.frame() %>% 
+  distinct(PART, USUBJID) %>% 
+  group_by(PART) %>% 
+  summarize(N=n(), .groups="drop") %>% 
+  kable(caption="Subjects treated by Part")
+
+nif.all %>%
+  as.data.frame() %>%
+  filter(EVID==1, DOSE!=0, ANALYTE=="M1774") %>% 
+  distinct(PART, USUBJID, DL) %>% 
+  group_by(PART, DL) %>% 
+  summarize(N=n(), .groups="drop") %>% 
+  kable(caption="Subjects treated by Part and M1774 Dose Level")
+
+nif.all %>%
+  as.data.frame() %>%
+  filter(EVID==1, DOSE!=0, ANALYTE=="M1774") %>% 
+  distinct(PART, USUBJID, DOSEREG) %>% 
+  group_by(PART, DOSEREG) %>% 
+  summarize(N=n()) %>% 
+  kable(caption="Subjects treated by Part and M1774 dose regimen")
+
+# nif.all %>% age_hist()
+# nif.all %>% weight_hist()
+# nif.all %>% bmi_hist()
+
+plot(summary(nif.all), baseline = F)
+```
+
+# GLOBAL OVERVIEW
+
+## Pharmacokinetics
+
+```{r fig.width=6, fig.height=4}
+nif.20 %>% 
+  plot(analyte = "M1774", dose = c(90, 130, 180), max_time = 250, log = T,
+       title = "M1774 PK", points = T)
+
+nif.20 %>% 
+  plot(analyte = "M4076", dose = c(50, 100, 150, 200), log = T, max_time = 10,
+       points = T, title = "M4076 PK", mean = T)
+
+nif.20 %>% 
+  plot(analyte="M4076")
+       
+nif.20 %>% 
+  plot(analyte="M4076", max_time = 500, title="M4076 PK", mean = T)
+
+```
+
+# Hemoglobin
+
+HGB across all treatments
+
+```{r fig.width=6, fig.height=3}
+temp <- nif.all %>% 
+  as.data.frame() %>% 
+  filter(ANALYTE=="HGB") %>% 
+  filter(DV>10) %>% 
+  group_by(ID) %>%
+  mutate(bl=mean(DV[NTIME <= 0])) %>% 
+  mutate(cfb=DV-bl) %>% 
+  ungroup()
+
+temp %>% 
+  ggplot(aes(x=TIME, y=DV, group=USUBJID)) +
+  geom_line() +
+  geom_point() +
+  #scale_y_log10() +
+  #xlim(NA, 2000) +
+  #facet_wrap(~DOSE) +
+  theme_bw()
+
+temp %>% 
+  ggplot(aes(x=TIME, y=cfb, group=USUBJID)) +
+  geom_hline(yintercept = c(0, -30), color="red") +
+  geom_line() +
+  geom_point() +
+  #facet_wrap(~DOSE) +
+  theme_bw()
+
+temp %>% 
+  ggplot(aes(x=TIME, y=cfb, group=USUBJID)) +
+  geom_hline(yintercept = c(0, -30), color="red") +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~REG) +
+  theme_bw()
+```
+
+## Lab markers of hepatotoxicity
+
+```{r}
+nif.20 %>% 
+  edish_plot(sdtm.20)
+```
+
+
+There is one PROT data point wrongly converted into standard units (i.e., g/l).
+
+```{r fig.width=6, fig.height=4}
+temp <- lb %>% 
+  filter(LBTESTCD %in% c("BILI", "ALT", "AST", "PROT"))
+
+temp %>% 
+  ggplot(aes(x=as.numeric(LBORRES), y=LBSTRESN, color=LBORRESU)) +
+  geom_point() +
+  facet_wrap(~LBTESTCD, scales="free") +
+  theme_bw() +
+  ggtitle("Standardization check")
+
+temp %>% 
+  filter(LBSTRESN>=0.1) %>% 
+  ggplot(aes(x=LBSTRESN)) +
+  geom_histogram(bins=15) +
+  geom_vline(aes(xintercept=LBSTNRHI), color="red") +
+  scale_x_log10() +
+  facet_wrap(~LBTESTCD, scales="free") +
+  theme_bw() +
+  labs(caption="red marker: ULN") +
+  ggtitle("Lab value distribution for markers of hepatotoxicity")
+```
+
+
+
+```{r fig.width=6, fig.height=4}
+nif.lb <- nif.all %>% 
+  add_lab_observation(lb, "BILI", 10, "SERUM") %>% 
+  add_lab_observation(lb, "ALT", 11, "SERUM") %>% 
+  add_lab_observation(lb, "AST", 11, "SERUM") %>% 
+  add_lab_observation(lb, "PROT", 12, "SERUM") %>% 
+  as.data.frame() %>% 
+  group_by(USUBJID) %>% 
+  fill(DL, REG, DOSEREG, .direction = "downup") %>% 
+  new_nif()
+
+# nif.lb %>% 
+#   plot(analyte="AST", group="REG", y_scale="log")
+```
+
+```{r fig.width=6, fig.height=4}
+temp <- nif.lb %>% 
+  as.data.frame() %>%
+  mutate(ULN=case_match(ANALYTE, "BILI"~20, "ALT"~40, "AST"~40, .default=NA)) %>% 
+  mutate(LLN=case_match(ANALYTE, "PROT"~60, .default=NA)) %>% 
+  filter(ANALYTE %in% c("BILI", "ALT", "AST", "PROT")) %>% 
+  group_by(USUBJID, ANALYTE) %>% 
+  mutate(bl=mean(DV[NTIME<=0])) %>% 
+  ungroup()
+
+temp %>% 
+  filter(DOSE==180) %>% 
+  filter(DV>0.1) %>% 
+  ggplot(aes(x=TIME, y=DV, group=ID)) +
+  geom_point() + 
+  geom_line() +
+  scale_y_log10() +
+  geom_hline(aes(yintercept=ULN), color="red") +
+  geom_hline(aes(yintercept=LLN), color="red") +
+  facet_wrap(~ANALYTE, scales="free") +
+  theme_bw()
+
+temp %>% 
+  filter(DOSE==180) %>% 
+  filter(DV>0.1) %>% 
+  ggplot(aes(x=TIME, y=DV-bl, group=ID)) +
+  geom_point() + 
+  geom_line() +
+  facet_wrap(~ANALYTE, scales="free") +
+  theme_bw()
+
+blt.sbs <- temp %>% 
+  filter(ANALYTE!="PROT") %>% 
+  filter(DV>ULN) %>% 
+  distinct(USUBJID)
+```
+
+## Transaminases over time
+
+```{r fig.width=6, fig.height=3}
+ht.sbs <- c("20192400201010005",
+            "20192400201020001",
+            "20192400201020002",
+            "20192400202010006",
+            "20192400202010009",
+            "20192400202010014",
+            "20192400202010018",
+            "20192400203010004",
+            "20192400201010011")
+
+temp <- nif.lb %>% 
+  as.data.frame() %>% 
+  filter(USUBJID %in% ht.sbs)
+
+admin <- temp %>% 
+  filter(ANALYTE=="M1774", EVID==1) %>% 
+  group_by(USUBJID) %>%
+  mutate(admintimes=list(TIME)) %>% 
+  distinct(USUBJID, admintimes)
+
+labplot <- function(id){
+  temp %>%
+    filter(USUBJID==id) %>% 
+    filter(ANALYTE %in% c("AST", "ALT")) %>%
+    ggplot(aes(x=TIME, y=DV, color=ANALYTE)) +
+    geom_vline(xintercept=admin %>% filter(USUBJID==id) %>% pull(admintimes) %>% unlist(), color="grey") +
+    geom_point() +
+    geom_line() +
+    #facet_wrap(~USUBJID, scales="free", ncol=1) +
+    theme_bw() +
+    theme(legend.position = "bottom") +
+    labs(caption="vertical bars: M1774 administration",
+         title=paste(id))
+}
+
+lapply(ht.sbs, labplot)
+
+```
+
+
+
+# AVELUMAB COMBINATION TREATMENT
+
+```{r}
+nif.b1 <- nif.all %>% 
+  filter(PART=="B1")
+```
+
+## Subject disposition
+
+
+```{r}
+summary(nif.b1)
+
+nif.b1 %>% 
+  as.data.frame() %>% 
+  filter(ANALYTE=="M1774") %>% 
+  distinct(USUBJID, DOSEREG) %>% 
+  group_by(DOSEREG) %>% 
+  summarize(N=n()) %>% 
+  kable(caption="Part B1: Number of subjects per M1774 dose regimen")
+```
+
+```{r fig.width=3, fig.height=3}
+nif.b1 %>% age_hist()
+nif.b1 %>% weight_hist()
+nif.b1 %>% bmi_hist()
+```
+
+## Exposure
+
+M1774 administration: 180 mg (PO), 2 weeks on, 2 weeks off
+AVELUMAB administration: IV infusion every 2 weeks
+
+M1774 PK sampling on C1D1, C1D8 (rich)
+AVELUMAB PK sampling at pre-dose and post-infusion
+
+```{r fig.width=6, fig.height=4}
+nif.b1 %>% 
+  plot(analyte="M1774", max_x=200, points=T, administrations=T, doses=180)
+
+nif.b1 %>% 
+  plot(analyte="AVELUMAB",  max_x=1500, administration=T, points=T)
+```
+
+Higher avelumab exposure in females (SEX=1)?
+
+```{r fig.width=6, fig.height=4}
+nif.b1 %>% 
+  plot(analyte="AVELUMAB", group="SEX", mean=F, points=T, max_x=2000)
+```
+
+## Hemoglobin
+
+```{r fig.width=6, fig.height=3}
+temp <- nif.b1 %>% 
+  as.data.frame() %>% 
+  filter(ANALYTE=="HGB") %>% 
+  filter(DV>10) %>% 
+  group_by(ID) %>%
+  mutate(bl=mean(DV[NTIME <= 0])) %>% 
+  mutate(cfb=DV-bl) %>% 
+  ungroup()
+
+temp %>% 
+  ggplot(aes(x=TIME, y=DV, group=USUBJID)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~REG) +
+  theme_bw() +
+  labs(x="time (h)", y="HGB (g/l)") +
+  ggtitle("HGB over time (Part B1)")
+
+temp %>% 
+  ggplot(aes(x=TIME, y=cfb, group=USUBJID)) +
+  geom_hline(yintercept = c(0, -30), color="red") +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~REG) +
+  theme_bw() +
+  labs(x="time (h)", y="delta HGB (g/l)") +
+  ggtitle("HGB difference to baseline (Part B1)")
+```
+
+
+```{r fig.width=4, fig.height=4}
+temp %>% 
+  distinct(USUBJID, REG, bl) %>% 
+  ggplot(aes(x=REG, y=bl)) + 
+  geom_boxplot(width=.5) +
+  geom_point(size=2) +
+  expand_limits(y=0) +
+  theme_bw() +
+  ggtitle("Part B1: Baseline HGB by regimen")
+
+temp %>% 
+  distinct(USUBJID, REG, bl) %>% 
+  ggplot(aes(fill=REG, x=bl)) + 
+  geom_histogram(aes(y=..density..), alpha=0.2, position="identity", binwidth=10) +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  ggtitle("Part B1: Baseline HGB by regimen")
+```
+
+
+
+
+
+
+
+
+
+
+
+

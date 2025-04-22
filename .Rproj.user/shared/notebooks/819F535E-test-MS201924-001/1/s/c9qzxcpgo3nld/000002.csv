@@ -1,0 +1,32 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmlmLjAwMSAlPiUgXG4gIGZpbHRlcihDT0hPUlQgJWluJSBjKFwiQTFcIiwgXCJBNFwiLCBcIkE1XCIpKSAlPiUgXG4gIGZpbHRlcihET1NFID09IDE4MCkgJT4lXG4gIHBsb3QoYW5hbHl0ZT1cIk0xNzc0XCIsIG1heF90aW1lID0gMTYsIGxvZyA9IFQsIGdyb3VwID0gXCJDT0hPUlRcIixcbiAgICAgICBtZWFuID0gRiwgdGl0bGUgPSBcIlBhcnRzIEExLCBBNCwgQTUgKHNpbmdsZS1kb3NlKVwiKVxuXG5uaWYuMDAxICU+JSBcbiAgZmlsdGVyKERPU0U9PTE4MCkgJT4lIFxuICBmaWx0ZXIoQ09IT1JUICVpbiUgYyhcIkExXCIsIFwiQTRcIiwgXCJBNVwiKSkgJT4lIFxuICBwbG90KGFuYWx5dGU9XCJNMTc3NFwiLCBtYXhfdGltZSA9IDE2LCBsb2cgPSBULCBncm91cD1cIkNPSE9SVFwiLFxuICAgICAgIG1lYW4gPSBULCB0aXRsZSA9IFwiUGFydHMgQTEsIEE0LCBBNSAoc2luZ2xlLWRvc2UpXCIpXG5gYGAifQ== -->
+
+```r
+nif.001 %>% 
+  filter(COHORT %in% c(\"A1\", \"A4\", \"A5\")) %>% 
+  filter(DOSE == 180) %>%
+  plot(analyte=\"M1774\", max_time = 16, log = T, group = \"COHORT\",
+       mean = F, title = \"Parts A1, A4, A5 (single-dose)\")
+
+nif.001 %>% 
+  filter(DOSE==180) %>% 
+  filter(COHORT %in% c(\"A1\", \"A4\", \"A5\")) %>% 
+  plot(analyte=\"M1774\", max_time = 16, log = T, group=\"COHORT\",
+       mean = T, title = \"Parts A1, A4, A5 (single-dose)\")
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+nif.001 %>% 
+  filter(COHORT %in% c(\"A1\", \"A4\", \"A5\")) %>% 
+  filter(DOSE == 180) %>%
+  plot(analyte=\"M1774\", max_time = 16, log = T, group = \"COHORT\",
+       mean = F, title = \"Parts A1, A4, A5 (single-dose)\")
+
+nif.001 %>% 
+  filter(DOSE==180) %>% 
+  filter(COHORT %in% c(\"A1\", \"A4\", \"A5\")) %>% 
+  plot(analyte=\"M1774\", max_time = 16, log = T, group=\"COHORT\",
+       mean = T, title = \"Parts A1, A4, A5 (single-dose)\")
+```"

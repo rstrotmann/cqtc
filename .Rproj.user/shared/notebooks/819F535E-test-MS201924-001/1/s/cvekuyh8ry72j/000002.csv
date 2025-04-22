@@ -1,0 +1,20 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmlmLmIxIDwtIG5pZi4wMDEgJT4lIFxuICBmaWx0ZXIoQ09IT1JUPT1cIkIxXCIpXG5cbnVuY2xhc3Moc3VtbWFyeShuaWYuYjEpKVtbXCJkb3NlX2xldmVsc1wiXV0gJT4lXG4gIGthYmxlKGNhcHRpb249XCJQYXJ0IEIxOiBTdWJqZWN0cyBieSBkb3NlIGxldmVsXCIpXG5gYGAifQ== -->
+
+```r
+nif.b1 <- nif.001 %>% 
+  filter(COHORT==\"B1\")
+
+unclass(summary(nif.b1))[[\"dose_levels\"]] %>%
+  kable(caption=\"Part B1: Subjects by dose level\")
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+nif.b1 <- nif.001 %>% 
+  filter(COHORT==\"B1\")
+
+unclass(summary(nif.b1))[[\"dose_levels\"]] %>%
+  kable(caption=\"Part B1: Subjects by dose level\")
+```"

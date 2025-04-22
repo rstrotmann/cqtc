@@ -1,0 +1,90 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWRtaW4gPC0gbmlmLjAwMSAlPiUgXG4gIGFzLmRhdGEuZnJhbWUoKSAlPiUgXG4gIGZpbHRlcihFVklEPT0xLCBBTkFMWVRFPT1cIk0xNzc0XCIpICU+JSBcbiAgbXV0YXRlKEFETUlOPVQpXG5cbm5pZi4wMDEgJT4lIFxuICBhZGRfY2ZiKCkgJT4lIFxuICBmaWx0ZXIoRE9TRT09MTgwKSAlPiUgXG4gIGZpbHRlcihDT0hPUlQ9PVwiQTNcIikgJT4lXG4gICMgZmlsdGVyKFBBUlQ9PVwiQVwiKSAlPiUgXG4gIGZpbHRlcihFVklEPT0wLCBBTkFMWVRFPT1cIlJFVElcIikgJT4lIFxuICBnZ3Bsb3QoYWVzKHg9VElNRSwgeT1EVkNGQiwgZ3JvdXA9SUQpKSArXG4gIGdlb21fdmxpbmUoZGF0YT1hZG1pbiAlPiVcbiAgICAgICAgICAgICAgIGZpbHRlcihDT0hPUlQ9PVwiQTNcIiksXG4gICAgICAgICAgICAgYWVzKHhpbnRlcmNlcHQ9VElNRSwgZ3JvdXA9SUQpLCBjb2xvcj1cInJlZFwiLCBhbHBoYT0wLjIpICtcbiAgZ2VvbV9saW5lKCkgK1xuICBnZW9tX3BvaW50KCkgK1xuICB4bGltKDAsIDE1MDApICtcbiAgZmFjZXRfd3JhcCh+Q09IT1JUKSArXG4gIHRoZW1lX2J3KCkgK1xuICBnZ3RpdGxlKFwiQ29ob3J0IEEzOiBSRVRJIGNoYW5nZSBmcm9tIGJhc2VsaW5lXCIpICtcbiAgbGFicyhjYXB0aW9uPVwicmVkIGxpbmVzOiBNMTc3NCBhZG1pbmlzdHJhdGlvbnNcIilcblxuXG5uaWYuMDAxICU+JSBcbiAgYWRkX2NmYigpICU+JSBcbiAgZmlsdGVyKERPU0U9PTE4MCwgQ09IT1JUPT1cIkEzXCIpICU+JSBcbiAgZmlsdGVyKEVWSUQ9PTAsIEFOQUxZVEU9PVwiUkJDXCIpICU+JSBcbiAgZ2dwbG90KGFlcyh4PVRJTUUsIHk9RFZDRkIsIGdyb3VwPUlEKSkgK1xuICBnZW9tX3ZsaW5lKGRhdGE9YWRtaW4gJT4lXG4gICAgICAgICAgICAgICBmaWx0ZXIoQ09IT1JUPT1cIkEzXCIpLFxuICAgICAgICAgICAgIGFlcyh4aW50ZXJjZXB0PVRJTUUsIGdyb3VwPUlEKSwgY29sb3I9XCJyZWRcIiwgYWxwaGE9MC4yKSArXG4gIGdlb21fbGluZSgpICtcbiAgZ2VvbV9wb2ludCgpICtcbiAgeGxpbSgwLCAxNTAwKSArXG4gIGZhY2V0X3dyYXAofkNPSE9SVCkgK1xuICB0aGVtZV9idygpICtcbiAgZ2d0aXRsZShcIkNvaG9ydCBBMzogUkJDIGNoYW5nZSBmcm9tIGJhc2VsaW5lXCIpICtcbiAgbGFicyhjYXB0aW9uPVwicmVkIGxpbmVzOiBNMTc3NCBhZG1pbmlzdHJhdGlvbnNcIilcbiAgXG5gYGAifQ== -->
+
+```r
+admin <- nif.001 %>% 
+  as.data.frame() %>% 
+  filter(EVID==1, ANALYTE==\"M1774\") %>% 
+  mutate(ADMIN=T)
+
+nif.001 %>% 
+  add_cfb() %>% 
+  filter(DOSE==180) %>% 
+  filter(COHORT==\"A3\") %>%
+  # filter(PART==\"A\") %>% 
+  filter(EVID==0, ANALYTE==\"RETI\") %>% 
+  ggplot(aes(x=TIME, y=DVCFB, group=ID)) +
+  geom_vline(data=admin %>%
+               filter(COHORT==\"A3\"),
+             aes(xintercept=TIME, group=ID), color=\"red\", alpha=0.2) +
+  geom_line() +
+  geom_point() +
+  xlim(0, 1500) +
+  facet_wrap(~COHORT) +
+  theme_bw() +
+  ggtitle(\"Cohort A3: RETI change from baseline\") +
+  labs(caption=\"red lines: M1774 administrations\")
+
+
+nif.001 %>% 
+  add_cfb() %>% 
+  filter(DOSE==180, COHORT==\"A3\") %>% 
+  filter(EVID==0, ANALYTE==\"RBC\") %>% 
+  ggplot(aes(x=TIME, y=DVCFB, group=ID)) +
+  geom_vline(data=admin %>%
+               filter(COHORT==\"A3\"),
+             aes(xintercept=TIME, group=ID), color=\"red\", alpha=0.2) +
+  geom_line() +
+  geom_point() +
+  xlim(0, 1500) +
+  facet_wrap(~COHORT) +
+  theme_bw() +
+  ggtitle(\"Cohort A3: RBC change from baseline\") +
+  labs(caption=\"red lines: M1774 administrations\")
+  
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+admin <- nif.001 %>% 
+  as.data.frame() %>% 
+  filter(EVID==1, ANALYTE==\"M1774\") %>% 
+  mutate(ADMIN=T)
+
+nif.001 %>% 
+  add_cfb() %>% 
+  filter(DOSE==180) %>% 
+  filter(COHORT==\"A3\") %>%
+  # filter(PART==\"A\") %>% 
+  filter(EVID==0, ANALYTE==\"RETI\") %>% 
+  ggplot(aes(x=TIME, y=DVCFB, group=ID)) +
+  geom_vline(data=admin %>%
+               filter(COHORT==\"A3\"),
+             aes(xintercept=TIME, group=ID), color=\"red\", alpha=0.2) +
+  geom_line() +
+  geom_point() +
+  xlim(0, 1500) +
+  facet_wrap(~COHORT) +
+  theme_bw() +
+  ggtitle(\"Cohort A3: RETI change from baseline\") +
+  labs(caption=\"red lines: M1774 administrations\")
+
+
+nif.001 %>% 
+  add_cfb() %>% 
+  filter(DOSE==180, COHORT==\"A3\") %>% 
+  filter(EVID==0, ANALYTE==\"RBC\") %>% 
+  ggplot(aes(x=TIME, y=DVCFB, group=ID)) +
+  geom_vline(data=admin %>%
+               filter(COHORT==\"A3\"),
+             aes(xintercept=TIME, group=ID), color=\"red\", alpha=0.2) +
+  geom_line() +
+  geom_point() +
+  xlim(0, 1500) +
+  facet_wrap(~COHORT) +
+  theme_bw() +
+  ggtitle(\"Cohort A3: RBC change from baseline\") +
+  labs(caption=\"red lines: M1774 administrations\")
+  
+```"

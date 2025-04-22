@@ -1,0 +1,22 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2R0bS4wMDEgJT4lXG4gIGNoZWNrX3NkdG0odmVyYm9zZT1GKVxuXG5kdW1teSA8LSBzZHRtLjAwMSAlPiUgZG9tYWluKFwiZG1cIikgJT4lIFxuICBzZWxlY3QoVVNVQkpJRCwgRE9NQUlOLCBSRlNURFRDLCBSRkVORFRDKSAlPiUgXG4gIGNoZWNrX2RhdGVfZm9ybWF0KHZlcmJvc2U9VClcbmBgYCJ9 -->
+
+```r
+sdtm.001 %>%
+  check_sdtm(verbose=F)
+
+dummy <- sdtm.001 %>% domain(\"dm\") %>% 
+  select(USUBJID, DOMAIN, RFSTDTC, RFENDTC) %>% 
+  check_date_format(verbose=T)
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+sdtm.001 %>%
+  check_sdtm(verbose=F)
+
+dummy <- sdtm.001 %>% domain(\"dm\") %>% 
+  select(USUBJID, DOMAIN, RFSTDTC, RFENDTC) %>% 
+  check_date_format(verbose=T)
+```"

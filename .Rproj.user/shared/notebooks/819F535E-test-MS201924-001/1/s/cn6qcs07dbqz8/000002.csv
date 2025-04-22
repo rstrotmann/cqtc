@@ -1,0 +1,46 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmNhIDwtIG5pZi4wMDEgJT4lIFxuICBpbmRleF9kb3NpbmdfaW50ZXJ2YWwoKSAlPiUgXG4gIGZpbHRlcihDT0hPUlQgJWluJSBjKFwiQTFcIiwgXCJBNFwiLCBcIkE1XCIpKSAlPiUgXG4gIGZpbHRlcihET1NFID09IDE4MCkgJT4lIFxuICBmaWx0ZXIoREkgPT0gMSkgJT4lIFxuICBuY2EoZ3JvdXA9XCJDT0hPUlRcIiwgYW5hbHl0ZT1cIk0xNzc0XCIpXG5cbm5jYSAlPiUgXG4gIGZpbHRlcihQUFRFU1RDRCAlaW4lIGMoXCJhdWNsYXN0XCIsIFwiY21heFwiKSkgJT4lIFxuICBnZ3Bsb3QoYWVzKHg9Q09IT1JULCB5PVBQT1JSRVMpKSArXG4gIGdlb21fYm94cGxvdCgpICtcbiAgZ2VvbV9wb2ludCgpICtcbiAgZmFjZXRfd3JhcCh+UFBURVNUQ0QsIHNjYWxlcz1cImZyZWVcIikgK1xuICBleHBhbmRfbGltaXRzKHk9MCkgK1xuICB0aGVtZV9idygpICtcbiAgbGFicyhjYXB0aW9uPVwiRXhwb3N1cmUgYWZ0ZXIgc2luZ2xlIGRvc2VzIG9mIDE4MCBtZ1wiKSArXG4gIGdndGl0bGUoXCJQYXJ0cyBBNCwgQTU6IEV4cG9zdXJlIGluIEFzaWFuIHN1YmplY3RzXCIpICtcbiAgd2F0ZXJtYXJrKClcbmBgYCJ9 -->
+
+```r
+nca <- nif.001 %>% 
+  index_dosing_interval() %>% 
+  filter(COHORT %in% c(\"A1\", \"A4\", \"A5\")) %>% 
+  filter(DOSE == 180) %>% 
+  filter(DI == 1) %>% 
+  nca(group=\"COHORT\", analyte=\"M1774\")
+
+nca %>% 
+  filter(PPTESTCD %in% c(\"auclast\", \"cmax\")) %>% 
+  ggplot(aes(x=COHORT, y=PPORRES)) +
+  geom_boxplot() +
+  geom_point() +
+  facet_wrap(~PPTESTCD, scales=\"free\") +
+  expand_limits(y=0) +
+  theme_bw() +
+  labs(caption=\"Exposure after single doses of 180 mg\") +
+  ggtitle(\"Parts A4, A5: Exposure in Asian subjects\") +
+  watermark()
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+nca <- nif.001 %>% 
+  index_dosing_interval() %>% 
+  filter(COHORT %in% c(\"A1\", \"A4\", \"A5\")) %>% 
+  filter(DOSE == 180) %>% 
+  filter(DI == 1) %>% 
+  nca(group=\"COHORT\", analyte=\"M1774\")
+
+nca %>% 
+  filter(PPTESTCD %in% c(\"auclast\", \"cmax\")) %>% 
+  ggplot(aes(x=COHORT, y=PPORRES)) +
+  geom_boxplot() +
+  geom_point() +
+  facet_wrap(~PPTESTCD, scales=\"free\") +
+  expand_limits(y=0) +
+  theme_bw() +
+  labs(caption=\"Exposure after single doses of 180 mg\") +
+  ggtitle(\"Parts A4, A5: Exposure in Asian subjects\") +
+  watermark()
+```"

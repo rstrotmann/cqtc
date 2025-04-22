@@ -1,0 +1,60 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmNhICU+JVxuICBnZ3Bsb3QoYWVzKHggPSBCTF9DUkNMLCB5ID0gUFBPUlJFUy9ET1NFLFxuICAgICAgICAgICAgIGNvbG9yID0gYXMuZmFjdG9yKERPU0UpKSkgK1xuICBnZW9tX3BvaW50KHNpemUgPSAzKSArXG4gIGZhY2V0X3dyYXAoflJJQ0hfTiwgc2NhbGVzPVwiZnJlZVwiLFxuICAgICAgICAgICAgIGxhYmVsbGVyID0gbGFiZWxsZXIoUklDSF9OID0gZnVuY3Rpb24oeCkgYyhcIlNEXCIsIFwiTURcIilbYXMubnVtZXJpYyh4KV0pKSArXG4gIGxhYnMoY2FwdGlvbj1cIlwiKSArXG4gIGxhYnMoY29sb3I9XCJkb3NlIChtZylcIiwgeCA9IFwiYmFzZWxpbmUgQ3JDTCAobWwvbWluKVwiLFxuICAgICAgICB5ID0gXCJBVUMvZG9zZSAoaCp1Zy9tbC9tZ1wiKSArXG4gIHNjYWxlX3lfbG9nMTAoKSArXG4gIHRoZW1lX2J3KCkgK1xuICB0aGVtZShsZWdlbmQucG9zaXRpb24gPSBcImJvdHRvbVwiKSArXG4gIGdndGl0bGUoXCJEb3NlLW5vcm1hbGl6ZWQgQVVDIGJ5IGJhc2VsaW5lIENyQ0xcIilcblxubmNhICU+JSBcbiAgZmlsdGVyKFBQVEVTVENEID09IFwiYXVjaW5mLm9ic1wiKSAlPiUgXG4gIGdncGxvdChhZXMoeCA9IEJMX1JFTkFMLCB5ID0gUFBPUlJFUy9ET1NFKSkgK1xuICBnZW9tX2JveHBsb3QoKSArXG4gIHRoZW1lX2J3KCkgK1xuICAjIHNjYWxlX3lfbG9nMTAoKSArXG4gIGZhY2V0X3dyYXAoflJJQ0hfTiwgbGFiZWxsZXIgPSBsYWJlbGxlcihSSUNIX04gPSBmdW5jdGlvbih4KSBjKFwiU0RcIiwgXCJNRFwiKVthcy5udW1lcmljKHgpXSkpICtcbiAgbGFicyh4ID0gXCJcIiwgeSA9IFwiQVVDL2Rvc2UgKGgqdWcvbWwvbWdcIikgK1xuICBnZ3RpdGxlKFwiTm9zZS1ub3JtYWxpemVkIEFVQyBieSBiYXNlbGluZSByZW5hbCBpbXBhaXJtZW50XCIpICtcbiAgd2F0ZXJtYXJrKClcblxuYGBgIn0= -->
+
+```r
+nca %>%
+  ggplot(aes(x = BL_CRCL, y = PPORRES/DOSE,
+             color = as.factor(DOSE))) +
+  geom_point(size = 3) +
+  facet_wrap(~RICH_N, scales=\"free\",
+             labeller = labeller(RICH_N = function(x) c(\"SD\", \"MD\")[as.numeric(x)])) +
+  labs(caption=\"\") +
+  labs(color=\"dose (mg)\", x = \"baseline CrCL (ml/min)\",
+        y = \"AUC/dose (h*ug/ml/mg\") +
+  scale_y_log10() +
+  theme_bw() +
+  theme(legend.position = \"bottom\") +
+  ggtitle(\"Dose-normalized AUC by baseline CrCL\")
+
+nca %>% 
+  filter(PPTESTCD == \"aucinf.obs\") %>% 
+  ggplot(aes(x = BL_RENAL, y = PPORRES/DOSE)) +
+  geom_boxplot() +
+  theme_bw() +
+  # scale_y_log10() +
+  facet_wrap(~RICH_N, labeller = labeller(RICH_N = function(x) c(\"SD\", \"MD\")[as.numeric(x)])) +
+  labs(x = \"\", y = \"AUC/dose (h*ug/ml/mg\") +
+  ggtitle(\"Nose-normalized AUC by baseline renal impairment\") +
+  watermark()
+
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+nca %>%
+  ggplot(aes(x = BL_CRCL, y = PPORRES/DOSE,
+             color = as.factor(DOSE))) +
+  geom_point(size = 3) +
+  facet_wrap(~RICH_N, scales=\"free\",
+             labeller = labeller(RICH_N = function(x) c(\"SD\", \"MD\")[as.numeric(x)])) +
+  labs(caption=\"\") +
+  labs(color=\"dose (mg)\", x = \"baseline CrCL (ml/min)\",
+        y = \"AUC/dose (h*ug/ml/mg\") +
+  scale_y_log10() +
+  theme_bw() +
+  theme(legend.position = \"bottom\") +
+  ggtitle(\"Dose-normalized AUC by baseline CrCL\")
+
+nca %>% 
+  filter(PPTESTCD == \"aucinf.obs\") %>% 
+  ggplot(aes(x = BL_RENAL, y = PPORRES/DOSE)) +
+  geom_boxplot() +
+  theme_bw() +
+  # scale_y_log10() +
+  facet_wrap(~RICH_N, labeller = labeller(RICH_N = function(x) c(\"SD\", \"MD\")[as.numeric(x)])) +
+  labs(x = \"\", y = \"AUC/dose (h*ug/ml/mg\") +
+  ggtitle(\"Nose-normalized AUC by baseline renal impairment\") +
+  watermark()
+
+```"

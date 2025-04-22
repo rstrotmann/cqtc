@@ -1,0 +1,38 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVtcCA8LSBuaWYuMDAxICU+JSBcbiAgYWRkX2FlKHNkdG0uMDAxLCBcIk5hdXNlYVwiKSAlPiUgXG4gIGFkZF9hZShzZHRtLjAwMSwgXCJBbmFlbWlhXCIsIGFlX2ZpZWxkID0gXCJBRURFQ09EXCIpXG5cbnRlbXAgJT4lIFxuICBwbG90KFwiQUVfTmF1c2VhXCIsIDE4MCwgcG9pbnRzID0gVCwgbGluZXMgPSBGKVxuXG50ZW1wICU+JSBcbiAgcGxvdChcIkFFX0FuYWVtaWFcIiwgcG9pbnRzID0gVCwgbGluZXMgPSBGKVxuXG5cbiMgdGVtcCA8LSBuaWYuMDAxICU+JSBcbiMgICBhZGRfYWUoc2R0bS4wMDEsIFwiM1wiLCBhZV9maWVsZCA9IFwiQUVUT1hHUlwiKVxuXG5gYGAifQ== -->
+
+```r
+temp <- nif.001 %>% 
+  add_ae(sdtm.001, \"Nausea\") %>% 
+  add_ae(sdtm.001, \"Anaemia\", ae_field = \"AEDECOD\")
+
+temp %>% 
+  plot(\"AE_Nausea\", 180, points = T, lines = F)
+
+temp %>% 
+  plot(\"AE_Anaemia\", points = T, lines = F)
+
+
+# temp <- nif.001 %>% 
+#   add_ae(sdtm.001, \"3\", ae_field = \"AETOXGR\")
+
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+temp <- nif.001 %>% 
+  add_ae(sdtm.001, \"Nausea\") %>% 
+  add_ae(sdtm.001, \"Anaemia\", ae_field = \"AEDECOD\")
+
+temp %>% 
+  plot(\"AE_Nausea\", 180, points = T, lines = F)
+
+temp %>% 
+  plot(\"AE_Anaemia\", points = T, lines = F)
+
+
+# temp <- nif.001 %>% 
+#   add_ae(sdtm.001, \"3\", ae_field = \"AETOXGR\")
+
+```"

@@ -1,0 +1,88 @@
+"1","<!-- KNITR_ASIS_OUTPUT_TOKEN -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShubG1peHIyKVxuXG5vbmVfY3B0X21vZGVsIDwtIGZ1bmN0aW9uKCkge1xuICBpbmkoe1xuICAgIHQuS0EgPC0gLTAuOCAjIEthXG4gICAgdC5RIDwtIDEuMiAjIFFcbiAgICB0LkNMIDwtIDIgIyBDTFxuICAgIHQuVkMgPC0gMiAjIFZjXG4gICAgdC5WUCA8LSAyICMgQ3BcbiAgICB0LkFMQUcxIDwtIC0wLjFcbiAgICBcbiAgICBldGEuQ0wgfiAwLjEgIyBJSVYgb24gQ0xcbiAgICBldGEuVkMgfiAwLjEgIyBJSVYgb24gVmNcbiAgICBcbiAgICBhZGQuc2QgPC0gMC43ICBcbiAgfSlcbiAgXG4gIG1vZGVsKHtcbiAgICBLQSA9IGV4cCh0LktBKVxuICAgIFEgPSBleHAodC5RKVxuICAgIENMID0gZXhwKHQuQ0wgKyBldGEuQ0wpXG4gICAgVkMgPSBleHAodC5WQyArIGV0YS5WQylcbiAgICBWUCA9IGV4cCh0LlZQKVxuICAgIEFMQUcxID0gZXhwKHQuQUxBRzEpXG4gICAgXG4gICAgbGluQ210KCkgfiBhZGQoYWRkLnNkKVxuICB9KVxufVxuXG5uaWYucG9wcGsgPC0gbmlmLjAwMSAlPiUgXG4gIGZpbHRlcihGQVNURUQgPT0gVCkgJT4lXG4gIGZpbHRlcihBTkFMWVRFID09IFwiTTE3NzRcIikgJT4lIFxuICBmaWx0ZXIoVEFGRCA8IDUwMCkgJT4lIFxuICBtdXRhdGUoRFYgPSBEVi8xMDAwKVxuXG5maXQgPC0gbmxtaXhyMihvbmVfY3B0X21vZGVsLCBuaWYucG9wcGssIGVzdCA9IFwiZm9jZWlcIixcbiAgICAgICAgICAgICAgY29udHJvbCA9IGxpc3QocHJpbnQgPSAxKSlcbmZpdCRwYXJGaXhlZCAlPiVcbiAga2FibGUoKSAgIFxuYGBgIn0= -->
+
+```r
+library(nlmixr2)
+
+one_cpt_model <- function() {
+  ini({
+    t.KA <- -0.8 # Ka
+    t.Q <- 1.2 # Q
+    t.CL <- 2 # CL
+    t.VC <- 2 # Vc
+    t.VP <- 2 # Cp
+    t.ALAG1 <- -0.1
+    
+    eta.CL ~ 0.1 # IIV on CL
+    eta.VC ~ 0.1 # IIV on Vc
+    
+    add.sd <- 0.7  
+  })
+  
+  model({
+    KA = exp(t.KA)
+    Q = exp(t.Q)
+    CL = exp(t.CL + eta.CL)
+    VC = exp(t.VC + eta.VC)
+    VP = exp(t.VP)
+    ALAG1 = exp(t.ALAG1)
+    
+    linCmt() ~ add(add.sd)
+  })
+}
+
+nif.poppk <- nif.001 %>% 
+  filter(FASTED == T) %>%
+  filter(ANALYTE == \"M1774\") %>% 
+  filter(TAFD < 500) %>% 
+  mutate(DV = DV/1000)
+
+fit <- nlmixr2(one_cpt_model, nif.poppk, est = \"focei\",
+              control = list(print = 1))
+fit$parFixed %>%
+  kable()   
+```
+
+<!-- rnb-source-end -->
+<!-- KNITR_ASIS_OUTPUT_TOKEN -->"
+"0","```r
+library(nlmixr2)
+
+one_cpt_model <- function() {
+  ini({
+    t.KA <- -0.8 # Ka
+    t.Q <- 1.2 # Q
+    t.CL <- 2 # CL
+    t.VC <- 2 # Vc
+    t.VP <- 2 # Cp
+    t.ALAG1 <- -0.1
+    
+    eta.CL ~ 0.1 # IIV on CL
+    eta.VC ~ 0.1 # IIV on Vc
+    
+    add.sd <- 0.7  
+  })
+  
+  model({
+    KA = exp(t.KA)
+    Q = exp(t.Q)
+    CL = exp(t.CL + eta.CL)
+    VC = exp(t.VC + eta.VC)
+    VP = exp(t.VP)
+    ALAG1 = exp(t.ALAG1)
+    
+    linCmt() ~ add(add.sd)
+  })
+}
+
+nif.poppk <- nif.001 %>% 
+  filter(FASTED == T) %>%
+  filter(ANALYTE == \"M1774\") %>% 
+  filter(TAFD < 500) %>% 
+  mutate(DV = DV/1000)
+
+fit <- nlmixr2(one_cpt_model, nif.poppk, est = \"focei\",
+              control = list(print = 1))
+fit$parFixed %>%
+  kable()   
+```"
