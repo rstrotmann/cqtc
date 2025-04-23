@@ -1,6 +1,6 @@
-in_range <- function(val, ref, window_low, window_high) {
-  val >= ref - window_low & val < ref + window_high
-}
+# in_range <- function(val, ref, window_low, window_high) {
+#   val >= ref - window_low & val < ref + window_high
+# }
 
 #' Make EG nif object from SDTM data
 #'
@@ -66,17 +66,17 @@ eg_nif_from_sdtm <- function(
                          duplicates = "resolve",
                          silent = silent) %>%
     nif::add_observation(sdtm, "eg", "HR", cmt = 3,
-                         # include_day_in_ntime = TRUE,
+                         include_day_in_ntime = TRUE,
                          NTIME_lookup = eg_ntl,
                          duplicates = "resolve",
                          silent = silent) %>%
     nif::add_observation(sdtm, "eg", "RR", cmt = 4,
-                         # include_day_in_ntime = TRUE,
+                         include_day_in_ntime = TRUE,
                          NTIME_lookup = eg_ntl,
                          duplicates = "resolve",
                          silent = silent) %>%
     nif::add_observation(sdtm, "eg", "QTCF", cmt = 5,
-                         # include_day_in_ntime = TRUE,
+                         include_day_in_ntime = TRUE,
                          NTIME_lookup = eg_ntl,
                          duplicates = "resolve",
                          silent = silent)
@@ -120,14 +120,15 @@ find_time_matched <- function(
   if(!ecg_analyte %in% analytes(nif))
     stop(paste0(ecg_analyte , " not found in analytes!"))
 
+  pc <- nif %>%
+    filter(ANALYTE == conc_analyte,
+           EVID == 0) %>%
+    as.data.frame()
 
   eg <- nif %>%
     filter(ANALYTE == ecg_analyte,
-           EVID == 0)
-
-  pc <- nif %>%
-    filter(ANALYTE == conc_analyte,
-           EVID == 0)
+           EVID == 0) %>%
+    as.data.frame()
 
   # Check if we have data to work with
   if (nrow(pc) == 0 || nrow(eg) == 0) {
@@ -137,14 +138,20 @@ find_time_matched <- function(
 
   out = data.frame()
 
-  for(i in 1:length(eg)){
+  for(i in 1:nrow(eg)){
     e <- eg[i, ]
+
     temp <- pc %>%
       filter(USUBJID == e$USUBJID) %>%
-      mutate(delta_time = as.numeric(difftime(DTC, e$DTC, unit = "hours"))) %>%
-      filter(delta_time == min(abs(delta_time))) %>%
-      filter(delta_time < time_window) %>%
-      select(pc_DTC = DTC, pc_REF = REF, pc_DV = DV)
+      mutate(delta_time = as.numeric(difftime(DTC, e$DTC, unit = "hours")))
+
+    if(nrow(temp) != 0){
+      temp <- temp %>%
+        filter(delta_time == min(abs(delta_time))) %>%
+        filter(delta_time < time_window) %>%
+        select(pc_DTC = DTC, pc_REF = REF, pc_DV = DV)
+    }
+
     if(nrow(temp) != 0){
       out <- rbind(
         out,

@@ -4,7 +4,14 @@
 \alias{eg_nif_from_sdtm}
 \title{Make EG nif object from SDTM data}
 \usage{
-eg_nif_from_sdtm(sdtm, extrt, eg_ntime = NULL, pctestcd = NULL, silent = NULL)
+eg_nif_from_sdtm(
+  sdtm,
+  extrt,
+  pc_ntl = NULL,
+  eg_ntl = NULL,
+  pctestcd = NULL,
+  silent = NULL
+)
 }
 \arguments{
 \item{sdtm}{A sdtm object.}

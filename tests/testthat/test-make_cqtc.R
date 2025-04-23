@@ -98,3 +98,4 @@ test_that("find_time_matched handles multiple subjects correctly", {
   expect_equal(nrow(result2), 3)
   expect_equal(unique(result2$USUBJID), c("001", "002", "003"))
 })
+

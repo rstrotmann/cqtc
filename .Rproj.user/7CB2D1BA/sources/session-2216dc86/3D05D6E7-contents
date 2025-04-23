@@ -1,0 +1,20 @@
+nif <- read_rds("/Users/rainerstrotmann/Documents/Programming/R/nif-test/absk_ecg.rds") %>% 
+  add_cfb()
+
+temp <- find_time_matched(
+    nif,
+    ecg_analyte = "QTCF",
+    conc_analyte = "ABSK021",
+    time_window = 30/60
+)
+
+temp <- find_time_matched(
+  nif,
+  ecg_analyte = "RR",
+  conc_analyte = "ABSK021",
+  time_window = 30/60
+)
+  
+temp %>% 
+  ggplot(aes(x = pc_DV, y = DV, color = as.factor(DOSE))) +
+  geom_point()
