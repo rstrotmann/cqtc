@@ -135,29 +135,75 @@ find_time_matched <- function(
     warning("No data found for specified analyte or ECG parameter")
     return(data.frame(eg_REF = numeric(0), pc_REF = numeric(0)))
   }
-
-  out = data.frame()
-
-  for(i in 1:nrow(eg)){
-    e <- eg[i, ]
-
-    temp <- pc %>%
-      filter(USUBJID == e$USUBJID) %>%
-      mutate(delta_time = as.numeric(difftime(DTC, e$DTC, unit = "hours")))
-
-    if(nrow(temp) != 0){
-      temp <- temp %>%
-        filter(delta_time == min(abs(delta_time))) %>%
-        filter(delta_time <= time_window) %>%
-        select(pc_DTC = DTC, pc_REF = REF, pc_DV = DV)
+  
+  # Faster implementation using join + group operations instead of loop
+  # Get unique subjects present in both datasets
+  subjects <- intersect(unique(eg$USUBJID), unique(pc$USUBJID))
+  
+  # Pre-filter data to only include relevant subjects
+  eg_filtered <- eg[eg$USUBJID %in% subjects, ]
+  pc_filtered <- pc[pc$USUBJID %in% subjects, ]
+  
+  # Calculate all possible time differences efficiently with cross join
+  matches <- lapply(subjects, function(subj) {
+    eg_subj <- eg_filtered[eg_filtered$USUBJID == subj, ]
+    pc_subj <- pc_filtered[pc_filtered$USUBJID == subj, ]
+    
+    # If either is empty, return empty result
+    if (nrow(eg_subj) == 0 || nrow(pc_subj) == 0) {
+      return(NULL)
     }
-
-    if(nrow(temp) != 0){
-      out <- rbind(
-        out,
-        cbind(e, temp)
+    
+    # Create all combinations for this subject
+    result <- expand.grid(
+      eg_idx = 1:nrow(eg_subj),
+      pc_idx = 1:nrow(pc_subj)
+    )
+    
+    # Calculate time differences for all combinations
+    result$delta_time <- as.numeric(
+      difftime(pc_subj$DTC[result$pc_idx], 
+               eg_subj$DTC[result$eg_idx], 
+               units = "hours")
+    )
+    
+    # Keep only those within time window
+    result <- result[abs(result$delta_time) <= time_window, ]
+    
+    # If no matches within time window, return NULL
+    if (nrow(result) == 0) {
+      return(NULL)
+    }
+    
+    # For each eg record, find closest pc record
+    best_matches <- lapply(1:nrow(eg_subj), function(i) {
+      matches_for_eg <- result[result$eg_idx == i, ]
+      if (nrow(matches_for_eg) == 0) return(NULL)
+      
+      # Find closest match by time
+      best_idx <- which.min(abs(matches_for_eg$delta_time))
+      best_match <- matches_for_eg[best_idx, ]
+      
+      # Combine the eg and pc records
+      cbind(
+        eg_subj[best_match$eg_idx, ],
+        pc_DTC = pc_subj$DTC[best_match$pc_idx],
+        pc_REF = pc_subj$REF[best_match$pc_idx],
+        pc_DV = pc_subj$DV[best_match$pc_idx]
       )
-    }
+    })
+    
+    # Combine all best matches for this subject
+    do.call(rbind, best_matches[!sapply(best_matches, is.null)])
+  })
+  
+  # Combine results from all subjects
+  out <- do.call(rbind, matches[!sapply(matches, is.null)])
+  
+  # Return empty dataframe with expected columns if no matches found
+  if (is.null(out) || nrow(out) == 0) {
+    return(data.frame(eg_REF = numeric(0), pc_REF = numeric(0)))
   }
+  
   return(out)
 }
