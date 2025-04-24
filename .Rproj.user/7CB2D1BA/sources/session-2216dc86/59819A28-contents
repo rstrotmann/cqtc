@@ -148,7 +148,7 @@ find_time_matched <- function(
     if(nrow(temp) != 0){
       temp <- temp %>%
         filter(delta_time == min(abs(delta_time))) %>%
-        filter(delta_time < time_window) %>%
+        filter(delta_time <= time_window) %>%
         select(pc_DTC = DTC, pc_REF = REF, pc_DV = DV)
     }
 
