@@ -3,7 +3,8 @@
 #' A concentration-QTc analysis set for dofetilide.
 #'
 #' @format
-#' A data frame with 704 rows and 7 columns:
+#' A cqtc object, i.e., a class wrapper around a data frame with 704 rows and 7
+#' columns:
 #' \describe{
 #'   \item{ID}{Subject ID}
 #'   \item{NTIME}{Nominal time in hours}
@@ -12,7 +13,7 @@
 #'   \item{QTCF}{The QTcF interval in ms}
 #'   \item{DQTCF}{The change from baseline in QTCF in ms}
 #'   \item{RR}{The RR interval in ms}
-#'   \item{}{}
+#'   \item{HR}{Heart rate, derived from RR in the original data set}
 #'   ...
 #' }
 #' @source <https://github.com/joannaparkinson/C-QTc-hands-on-tutorial>
@@ -27,7 +28,8 @@
 #' A concentration-QTc analysis set for verapamil
 #'
 #' @format
-#' A data frame with 704 rows and 7 columns:
+#' A cqtc object, i.e., a class wrapper around a data frame with 704 rows and 7
+#' columns:
 #' \describe{
 #'   \item{ID}{Subject ID}
 #'   \item{NTIME}{Nominal time in hours}
@@ -36,7 +38,7 @@
 #'   \item{QTCF}{The QTcF interval in ms}
 #'   \item{DQTCF}{The change from baseline in QTCF in ms}
 #'   \item{RR}{The RR interval in ms}
-#'   \item{}{}
+#'   \item{HR}{Heart rate, derived from RR in the original data set}
 #'   ...
 #' }
 #' @source <https://github.com/joannaparkinson/C-QTc-hands-on-tutorial>

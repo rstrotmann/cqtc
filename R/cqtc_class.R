@@ -1,9 +1,12 @@
 #' cqtc class constructor
 #'
+#' @param obj A data frame.
+#' @param silent Suppress warnings, as logical.
+#'
 #' @import dplyr
 #' @return A cqtc object from the input data set.
 #' @export
-new_cqtc <- function(obj = NULL, ..., silent = NULL) {
+new_cqtc <- function(obj = NULL, silent = NULL) {
   if (is.null(obj)) {
     out <- data.frame(
       ID = numeric(0),
@@ -22,7 +25,7 @@ new_cqtc <- function(obj = NULL, ..., silent = NULL) {
       stop(paste0(
         "Missing expected ",
         nif::plural("field", length(missing_minimal) > 1), ": ",
-        nice_enumeration(missing_minimal), "!"))
+        nif::nice_enumeration(missing_minimal), "!"))
     }
 
     out <- obj
@@ -32,12 +35,12 @@ new_cqtc <- function(obj = NULL, ..., silent = NULL) {
 
     if("RR" %in% fields & !"HR" %in% fields) {
       out <- out %>%
-        mutate(HR = round(1000/RR*60, 0))
+        mutate(HR = round(1000/.data$RR*60, 0))
     }
 
     if("HR" %in% fields & !"RR" %in% fields) {
       out <- out %>%
-        mutate(RR = 60/HR * 1000)
+        mutate(RR = 60/.data$HR * 1000)
     }
 
   }
@@ -68,6 +71,7 @@ print.cqtc <- function(x, ...) {
 #' @returns A summary_cqtc object.
 #' @noRd
 #' @export
+#' @import tidyr
 summary.cqtc <- function(object, ...) {
   out <- list(
     cqtc = as.data.frame(object),
@@ -78,8 +82,8 @@ summary.cqtc <- function(object, ...) {
         cols = any_of(c("QT", "QTCF", "DQTCF", "RR", "HR")),
         names_to = "param", values_to = "value"
       ) %>%
-      reframe(n = sum(!is.na(value)), .by = c("NTIME", "param")) %>%
-      pivot_wider(names_from = param, values_from = n)
+      reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "param")) %>%
+      pivot_wider(names_from = "param", values_from = "n")
   )
   class(out) <- "summary_cqtc"
   return(out)
@@ -117,7 +121,7 @@ print.summary_cqtc <- function(x, ...) {
   temp <- x$cqtc %>%
     as.data.frame() %>%
     select(any_of(c("ID", "NTIME", "QT", "QTCF", "DQTCF", "RR", "HR"))) %>%
-    head(10) %>%
+    utils::head(10) %>%
     mutate(across(where(is.numeric), ~ round(., 1))) %>%
     nif:::df_to_string(indent = 2)
   cat(paste0("\nData (selected columns):\n", temp, "\n"))

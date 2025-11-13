@@ -23,7 +23,7 @@ hr_plot <- function(obj, param = "QTCF", fit = TRUE, method = "lm") {
   if(!method %in% allowed_methods)
     stop(paste0(
       "method must be one of: ",
-      nice_enumeration(allowed_methods, conjunction = "or")
+      nif::nice_enumeration(allowed_methods, conjunction = "or")
     ))
   # suppressMessages(
     obj %>%

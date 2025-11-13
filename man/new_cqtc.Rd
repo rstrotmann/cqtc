@@ -4,7 +4,12 @@
 \alias{new_cqtc}
 \title{cqtc class constructor}
 \usage{
-new_cqtc(obj = NULL, ..., silent = NULL)
+new_cqtc(obj = NULL, silent = NULL)
+}
+\arguments{
+\item{obj}{A data frame.}
+
+\item{silent}{Suppress warnings, as logical.}
 }
 \value{
 A cqtc object from the input data set.

@@ -12,9 +12,9 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     dplyr,
-    tidyselect,
+    tidyr,
     ggplot2,
-    ggrepel,
+    utils,
     nif (>= 0.57.9)
 Suggests: 
     testthat (>= 3.0.0)
