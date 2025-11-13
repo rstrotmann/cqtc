@@ -1,6 +1,6 @@
 Package: cqtc
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Conduct concentration-QTc analysis
 Version: 0.2.0
 Authors@R: 
     person("Rainer", "Strotmann", email = "rainer.strotmann@mailbox.org",
