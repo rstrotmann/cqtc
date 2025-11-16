@@ -16,6 +16,7 @@ columns:
   \item{DQTCF}{The change from baseline in QTCF in ms}
   \item{RR}{The RR interval in ms}
   \item{HR}{Heart rate, derived from RR in the original data set}
+  \item{BL_QTCF}{Baseline QTCF, derived from QTCF at NTIME -0.5}
   ...
 }
 }
