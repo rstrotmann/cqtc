@@ -6,8 +6,13 @@
 #' @param silent Suppress messages.
 #' @param eg_analyte The EGTESTCD.
 #' @param egcat The EGCAT to filter observations for.
-#' @param ntime_method
-#' @param NTIME_lookup
+#' @param ntime_method The field to derive the nominal time from. Allowed values
+#'   are 'TPT', 'TPTNUM' and 'ELTM'. Defaults to xxTPT where xx is the domain
+#'   name.
+#' @param NTIME_lookup A data frame with two columns, a column that defines the
+#'   custom nominal time information in the target domain (e.g., 'PCELTM'), and
+#'   'NTIME'. This data frame is left_joined into the observation data frame
+#'   to provide the NTIME field.
 #' @param verbose Verbose messages.
 #'
 #' @returns A cqtc object.
@@ -34,7 +39,7 @@ auto_cqtc <- function(
   nif:::conditional_message(
     "ECG analytes available in domain EG:\n",
     nif:::df_to_string(
-      distinct(domain(sdtm, "eg"), EGTEST, EGTESTCD),
+      distinct(domain(sdtm, "eg"), c("EGTEST", "EGTESTCD")),
       indent = 2),
     silent = !verbose
   )
@@ -43,7 +48,7 @@ auto_cqtc <- function(
   missing_eg_analyte <- setdiff(eg_analyte, available_eg_analytes$EGTESTCD)
   if(length(missing_eg_analyte) > 0)
     stop(paste0(
-      "ECG ", plural("parameter", length(missing_egtest) > 1),
+      "ECG ", plural("parameter", length(missing_eg_analyte) > 1),
       " not found in EG domain: ",
       nif::nice_enumeration(missing_eg_analyte)
     ))

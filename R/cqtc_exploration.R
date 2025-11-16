@@ -5,19 +5,23 @@
 #' @param param The parameter to plot.
 #' @param fit Show regression fit.
 #' @param method The method for geom_smooth.
-#' @param ... Further parameters to geom_point()
+#' @param ... Further parameters to geom_point().
+#' @param color The column to be used for coloring.
 #'
 #' @returns A ggplot object.
 #' @import ggplot2
 #' @export
-hr_plot <- function(obj, param = "QTCF", fit = TRUE, method = "lm", ...) {
+hr_plot <- function(
+    obj,
+    param = "QTCF",
+    color = NULL,
+    fit = TRUE,
+    method = "lm",
+    ...) {
   # input validation
   validate_cqtc(obj)
-  nif:::validate_char_param(param, "param")
-  if(!param %in% names(obj))
-    stop(paste0(
-      param, " field not found in input."
-    ))
+  validate_col_param(param, obj)
+  validate_col_param(color, obj, allow_null = TRUE)
   nif:::validate_logical_param(fit, "fit")
   nif:::validate_char_param(method, "method")
   allowed_methods <- c("loess", "lm")
@@ -26,30 +30,44 @@ hr_plot <- function(obj, param = "QTCF", fit = TRUE, method = "lm", ...) {
       "method must be one of: ",
       nif::nice_enumeration(allowed_methods, conjunction = "or")
     ))
-  # suppressMessages(
-    obj %>%
-      as.data.frame() %>%
-      ggplot(aes(x = .data$HR, y = .data[[param]])) +
-      geom_point(...) +
-      {if(fit == TRUE) invisible(geom_smooth(method = method))} +
-      theme_bw()
-  # )
+
+  # Business logic
+  obj %>%
+    as.data.frame() %>%
+    ggplot(aes(
+      x = .data$HR, y = .data[[param]])) +
+    {if(is.null(color))
+        geom_point(...) else
+          geom_point(aes(color = as.factor(.data[[color]])), ...)} +
+    {if(fit == TRUE) invisible(geom_smooth(method = method))} +
+    {if(!is.null(color)) labs(color = color)} +
+    theme_bw() +
+    theme(legend.position = "bottom")
 }
 
 
-#' Title
+#' Exploratory c-QTc plot
 #'
 #' @param obj A cqtc object.
 #' @param param The parameter to plot on the y axis.
 #' @param fit Show regression fit.
 #' @param method The method for geom_smooth.
 #' @param ... Further parameters to geom_point()
+#' @param color The column to be used for coloring.
 #'
 #' @returns A ggplot object.
 #' @export
-cqtc_plot <- function(obj, param = "QTCF", fit = TRUE, method = "lm", ...) {
+cqtc_plot <- function(
+    obj,
+    param = "QTCF",
+    color = NULL,
+    fit = TRUE,
+    method = "lm",
+    ...) {
   # input validation
   validate_cqtc(obj)
+  validate_col_param(param, obj)
+  validate_col_param(color, obj, allow_null = TRUE)
   nif:::validate_logical_param(fit, "fit")
   nif:::validate_char_param(method, "method")
   allowed_methods <- c("loess", "lm")
@@ -59,13 +77,19 @@ cqtc_plot <- function(obj, param = "QTCF", fit = TRUE, method = "lm", ...) {
       nif::nice_enumeration(allowed_methods, conjunction = "or")
     ))
 
+  # business logic
   obj %>%
     as.data.frame() %>%
+    filter(!is.na(.data$CONC)) %>%
+    filter(!is.na(.data[[param]])) %>%
     ggplot(aes(x = .data$CONC, y = .data[[param]])) +
-    geom_point(...) +
+    {if(is.null(color))
+      geom_point(...) else
+        geom_point(aes(color = as.factor(.data[[color]])), ...)} +
     {if(fit == TRUE) invisible(geom_smooth(method = method))} +
-    theme_bw()
-
+    {if(!is.null(color)) labs(color = color)} +
+    theme_bw() +
+    theme(legend.position = "bottom")
 }
 
 
@@ -77,32 +101,37 @@ cqtc_plot <- function(obj, param = "QTCF", fit = TRUE, method = "lm", ...) {
 #'
 #' @returns A ggplot object.
 #' @importFrom ggrepel geom_text_repel
+#' @importFrom stats qnorm
+#' @importFrom stats sd
 #' @export
 hysteresis_plot <- function(
-    obj, param = "QTCF", ...) {
+    obj,
+    param = "QTCF",
+    ...) {
   # input validation
   validate_cqtc(obj)
+  validate_col_param(param, obj)
 
   temp <- obj %>%
-    filter(!is.na(CONC), !is.na(.data[[param]])) %>%
+    filter(!is.na(.data$CONC), !is.na(.data[[param]])) %>%
     reframe(
-      c_mean = mean(CONC),
+      c_mean = mean(.data$CONC),
       dqtcf_mean = mean(.data[[param]], na.rm = T),
       dqtcf_sd = sd(.data[[param]], na.rm = T),
       n = n(),
-      .by = NTIME) %>%
+      .by = .data$NTIME) %>%
     mutate(
-      dqtcf_lcl = dqtcf_mean + qnorm(0.05) * dqtcf_sd/sqrt(n),
-      dqtcf_ucl = dqtcf_mean + qnorm(0.95) * dqtcf_sd/sqrt(n)
+      dqtcf_lcl = .data$dqtcf_mean + stats::qnorm(0.05) * .data$dqtcf_sd/sqrt(.data$n),
+      dqtcf_ucl = .data$dqtcf_mean + stats::qnorm(0.95) * .data$dqtcf_sd/sqrt(.data$n)
     ) %>%
-    arrange(NTIME)
+    arrange(.data$NTIME)
 
   temp %>%
-    ggplot(aes(x = c_mean, y = dqtcf_mean)) +
+    ggplot(aes(x = .data$c_mean, y = .data$dqtcf_mean)) +
     geom_point(...) +
-    geom_pointrange(aes(ymin = dqtcf_lcl, ymax = dqtcf_ucl)) +
+    geom_pointrange(aes(ymin = .data$dqtcf_lcl, ymax = .data$dqtcf_ucl)) +
     geom_path() +
-    geom_text_repel(size = 3, aes(label = NTIME)) +
+    geom_text_repel(size = 3, aes(label = .data$NTIME)) +
     theme_bw()
 }
 

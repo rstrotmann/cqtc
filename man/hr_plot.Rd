@@ -4,18 +4,20 @@
 \alias{hr_plot}
 \title{Plot ECG parameter by HR}
 \usage{
-hr_plot(obj, param = "QTCF", fit = TRUE, method = "lm", ...)
+hr_plot(obj, param = "QTCF", color = NULL, fit = TRUE, method = "lm", ...)
 }
 \arguments{
 \item{obj}{A cqtc object.}
 
 \item{param}{The parameter to plot.}
 
+\item{color}{The column to be used for coloring.}
+
 \item{fit}{Show regression fit.}
 
 \item{method}{The method for geom_smooth.}
 
-\item{...}{Further parameters to geom_point()}
+\item{...}{Further parameters to geom_point().}
 }
 \value{
 A ggplot object.

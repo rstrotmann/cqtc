@@ -2,14 +2,16 @@
 % Please edit documentation in R/cqtc_exploration.R
 \name{cqtc_plot}
 \alias{cqtc_plot}
-\title{Title}
+\title{Exploratory c-QTc plot}
 \usage{
-cqtc_plot(obj, param = "QTCF", fit = TRUE, method = "lm", ...)
+cqtc_plot(obj, param = "QTCF", color = NULL, fit = TRUE, method = "lm", ...)
 }
 \arguments{
 \item{obj}{A cqtc object.}
 
 \item{param}{The parameter to plot on the y axis.}
+
+\item{color}{The column to be used for coloring.}
 
 \item{fit}{Show regression fit.}
 
@@ -21,5 +23,5 @@ cqtc_plot(obj, param = "QTCF", fit = TRUE, method = "lm", ...)
 A ggplot object.
 }
 \description{
-Title
+Exploratory c-QTc plot
 }

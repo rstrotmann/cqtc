@@ -27,6 +27,15 @@ auto_cqtc(
 
 \item{egcat}{The EGCAT to filter observations for.}
 
+\item{ntime_method}{The field to derive the nominal time from. Allowed values
+are 'TPT', 'TPTNUM' and 'ELTM'. Defaults to xxTPT where xx is the domain
+name.}
+
+\item{NTIME_lookup}{A data frame with two columns, a column that defines the
+custom nominal time information in the target domain (e.g., 'PCELTM'), and
+'NTIME'. This data frame is left_joined into the observation data frame
+to provide the NTIME field.}
+
 \item{silent}{Suppress messages.}
 
 \item{verbose}{Verbose messages.}

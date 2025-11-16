@@ -7,6 +7,9 @@
 #' @return A cqtc object from the input data set.
 #' @export
 new_cqtc <- function(obj = NULL, silent = NULL) {
+  # input validation
+  nif:::validate_logical_param(silent, allow_null = TRUE)
+
   if (is.null(obj)) {
     out <- data.frame(
       ID = numeric(0),
@@ -100,6 +103,7 @@ summary.cqtc <- function(object, ...) {
 #' @returns Nothing.
 #' @noRd
 #' @export
+#' @importFrom stringr str_wrap
 print.summary_cqtc <- function(x, ...) {
   indent = 2
   spacer = paste(replicate(indent, " "), collapse = "")
@@ -113,6 +117,10 @@ print.summary_cqtc <- function(x, ...) {
     nif:::df_to_string(x$disposition, indent = 2),
     "\n\n"
   ))
+
+  cat("Columns:\n")
+  cat(stringr::str_wrap(paste(names(x$cqtc), collapse = ", "),
+               width = 80, indent = 2, exdent = 2), "\n")
 
   # cat(paste0(
   #   "Time points:\n",
@@ -131,5 +139,19 @@ print.summary_cqtc <- function(x, ...) {
 }
 
 
-
+#' Return the first lines of a cqtc object
+#'
+#' @param x A cqtc object.
+#' @param ... Further arguments.
+#'
+#' @import dplyr
+#' @return A data frame.
+#' @import utils
+#' @export
+#' @noRd
+head.cqtc <- function(x, ...) {
+  x <- x %>%
+    as.data.frame()
+  NextMethod("head")
+}
 
