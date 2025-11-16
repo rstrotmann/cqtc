@@ -73,17 +73,19 @@ print.cqtc <- function(x, ...) {
 #' @export
 #' @import tidyr
 summary.cqtc <- function(object, ...) {
+  temp <- as.data.frame(object)
   out <- list(
-    cqtc = as.data.frame(object),
-    subjects = distinct(object, across(any_of(c("ID", "USUBJID", "SUBJID")))),
-    ntime = arrange(distinct(object, .data$NTIME), .data$NTIME),
-    disposition = object %>%
+    cqtc = as.data.frame(temp),
+    subjects = distinct(temp, across(any_of(c("ID", "USUBJID", "SUBJID")))),
+    ntime = sort(unique(temp$NTIME)),
+    disposition = temp %>%
       pivot_longer(
         cols = any_of(c("QT", "QTCF", "DQTCF", "RR", "HR")),
         names_to = "param", values_to = "value"
       ) %>%
       reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "param")) %>%
-      pivot_wider(names_from = "param", values_from = "n")
+      pivot_wider(names_from = "param", values_from = "n") %>%
+      arrange(.data$NTIME)
   )
   class(out) <- "summary_cqtc"
   return(out)
