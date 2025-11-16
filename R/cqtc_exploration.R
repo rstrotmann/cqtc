@@ -11,6 +11,13 @@
 #' @returns A ggplot object.
 #' @import ggplot2
 #' @export
+#' @examples
+#' library(dplyr)
+#' dofetilide_cqtc %>%
+#'   hr_plot(param = "QT", color = "ACTIVE")
+#'
+#' verapamil_cqtc %>%
+#'   hr_plot(param = "QTCF", color = "ACTIVE")
 hr_plot <- function(
     obj,
     param = "QTCF",
@@ -57,6 +64,16 @@ hr_plot <- function(
 #'
 #' @returns A ggplot object.
 #' @export
+#' @examples
+#' library(dplyr)
+#'
+#' verapamil_cqtc %>%
+#'   cqtc_plot(color = "ACTIVE")
+#'
+#' dofetilide_cqtc %>%
+#' filter(ACTIVE == 1) %>%
+#'   cqtc_plot()
+#'
 cqtc_plot <- function(
     obj,
     param = "QTCF",
@@ -93,7 +110,7 @@ cqtc_plot <- function(
 }
 
 
-#' Title
+#' Hysteresis plot
 #'
 #' @param obj A cqtc object.
 #' @param param The parameter to plot on the y axis.
@@ -104,6 +121,11 @@ cqtc_plot <- function(
 #' @importFrom stats qnorm
 #' @importFrom stats sd
 #' @export
+#' @examples
+#' dofetilide_cqtc %>%
+#'   filter(ACTIVE == 1) %>%
+#'   hysteresis_plot()
+#'
 hysteresis_plot <- function(
     obj,
     param = "QTCF",
