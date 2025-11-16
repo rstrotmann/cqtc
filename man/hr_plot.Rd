@@ -25,3 +25,13 @@ A ggplot object.
 \description{
 Plot ECG parameter by HR
 }
+\examples{
+library(dplyr)
+library(magrittr)
+
+dofetilide_cqtc \%>\%
+  hr_plot(param = "QT", color = "ACTIVE")
+
+verapamil_cqtc \%>\%
+  hr_plot(param = "QTCF", color = "ACTIVE")
+}

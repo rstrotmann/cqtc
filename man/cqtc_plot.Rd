@@ -25,3 +25,15 @@ A ggplot object.
 \description{
 Exploratory c-QTc plot
 }
+\examples{
+library(dplyr)
+library(magrittr)
+
+verapamil_cqtc \%>\%
+  cqtc_plot(color = "ACTIVE")
+
+dofetilide_cqtc \%>\%
+filter(ACTIVE == 1) \%>\%
+  cqtc_plot()
+
+}

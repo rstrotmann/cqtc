@@ -13,6 +13,8 @@
 #' @export
 #' @examples
 #' library(dplyr)
+#' library(magrittr)
+#'
 #' dofetilide_cqtc %>%
 #'   hr_plot(param = "QT", color = "ACTIVE")
 #'
@@ -66,6 +68,7 @@ hr_plot <- function(
 #' @export
 #' @examples
 #' library(dplyr)
+#' library(magrittr)
 #'
 #' verapamil_cqtc %>%
 #'   cqtc_plot(color = "ACTIVE")
@@ -122,6 +125,9 @@ cqtc_plot <- function(
 #' @importFrom stats sd
 #' @export
 #' @examples
+#' library(dplyr)
+#' library(magrittr)
+#'
 #' dofetilide_cqtc %>%
 #'   filter(ACTIVE == 1) %>%
 #'   hysteresis_plot()

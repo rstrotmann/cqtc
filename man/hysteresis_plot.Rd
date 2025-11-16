@@ -2,7 +2,7 @@
 % Please edit documentation in R/cqtc_exploration.R
 \name{hysteresis_plot}
 \alias{hysteresis_plot}
-\title{Title}
+\title{Hysteresis plot}
 \usage{
 hysteresis_plot(obj, param = "QTCF", ...)
 }
@@ -17,5 +17,14 @@ hysteresis_plot(obj, param = "QTCF", ...)
 A ggplot object.
 }
 \description{
-Title
+Hysteresis plot
+}
+\examples{
+library(dplyr)
+library(magrittr)
+
+dofetilide_cqtc \%>\%
+  filter(ACTIVE == 1) \%>\%
+  hysteresis_plot()
+
 }
