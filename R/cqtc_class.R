@@ -130,7 +130,7 @@ print.summary_cqtc <- function(x, ...) {
 
   temp <- x$cqtc %>%
     as.data.frame() %>%
-    select(any_of(c("ID", "NTIME", "QT", "QTCF", "DQTCF", "RR", "HR"))) %>%
+    select(any_of(c("ID", "NTIME", "CONC", "QT", "QTCF", "DQTCF", "RR", "HR"))) %>%
     utils::head(10) %>%
     mutate(across(where(is.numeric), ~ round(., 1))) %>%
     nif:::df_to_string(indent = 2)
