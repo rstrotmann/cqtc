@@ -4,7 +4,7 @@
 \alias{add_bl_popmean}
 \title{Add population mean column}
 \usage{
-add_bl_popmean(cqtc, param = "QTCF")
+add_bl_popmean(cqtc, param = "BL_QTCF")
 }
 \arguments{
 \item{cqtc}{A cqtc object.}

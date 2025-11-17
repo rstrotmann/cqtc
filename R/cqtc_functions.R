@@ -9,7 +9,7 @@
 #' @export
 add_bl_popmean <- function(
     cqtc,
-    param = "QTCF") {
+    param = "BL_QTCF") {
   # input validation
   validate_cqtc(cqtc)
   validate_col_param(param, cqtc, allow_multiple = TRUE)
