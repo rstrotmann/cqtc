@@ -76,6 +76,8 @@ print.cqtc <- function(x, ...) {
 #' @export
 #' @import tidyr
 summary.cqtc <- function(object, ...) {
+  validate_cqtc(object)
+
   temp <- as.data.frame(object)
   out <- list(
     cqtc = as.data.frame(temp),
@@ -88,7 +90,8 @@ summary.cqtc <- function(object, ...) {
       ) %>%
       reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "param")) %>%
       pivot_wider(names_from = "param", values_from = "n") %>%
-      arrange(.data$NTIME)
+      arrange(.data$NTIME),
+    hash = hash(object)
   )
   class(out) <- "summary_cqtc"
   return(out)
@@ -136,6 +139,8 @@ print.summary_cqtc <- function(x, ...) {
     nif:::df_to_string(indent = 2)
   cat(paste0("\nData (selected columns):\n", temp, "\n"))
   cat(paste0(nif::positive_or_zero(nrow(x$cqtc) - 10), " more rows"))
+
+  cat(paste0("\n\nHash: ", x$hash))
 }
 
 
@@ -153,5 +158,32 @@ head.cqtc <- function(x, ...) {
   x <- x %>%
     as.data.frame()
   NextMethod("head")
+}
+
+
+#' Generic hash function
+#'
+#' @param obj A cqtc object.
+#'
+#' @return The XXH128 hash of the nif object as character.
+#' @export
+hash <- function(obj) {
+  UseMethod("hash")
+}
+
+
+#' Generate the XXH128 hash of a cqtc object
+#'
+#' @param obj A catc object.
+#'
+#' @returns The XXH128 hash of the catc object as character.
+#' @export
+#' @importFrom rlang hash
+#'
+#' @examples
+#' hash(dofetilide_cqtc)
+hash.cqtc <- function(obj) {
+  validate_cqtc(obj)
+  rlang::hash(obj)
 }
 
