@@ -136,6 +136,9 @@ cqtc_plot <- function(
 #' @param x_label The x axis label.
 #' @param y_label The y axis label.
 #' @param title The plot title.
+#' @param size Point size.
+#' @param alpha Alpha for points.
+#' @param lwd Line width for point range.
 #'
 #' @returns A ggplot object.
 #' @export
@@ -149,6 +152,9 @@ cqtc_decile_plot <- function(
     x_label = "concentration (ng/ml)",
     y_label = NULL,
     title = "",
+    size = 2,
+    alpha = 0.1,
+    lwd = 0.6,
     ...) {
   # input validation
   validate_cqtc(obj)
@@ -183,20 +189,25 @@ cqtc_decile_plot <- function(
 
   out <- ggplot() +
     geom_point(
-      aes(x = .data$CONC, y = .data[[param]]), alpha = 0.2,
+      aes(x = .data$CONC, y = .data[[param]]),
       data = individual,
-      color = "blue") +
+      size = size,
+      alpha = alpha,
+      color = "blue",
+      ...) +
     geom_point(
       aes(x = .data$CONC, y = .data[[param]]),
+      data = baseline,
+      size = size,
       alpha = 0.1,
       color = "red",
-      data = baseline
+      ...
     ) +
     geom_point(aes(x = .data$mean_conc, y = .data$mean), data = deciles) +
     geom_pointrange(
       aes(x = .data$mean_conc, y = .data$mean, ymin = .data$LCL, ymax = .data$UCL),
       data = deciles,
-      lwd = 0.6) +
+      lwd = lwd) +
     labs(
       x = x_label,
       y = y_label,

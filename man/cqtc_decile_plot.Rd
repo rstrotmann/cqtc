@@ -11,6 +11,9 @@ cqtc_decile_plot(
   x_label = "concentration (ng/ml)",
   y_label = NULL,
   title = "",
+  size = 2,
+  alpha = 0.1,
+  lwd = 0.6,
   ...
 )
 }
@@ -26,6 +29,12 @@ cqtc_decile_plot(
 \item{y_label}{The y axis label.}
 
 \item{title}{The plot title.}
+
+\item{size}{Point size.}
+
+\item{alpha}{Alpha for points.}
+
+\item{lwd}{Line width for point range.}
 
 \item{...}{Further parameters to geom_point.}
 }
