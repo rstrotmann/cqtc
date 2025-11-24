@@ -195,7 +195,8 @@ cqtc_decile_plot <- function(
     geom_point(aes(x = .data$mean_conc, y = .data$mean), data = deciles) +
     geom_pointrange(
       aes(x = .data$mean_conc, y = .data$mean, ymin = .data$LCL, ymax = .data$UCL),
-      data = deciles) +
+      data = deciles,
+      lwd = 0.6) +
     labs(
       x = x_label,
       y = y_label,
