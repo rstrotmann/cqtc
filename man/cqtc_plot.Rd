@@ -4,7 +4,17 @@
 \alias{cqtc_plot}
 \title{Exploratory c-QTc plot}
 \usage{
-cqtc_plot(obj, param = "QTCF", color = NULL, fit = TRUE, method = "lm", ...)
+cqtc_plot(
+  obj,
+  param = "QTCF",
+  color = NULL,
+  fit = TRUE,
+  method = "loess",
+  x_label = "concentration (ng/ml)",
+  y_label = NULL,
+  title = "",
+  ...
+)
 }
 \arguments{
 \item{obj}{A cqtc object.}
@@ -16,6 +26,12 @@ cqtc_plot(obj, param = "QTCF", color = NULL, fit = TRUE, method = "lm", ...)
 \item{fit}{Show regression fit.}
 
 \item{method}{The method for geom_smooth.}
+
+\item{x_label}{The x axis label.}
+
+\item{y_label}{The y axis label.}
+
+\item{title}{The plot title.}
 
 \item{...}{Further parameters to geom_point()}
 }

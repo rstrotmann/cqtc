@@ -61,6 +61,9 @@ hr_plot <- function(
 #' @param param The parameter to plot on the y axis.
 #' @param fit Show regression fit.
 #' @param method The method for geom_smooth.
+#' @param x_label The x axis label.
+#' @param y_label The y axis label.
+#' @param title The plot title.
 #' @param ... Further parameters to geom_point()
 #' @param color The column to be used for coloring.
 #'
@@ -82,7 +85,10 @@ cqtc_plot <- function(
     param = "QTCF",
     color = NULL,
     fit = TRUE,
-    method = "lm",
+    method = "loess",
+    x_label = "concentration (ng/ml)",
+    y_label = NULL,
+    title = "",
     ...) {
   # input validation
   validate_cqtc(obj)
@@ -97,6 +103,13 @@ cqtc_plot <- function(
       nif::nice_enumeration(allowed_methods, conjunction = "or")
     ))
 
+  # plot labels
+  y_label = ifelse(is.null(y_label), param, y_label)
+  # if(y_label == "DQTCF")
+  #   y_label = "\u0394QTcF (ms)"
+  # if(y_label == "QTCF")
+  #   y_label = "QTcF (ms)"
+
   # business logic
   obj %>%
     as.data.frame() %>%
@@ -108,8 +121,89 @@ cqtc_plot <- function(
         geom_point(aes(color = as.factor(.data[[color]])), ...)} +
     {if(fit == TRUE) invisible(geom_smooth(method = method))} +
     {if(!is.null(color)) labs(color = color)} +
+    labs(x = x_label, y = y_label, title = title) +
     theme_bw() +
     theme(legend.position = "bottom")
+}
+
+
+#' Exploratory decile plot.
+#'
+#' @param obj A cqtc object.
+#' @param param The parameter to plot.
+#' @param n The number of quantiles, defaults to 10.
+#' @param ... Further parameters to geom_point.
+#' @param x_label The x axis label.
+#' @param y_label The y axis label.
+#' @param title The plot title.
+#'
+#' @returns A ggplot object.
+#' @export
+#'
+#' @examples
+#' cqtc_decile_plot(dofetilide_cqtc)
+cqtc_decile_plot <- function(
+    obj,
+    param = "DQTCF",
+    n = 10,
+    x_label = "concentration (ng/ml)",
+    y_label = NULL,
+    title = "",
+    ...) {
+  # input validation
+  validate_cqtc(obj)
+  validate_col_param(param, obj)
+  nif:::validate_numeric_param(n, "n")
+
+  individual <- obj %>%
+    filter(.data$CONC != 0)
+
+  baseline <- obj %>%
+    filter(.data$CONC == 0)
+
+  deciles <- obj %>%
+    filter(!is.na(.data[[param]])) %>%
+    filter(!is.na(.data[["CONC"]])) %>%
+    filter(.data$CONC != 0) %>%
+    add_ntile("CONC", n = n) %>%
+    reframe(
+      n = n(),
+      mean_conc = mean(.data[["CONC"]]),
+      mean = mean(.data[[param]], na.rm = TRUE),
+      sd = sd(.data[[param]]), na.rm = TRUE,
+      UCL = .data$mean + qnorm(0.95)  * .data$sd/sqrt(.data$n),
+      LCL = .data$mean + qnorm(0.05)  * .data$sd/sqrt(.data$n),
+      .by = "CONC_NTILE")
+
+  y_label = ifelse(is.null(y_label), param, y_label)
+  # if(y_label == "DQTCF")
+  #   y_label = "\u0394QTcF (ms)"
+  # if(y_label == "QTCF")
+  #   y_label = "QTcF (ms)"
+
+  out <- ggplot() +
+    geom_point(
+      aes(x = .data$CONC, y = .data[[param]]), alpha = 0.2,
+      data = individual,
+      color = "blue") +
+    geom_point(
+      aes(x = .data$CONC, y = .data[[param]]),
+      alpha = 0.1,
+      color = "red",
+      data = baseline
+    ) +
+    geom_point(aes(x = .data$mean_conc, y = .data$mean), data = deciles) +
+    geom_pointrange(
+      aes(x = .data$mean_conc, y = .data$mean, ymin = .data$LCL, ymax = .data$UCL),
+      data = deciles) +
+    labs(
+      x = x_label,
+      y = y_label,
+      title = title,
+      caption = "Quantiles shown as mean and 90% CI") +
+    theme_bw()
+
+  return(out)
 }
 
 

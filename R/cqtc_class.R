@@ -187,3 +187,62 @@ hash.cqtc <- function(obj) {
   rlang::hash(obj)
 }
 
+
+#' Add ntiles (quantiles) for a specific column across all subjects
+#'
+#' @param obj A cqtc object.
+#' @param n The number of quantiles.
+#' @param input_col The column to calculate quantiles over.
+#' @param ntile_name The name of the quantile column.
+#'
+#' @returns A cqtc object with the ntile_name colunn added.
+#' @export
+add_ntile <- function(obj, input_col, n, ntile_name = NULL) {
+  UseMethod("add_ntile")
+}
+
+
+#' Add ntiles (quantiles) for a specific column across all subjects
+#'
+#' @param obj A cqtc object.
+#' @param n The number of quantiles.
+#' @param input_col The column to calculate quantiles over.
+#' @param ntile_name The name of the quantile column.
+#'
+#' @returns A cqtc object with the ntile_name colunn added.
+#' @export
+#' @importFrom rlang :=
+#'
+#' @examples
+#' head(add_ntile(dofetilide_cqtc, "CONC", 10))
+add_ntile.cqtc <- function(obj, input_col = "CONC", n = 10, ntile_name = NULL) {
+  # Validate that input is a nif object
+  if (!inherits(obj, "cqtc")) {
+    stop("Input must be a cqtc object")
+  }
+
+  nif:::validate_char_param(input_col, "input_col")
+  nif:::validate_numeric_param(n, "n")
+  if(n > 10 || n < 2)
+    stop("n must be between 1 and 10!")
+  nif:::validate_char_param(input_col, "input_col", allow_null = TRUE)
+  nif:::validate_char_param(ntile_name, "ntile_name", allow_null = TRUE)
+  if(is.null(ntile_name))
+    ntile_name <- paste(input_col, "NTILE", sep = "_")
+
+  # Check that required columns exist: ID, input_col
+  required_cols <- c(input_col)
+  missing_cols <- setdiff(required_cols, names(obj))
+  if (length(missing_cols) > 0)
+    stop("Missing required columns: ", nif::nice_enumeration(missing_cols))
+
+  # Validate data types (input_col should be numeric)
+  if (!is.numeric(obj[[input_col]])) {
+    stop("Column '", input_col, "' must contain numeric values")
+  }
+
+  out <- obj %>%
+    mutate(!!ntile_name := ntile(.data[[input_col]], n = n))
+
+  return(out)
+}
