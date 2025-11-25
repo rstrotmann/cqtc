@@ -3,16 +3,18 @@
 #' @param mod Model result.
 #'
 #' @returns A list of ggplot objects.
+#' @importFrom broom.mixed augment
+#' @importFrom stats residuals
 #' @export
 cqtc_gof_plot <- function(mod) {
 
   result <- augment(mod) %>%
-    mutate(scaled_res = residuals(mod, scaled = TRUE))
+    mutate(scaled_res = stats::residuals(mod, scaled = TRUE))
 
   out <- list(
     # IPRED plot as in publication:
     result %>%
-      ggplot(aes(x = .fitted, y = DQTCF)) +
+      ggplot(aes(x = .data$.fitted, y = .data$DQTCF)) +
       geom_point(alpha = 0.2) +
       geom_smooth(method="loess", se = TRUE) +
       geom_abline(intercept = 0, slope = 1) +
@@ -22,15 +24,15 @@ cqtc_gof_plot <- function(mod) {
 
     # QQ plot as in publication
     result %>%
-      ggplot(aes(sample = scaled_res)) +
-      stat_qq(alpha=0.2) +
+      ggplot(aes(sample = .data$scaled_res)) +
+      stat_qq(alpha = 0.2) +
       geom_abline(intercept = 0, slope = 1) +
       labs(x = "theoretical quantiles", y = "standardized residuals",
            title = "QQ plot") +
       theme_bw(),
 
     result %>%
-      ggplot(aes(x = CONC, y = scaled_res)) +
+      ggplot(aes(x = .data$CONC, y = .data$scaled_res)) +
       geom_point(alpha = 0.2) +
       geom_hline(yintercept = c(-1.96, 1.96), linetype = "dashed") +
       geom_smooth(method = "loess", se = TRUE) +
@@ -39,7 +41,7 @@ cqtc_gof_plot <- function(mod) {
       theme_bw(),
 
     result %>%
-      ggplot(aes(x = DPM_BL_QTCF, y = scaled_res)) +
+      ggplot(aes(x = .data$DPM_BL_QTCF, y = .data$scaled_res)) +
       geom_point(alpha = 0.2) +
       geom_hline(yintercept = c(-1.96, 1.96), linetype = "dashed") +
       labs(x = "centered baseline QTcF", y = "standardized residuals",
@@ -47,7 +49,7 @@ cqtc_gof_plot <- function(mod) {
       theme_bw(),
 
     result %>%
-      ggplot(aes(x = NTIME, y = scaled_res)) +
+      ggplot(aes(x = .data$NTIME, y = .data$scaled_res)) +
       geom_point(alpha = 0.2) +
       # geom_boxplot(notch = TRUE, outlier.color="white") +
       geom_hline(yintercept = c(-1.96, 1.96), linetype = "dashed") +

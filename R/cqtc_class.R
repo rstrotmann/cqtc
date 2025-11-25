@@ -98,6 +98,19 @@ summary.cqtc <- function(object, ...) {
 }
 
 
+#' Print function for cqtc object
+#'
+#' @param x A cqtc object.
+#' @param ... Further parameters.
+#'
+#' @returns A ggplot object.
+#' @export
+plot.cqtc <- function(x, ...) {
+  validate_cqtc(x)
+  cqtc_plot(x, ...)
+}
+
+
 #' Generic print function for cqtc_summary objects
 #'
 #' @param x A summary_cqtc object.

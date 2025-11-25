@@ -18,7 +18,8 @@ Imports:
     ggplot2,
     utils,
     nif (>= 0.57.9),
-    rlang
+    rlang,
+    broom.mixed
 Suggests: 
     testthat (>= 3.0.0),
     tibble, 
