@@ -4,14 +4,14 @@
 \alias{hr_plot}
 \title{Plot ECG parameter by HR}
 \usage{
-hr_plot(obj, param = "QTCF", color = NULL, fit = TRUE, method = "lm", ...)
+hr_plot(obj, param = "QTCF", group = NULL, fit = TRUE, method = "lm", ...)
 }
 \arguments{
 \item{obj}{A cqtc object.}
 
 \item{param}{The parameter to plot.}
 
-\item{color}{The column to be used for coloring.}
+\item{group}{The column to be used for grouping}
 
 \item{fit}{Show regression fit.}
 

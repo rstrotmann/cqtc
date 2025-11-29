@@ -6,7 +6,7 @@
 #' @param fit Show regression fit.
 #' @param method The method for geom_smooth.
 #' @param ... Further parameters to geom_point().
-#' @param color The column to be used for coloring.
+#' @param group The column to be used for grouping
 #'
 #' @returns A ggplot object.
 #' @import ggplot2
@@ -16,21 +16,21 @@
 #' library(magrittr)
 #'
 #' dofetilide_cqtc %>%
-#'   hr_plot(param = "QT", color = "ACTIVE")
+#'   hr_plot(param = "QT", group = "ACTIVE")
 #'
 #' verapamil_cqtc %>%
-#'   hr_plot(param = "QTCF", color = "ACTIVE")
+#'   hr_plot(param = "QTCF", group = "ACTIVE")
 hr_plot <- function(
     obj,
     param = "QTCF",
-    color = NULL,
+    group = NULL,
     fit = TRUE,
     method = "lm",
     ...) {
   # input validation
   validate_cqtc(obj)
   validate_col_param(param, obj)
-  validate_col_param(color, obj, allow_null = TRUE)
+  validate_col_param(group, obj, allow_null = TRUE)
   nif:::validate_logical_param(fit, "fit")
   nif:::validate_char_param(method, "method")
   allowed_methods <- c("loess", "lm")
@@ -43,14 +43,29 @@ hr_plot <- function(
   # Business logic
   obj %>%
     as.data.frame() %>%
-    ggplot(aes(
-      x = .data$HR, y = .data[[param]])) +
-    {if(is.null(color))
-        geom_point(...) else
-          geom_point(aes(color = as.factor(.data[[color]])), ...)} +
-    {if(fit == TRUE) invisible(geom_smooth(method = method))} +
-    {if(!is.null(color)) labs(color = color)} +
+    # ggplot(aes(x = .data$HR, y = .data[[param]])) +
+    {if(!is.null(group))
+      ggplot(., aes(
+        x = .data$HR, y = .data[[param]],
+        color = as.factor(.data[[group]]))) else
+      ggplot(., aes(x = .data$HR, y = .data[[param]]))} +
+
+    geom_point() +
+    {if(fit == TRUE) {
+      if(!is.null(group))
+        geom_smooth(
+          aes(fill = as.factor(.data[[group]])),
+          method = method,
+          formula = y ~ x)
+      else
+        geom_smooth(
+          method = method,
+          formula = y ~ x)}} +
+
+    {if(!is.null(group))
+      labs(color = group, fill = NULL)} +
     theme_bw() +
+    guides(fill = "none") +
     theme(legend.position = "bottom")
 }
 
