@@ -13,6 +13,7 @@ new_cqtc <- function(obj = NULL, silent = NULL) {
   if (is.null(obj)) {
     out <- data.frame(
       ID = numeric(0),
+      ACTIVE = logical(0),
       NTIME  = numeric(0),
       CONC= numeric(0),
       QTCF = numeric(0)
@@ -36,14 +37,20 @@ new_cqtc <- function(obj = NULL, silent = NULL) {
     if(!"HR" %in% fields & !"RR" %in% fields)
       warning("Neither RR nor HR fields found!")
 
-    if("RR" %in% fields & !"HR" %in% fields) {
+    if("RR" %in% fields & !"HR" %in% fields)
       out <- out %>%
         mutate(HR = round(1000/.data$RR*60, 0))
-    }
 
-    if("HR" %in% fields & !"RR" %in% fields) {
+    if("HR" %in% fields & !"RR" %in% fields)
       out <- out %>%
         mutate(RR = 60/.data$HR * 1000)
+
+    if(!"ACTIVE" %in% fields) {
+      out <- out %>%
+        mutate(ACTIVE = TRUE)
+    } else {
+      out <- out %>%
+        mutate(ACTIVE = as.logical(ACTIVE))
     }
 
   }
@@ -88,9 +95,9 @@ summary.cqtc <- function(object, ...) {
         cols = any_of(c("QT", "QTCF", "DQTCF", "RR", "HR")),
         names_to = "param", values_to = "value"
       ) %>%
-      reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "param")) %>%
+      reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "ACTIVE", param)) %>%
       pivot_wider(names_from = "param", values_from = "n") %>%
-      arrange(.data$NTIME),
+      arrange(.data$ACTIVE, .data$NTIME),
     hash = hash(object)
   )
   class(out) <- "summary_cqtc"
@@ -146,7 +153,8 @@ print.summary_cqtc <- function(x, ...) {
 
   temp <- x$cqtc %>%
     as.data.frame() %>%
-    select(any_of(c("ID", "NTIME", "CONC", "QT", "QTCF", "DQTCF", "RR", "HR"))) %>%
+    select(any_of(
+      c("ID", "ACTIVE", "NTIME", "CONC", "QT", "QTCF", "DQTCF", "RR", "HR"))) %>%
     utils::head(10) %>%
     mutate(across(where(is.numeric), ~ round(., 1))) %>%
     nif:::df_to_string(indent = 2)

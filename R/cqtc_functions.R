@@ -9,7 +9,10 @@
 #' @export
 add_bl_popmean <- function(
     cqtc,
-    param = "BL_QTCF") {
+    param = "BL_QTCF",
+    # baseline_filter = "NTIME == -0.5",
+    baseline_filter = "TRUE",
+    silent = NULL) {
   # input validation
   validate_cqtc(cqtc)
   validate_col_param(param, cqtc, allow_multiple = TRUE)
@@ -17,20 +20,35 @@ add_bl_popmean <- function(
   # business logic
   bl <- cqtc %>%
     as.data.frame() %>%
-    select(all_of(c("ID", param))) %>%
+    filter(eval(parse(text = baseline_filter))) %>%
+    select(all_of(c("ID", "ACTIVE", param))) %>%
     distinct()
 
-  if(nrow(bl) != length(unique(cqtc$ID)))
-    stop("Non-unique parameters by subject!")
+  missing_baseline_sbs <- setdiff(unique(cqtc$ID), unique(bl$ID))
+  if(length(missing_baseline_sbs) > 0)
+    nif:::conditional_message(
+      "Missing baseline values in ", length(missing_baseline_sbs),
+      " subjects!", silent = silent)
+
+  # Duplicate baseline values
+  test <- bl %>%
+    reframe(n = n(), .by = c("ID", "ACTIVE")) %>%
+    filter(n > 1)
+  if(nrow(test) > 0)
+    stop(paste0(
+      "Multiple baseline values for ", length(unique(test$ID)), " subjects. ",
+      "Consider providing an appropriate baseline_filter term!"
+    ))
 
   popmean <- bl %>%
     pivot_longer(cols = param, names_to = "param", values_to = "value") %>%
-    reframe(popmean = mean(.data$value, na.rm = TRUE), .by = param) %>%
-    pivot_wider(names_from = "param", values_from = popmean) %>%
-    rename_with(~ paste0("PM_", .x), everything())
+    reframe(popmean = mean(.data$value, na.rm = TRUE),
+            .by = c("ACTIVE", param)) %>%
+    pivot_wider(names_from = "param", values_from = popmean, names_prefix = "PM_")
 
   # Bind popmean to each row of cqtc (recycling single row)
-  bind_cols(cqtc, popmean)
+  cqtc %>%
+    left_join(popmean, by = "ACTIVE")
 }
 
 
