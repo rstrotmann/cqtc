@@ -29,6 +29,8 @@ hr_plot <- function(
     ...) {
   # input validation
   validate_cqtc(obj)
+  if(!"HR" %in% names(obj))
+    stop("HR field not found in input!")
   validate_col_param(param, obj)
   validate_col_param(group, obj, allow_null = TRUE)
   nif:::validate_logical_param(fit, "fit")
@@ -49,6 +51,78 @@ hr_plot <- function(
         x = .data$HR, y = .data[[param]],
         color = as.factor(.data[[group]]))) else
       ggplot(., aes(x = .data$HR, y = .data[[param]]))} +
+
+    geom_point() +
+    {if(fit == TRUE) {
+      if(!is.null(group))
+        geom_smooth(
+          aes(fill = as.factor(.data[[group]])),
+          method = method,
+          formula = y ~ x)
+      else
+        geom_smooth(
+          method = method,
+          formula = y ~ x)}} +
+
+    {if(!is.null(group))
+      labs(color = group, fill = NULL)} +
+    theme_bw() +
+    guides(fill = "none") +
+    theme(legend.position = "bottom")
+}
+
+
+#' Plot ECG parameter by RR interval
+#'
+#' @param obj A cqtc object.
+#' @param param The parameter to plot.
+#' @param fit Show regression fit.
+#' @param method The method for geom_smooth.
+#' @param ... Further parameters to geom_point().
+#' @param group The column to be used for grouping
+#'
+#' @returns A ggplot object.
+#' @import ggplot2
+#' @export
+#' @examples
+#' library(dplyr)
+#' library(magrittr)
+#'
+#' dofetilide_cqtc %>%
+#'   rr_plot(param = "QT", group = "ACTIVE")
+#'
+#' verapamil_cqtc %>%
+#'   rr_plot(param = "QTCF", group = "ACTIVE")
+rr_plot <- function(
+    obj,
+    param = "QTCF",
+    group = NULL,
+    fit = TRUE,
+    method = "lm",
+    ...) {
+  # input validation
+  validate_cqtc(obj)
+  if(!"RR" %in% names(obj))
+    stop("RR field not found in input!")
+  validate_col_param(param, obj)
+  validate_col_param(group, obj, allow_null = TRUE)
+  nif:::validate_logical_param(fit, "fit")
+  nif:::validate_char_param(method, "method")
+  allowed_methods <- c("loess", "lm")
+  if(!method %in% allowed_methods)
+    stop(paste0(
+      "method must be one of: ",
+      nif::nice_enumeration(allowed_methods, conjunction = "or")
+    ))
+
+  # Business logic
+  obj %>%
+    as.data.frame() %>%
+    {if(!is.null(group))
+      ggplot(., aes(
+        x = .data$RR, y = .data[[param]],
+        color = as.factor(.data[[group]]))) else
+          ggplot(., aes(x = .data$RR, y = .data[[param]]))} +
 
     geom_point() +
     {if(fit == TRUE) {
@@ -104,6 +178,7 @@ cqtc_plot <- function(
     x_label = "concentration (ng/ml)",
     y_label = NULL,
     title = "",
+    model = NULL,
     ...) {
   # input validation
   validate_cqtc(obj)
@@ -124,6 +199,11 @@ cqtc_plot <- function(
   #   y_label = "\u0394QTcF (ms)"
   # if(y_label == "QTCF")
   #   y_label = "QTcF (ms)"
+
+  # model paramters
+  if(!is.null(model)) {
+    coef = coef(summary(model))
+  }
 
   # business logic
   obj %>%
@@ -261,6 +341,7 @@ hysteresis_plot <- function(
   validate_cqtc(obj)
   validate_col_param(param, obj)
 
+  # business logic
   temp <- obj %>%
     filter(!is.na(.data$CONC), !is.na(.data[[param]])) %>%
     reframe(
@@ -280,54 +361,7 @@ hysteresis_plot <- function(
     geom_point(...) +
     geom_pointrange(aes(ymin = .data$dqtcf_lcl, ymax = .data$dqtcf_ucl)) +
     geom_path() +
-    geom_text_repel(size = 3, aes(label = .data$NTIME)) +
+    geom_text_repel(aes(label = .data$NTIME), point.padding = 2) +
     theme_bw()
 }
 
-
-# cqtc <- dofetilide_cqtc
-# drug <- "Dofetilide"
-#
-# cqtc <- verapamil_cqtc
-# drug <- "Verapamil"
-#
-# temp <- cqtc %>%
-#   filter(!is.na(.data[[drug]]), !is.na(DQTCF)) %>%
-#   reframe(
-#     c_mean = mean(.data[[drug]]),
-#     dqtcf_mean = mean(DQTCF, na.rm = T),
-#     dqtcf_sd = sd(DQTCF, na.rm = T),
-#     n = n(),
-#     .by = NTIME) %>%
-#   mutate(
-#     dqtcf_lcl = dqtcf_mean + qnorm(0.05) * dqtcf_sd/sqrt(n),
-#     dqtcf_ucl = dqtcf_mean + qnorm(0.95) * dqtcf_sd/sqrt(n)
-#   ) %>%
-#   arrange(NTIME)
-#
-# temp %>%
-#   ggplot(aes(x = c_mean, y = dqtcf_mean)) +
-#   geom_point() +
-#   geom_pointrange(aes(ymin = dqtcf_lcl, ymax = dqtcf_ucl)) +
-#   geom_path() +
-#   geom_text_repel(size = 3, aes(label = NTIME)) +
-#   theme_bw()
-#
-#
-# cqtc %>%
-#   ggplot(aes(x = RR, y = QT)) +
-#   geom_point() +
-#   geom_smooth(method = "lm") +
-#   theme_bw()
-#
-# cqtc %>%
-#   ggplot(aes(x = RR, y = QTCF)) +
-#   geom_point() +
-#   geom_smooth(method = "lm") +
-#   theme_bw()
-#
-# cqtc %>%
-#   ggplot(aes(x = .data[[drug]], y = QTCF)) +
-#   geom_point() +
-#   geom_smooth(method = "lm") +
-#   theme_bw()

@@ -19,7 +19,8 @@ Imports:
     utils,
     nif (>= 0.57.9),
     rlang,
-    broom.mixed
+    broom.mixed,
+    lsmeans
 Suggests: 
     testthat (>= 3.0.0),
     tibble, 
