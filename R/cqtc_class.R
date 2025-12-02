@@ -1,4 +1,22 @@
-#' cqtc class constructor
+#' Make a cqtc object
+#'
+#' Create a cqtc object from a data frame, or an empty cqtc object if the 'obj'
+#' argument is NULL.
+#'
+#' The minimally required fields are:
+#' * ID, the subject ID as numeric
+#' * NTIME, the nominal time in hours as numeric
+#' * CONC, the pharmacokinetic concentration as numeric
+#' * QTCF, the QTcF interval in ms, as numeric
+#'
+#' Further expected fields are:
+#' * ACTIVE, active/control treatment flag, as logical
+#' * QT, the QT interval in ms, as numeric
+#' * DQTCF, the delta QTcF to baseline in ms, as numeric
+#' * HR, the heart rate in 1/min, as numeric
+#' * RR, the RR interval in ms, as numeric
+#'
+#' If only one of HR or RR is included, the other will be derived.
 #'
 #' @param obj A data frame.
 #' @param silent Suppress warnings, as logical.
@@ -135,12 +153,6 @@ print.summary_cqtc <- function(x, ...) {
 
   cat("Data from", nrow(x$subjects), "subjects\n\n")
 
-  # cat(paste0(
-  #   "Observations per time point:\n",
-  #   nif:::df_to_string(x$disposition, indent = 2),
-  #   "\n\n"
-  # ))
-
   cat(paste0(
     "QTcF observations per time point:\n",
     x$disposition %>%
@@ -221,61 +233,31 @@ hash.cqtc <- function(obj) {
 }
 
 
-#' Add ntiles (quantiles) for a specific column across all subjects
+#' Generic subjects function
 #'
 #' @param obj A cqtc object.
-#' @param n The number of quantiles.
-#' @param input_col The column to calculate quantiles over.
-#' @param ntile_name The name of the quantile column.
 #'
-#' @returns A cqtc object with the ntile_name colunn added.
+#' @returns A data frame.
 #' @export
-add_ntile <- function(obj, input_col, n, ntile_name = NULL) {
-  UseMethod("add_ntile")
+subjects <- function(obj) {
+  UseMethod("subjects")
 }
 
 
-#' Add ntiles (quantiles) for a specific column across all subjects
+#' Subjects in a cqtc object
 #'
 #' @param obj A cqtc object.
-#' @param n The number of quantiles.
-#' @param input_col The column to calculate quantiles over.
-#' @param ntile_name The name of the quantile column.
 #'
-#' @returns A cqtc object with the ntile_name colunn added.
+#' @returns A data frame.
 #' @export
-#' @importFrom rlang :=
-#'
 #' @examples
-#' head(add_ntile(dofetilide_cqtc, "CONC", 10))
-add_ntile.cqtc <- function(obj, input_col = "CONC", n = 10, ntile_name = NULL) {
-  # Validate that input is a nif object
-  if (!inherits(obj, "cqtc")) {
-    stop("Input must be a cqtc object")
-  }
+#' subjects(dofetilide_cqtc)
+#'
+subjects.cqtc <- function(obj) {
+  # input validation
+  validate_cqtc(obj)
 
-  nif:::validate_char_param(input_col, "input_col")
-  nif:::validate_numeric_param(n, "n")
-  if(n > 10 || n < 2)
-    stop("n must be between 1 and 10!")
-  nif:::validate_char_param(input_col, "input_col", allow_null = TRUE)
-  nif:::validate_char_param(ntile_name, "ntile_name", allow_null = TRUE)
-  if(is.null(ntile_name))
-    ntile_name <- paste(input_col, "NTILE", sep = "_")
-
-  # Check that required columns exist: ID, input_col
-  required_cols <- c(input_col)
-  missing_cols <- setdiff(required_cols, names(obj))
-  if (length(missing_cols) > 0)
-    stop("Missing required columns: ", nif::nice_enumeration(missing_cols))
-
-  # Validate data types (input_col should be numeric)
-  if (!is.numeric(obj[[input_col]])) {
-    stop("Column '", input_col, "' must contain numeric values")
-  }
-
-  out <- obj %>%
-    mutate(!!ntile_name := ntile(.data[[input_col]], n = n))
-
-  return(out)
+  obj %>%
+    as.data.frame() %>%
+    distinct(ID, ACTIVE)
 }
