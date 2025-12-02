@@ -234,6 +234,8 @@ cqtc_plot <- function(
 #' @param size Point size.
 #' @param alpha Alpha for points.
 #' @param lwd Line width for point range.
+#' @param loess Show LOESS, as logical.
+#' @param lm Show linear regression, as logical.
 #'
 #' @returns A ggplot object.
 #' @export
@@ -250,6 +252,8 @@ cqtc_ntile_plot <- function(
     size = 2,
     alpha = 0.1,
     lwd = 0.6,
+    loess = FALSE,
+    lm = FALSE,
     ...) {
   # input validation
   validate_cqtc(obj)
@@ -289,20 +293,44 @@ cqtc_ntile_plot <- function(
       size = size,
       alpha = alpha,
       color = "blue",
-      ...) +
+      # ...
+      ) +
     geom_point(
       aes(x = .data$CONC, y = .data[[param]]),
       data = baseline,
       size = size,
       alpha = 0.1,
       color = "red",
-      ...
+      # ...
     ) +
+
+    {if(loess == TRUE)
+      geom_smooth(
+        aes(x = .data$mean_conc, y = .data$mean),
+        method = "loess",
+        formula = y ~ x,
+        data = deciles,
+        color = "red",
+        se = FALSE,
+        lwd = lwd)} +
+
+    {if(lm == TRUE)
+      geom_smooth(
+        aes(x = .data$mean_conc, y = .data$mean),
+        method = "lm",
+        formula = y ~ x,
+        data = deciles,
+        color = "black",
+        se = FALSE,
+        lwd = lwd,
+        linetype = "dashed")} +
+
     geom_point(aes(x = .data$mean_conc, y = .data$mean), data = deciles) +
     geom_pointrange(
       aes(x = .data$mean_conc, y = .data$mean, ymin = .data$LCL, ymax = .data$UCL),
       data = deciles,
       lwd = lwd) +
+
     labs(
       x = x_label,
       y = y_label,
@@ -370,9 +398,9 @@ cqtc_decile_plot <- function(
 #'
 #' dofetilide_cqtc %>%
 #'   filter(ACTIVE == 1) %>%
-#'   hysteresis_plot()
+#'   cqtc_hysteresis_plot()
 #'
-hysteresis_plot <- function(
+cqtc_hysteresis_plot <- function(
     obj,
     param = "QTCF",
     ...) {
@@ -393,14 +421,63 @@ hysteresis_plot <- function(
       dqtcf_lcl = .data$dqtcf_mean + stats::qnorm(0.05) * .data$dqtcf_sd/sqrt(.data$n),
       dqtcf_ucl = .data$dqtcf_mean + stats::qnorm(0.95) * .data$dqtcf_sd/sqrt(.data$n)
     ) %>%
-    arrange(.data$NTIME)
+    arrange("NTIME")
 
   temp %>%
     ggplot(aes(x = .data$c_mean, y = .data$dqtcf_mean)) +
-    geom_point(...) +
+    geom_point() +
     geom_pointrange(aes(ymin = .data$dqtcf_lcl, ymax = .data$dqtcf_ucl)) +
     geom_path() +
-    geom_text_repel(aes(label = .data$NTIME), point.padding = 2) +
+    geom_text_repel(aes(label = .data$NTIME), point.padding = 2) +#
+    labs(
+      caption = "mean and 90% CI",
+      x = "concentration",
+      y = param) +
     theme_bw()
 }
+
+
+#' Time course plot for QT parameter and drug concentration
+#'
+#' @param obj A cqtc object.
+#' @param param The parameter to be plotted, as character.
+#' @param title The plot title.
+#'
+#' @returns A ggplot object.
+#' @export
+cqtc_time_course_plot <- function(
+    obj,
+    param = "QTCF",
+    title = "") {
+  # input validation
+  validate_cqtc(obj)
+  validate_col_param(param, obj)
+
+  temp <- obj %>%
+    as.data.frame() %>%
+    mutate(NTIME = as.numeric(as.character(NTIME))) %>%
+    filter(ACTIVE == TRUE) %>%
+    mutate(PAR = .data[[param]]) %>%
+    select(all_of(c("ID", "NTIME", "ACTIVE", "CONC", "PAR"))) %>%
+    pivot_longer(cols = c("CONC", "PAR"), names_to = "PARAM", values_to = "VAL")
+
+  temp %>%
+    reframe(
+      mean = mean(VAL, na.rm = TRUE), sd = sd(VAL, na.rm = TRUE), n = n(),
+      .by = c("NTIME", "ACTIVE", "PARAM")) %>%
+    filter(!is.na(mean)) %>%
+    ggplot(aes(x = NTIME, y = mean)) +
+    geom_pointrange(aes(ymin = mean - sd, ymax = mean + sd)) +
+    geom_point() +
+    geom_line() +
+    facet_grid(PARAM ~ ., scales = "free_y",
+               labeller = labeller(PARAM = c(CONC = "concentration", PAR = param))) +
+    labs(y = "", title = title, caption = "mean and SD") +
+    theme_bw() +
+    theme(strip.background = element_rect(fill = "white"))
+}
+
+
+
+
 

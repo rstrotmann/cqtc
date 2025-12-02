@@ -14,6 +14,8 @@ cqtc_ntile_plot(
   size = 2,
   alpha = 0.1,
   lwd = 0.6,
+  loess = FALSE,
+  lm = FALSE,
   ...
 )
 }
@@ -35,6 +37,10 @@ cqtc_ntile_plot(
 \item{alpha}{Alpha for points.}
 
 \item{lwd}{Line width for point range.}
+
+\item{loess}{Show LOESS, as logical.}
+
+\item{lm}{Show linear regression, as logical.}
 
 \item{...}{Further parameters to geom_point.}
 }

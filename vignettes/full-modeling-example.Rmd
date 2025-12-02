@@ -1,0 +1,147 @@
+---
+title: "full-modeling-example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{full-modeling-example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, warning = F, message=F}
+library(tidyverse)
+library(knitr)
+library(lme4)
+library(lsmeans)
+library(cqtc)
+```
+
+This example is based on Parkinson, J., Dota, C. & Rekić, D. Practical guide to
+concentration-QTc modeling: a hands-on tutorial. J Pharmacokinet Pharmacodyn 52,
+43 (2025). https://doi.org/10.1007/s10928-025-09981-8
+
+The dofetilide and verapamil data sets used in the publication are provided as
+sample data files in this package. This example makes use of the dofetilide data:
+
+```{r}
+head(dofetilide_cqtc, 5)
+```
+
+# DATA PREPROCESSING
+
+* add individual baseline QTcF (BL_QTCF):
+
+$$DQTCF = \Delta QTcF_{i,t} = QTcF_{i,t} - QTcF_{i,predose}$$
+
+* calculate the population mean for the baseline QTcF by treatment group
+(PM_BL_QTCF):
+
+$$PM\_BL\_QTF = \overline {QTc_0}$$
+
+* calculate the difference between the individual baseline QTcF and the 
+respective population mean baseline QTcF:
+
+$$DPM\_BL\_QTCF = QTc_{i,j=0} - \overline {QTc_0}$$
+
+* calculate the difference between DQTCF and the group mean DQTCF of the control
+population by time point (DDQTCF):
+
+$$DDQTCF = \Delta \Delta QTcF_{i,t} = \Delta QTcF_{i,t} - \overline{\Delta QTcF_{control,t}} $$
+
+* change the numeric nominal time field (NTIME) to factors
+
+```{r}
+dof <- dofetilide_cqtc %>%
+  mutate(BL_QTCF = QTCF[NTIME == -0.5], .by = c("ID", "ACTIVE")) %>%
+  add_bl_popmean("BL_QTCF") %>%
+  mutate(DPM_BL_QTCF = BL_QTCF - PM_BL_QTCF) %>%
+  derive_group_delta("DQTCF") %>% 
+  mutate(NTIME = as.factor(NTIME))
+```
+
+# EXPLORATORY DATA ANALYSIS
+
+## Drug effect on heart rate
+
+```{r}
+rr_plot(dof, "QT", group = "ACTIVE")
+rr_plot(dof, "QTCF", group = "ACTIVE")
+```
+
+## Assessment of hysteresis
+
+```{r}
+cqtc_time_course_plot(dof, "QTCF")
+```
+
+```{r}
+cqtc_hysteresis_plot(dof, "DDQTCF")
+```
+
+## Linear concentration-QTc relationship
+
+```{r}
+cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
+```
+
+# LINEAR MIXED EFFECTS MODELING
+
+## Modeling
+
+```{r}
+mod <- lmerTest::lmer(
+  DQTCF ~ NTIME + ACTIVE + DPM_BL_QTCF + CONC + (CONC||ID),
+  data = dof)
+
+# parameter estimates
+temp <-as.data.frame(coef(summary(mod, ddf="Kenward-Roger")))
+colnames(temp) <- c("estimate", "se", "df", "t", "p")
+parameters <- temp %>%
+  mutate(
+    rse = se/estimate * 100,
+      lci = estimate + qt(0.025, df = df) * se,
+      uci = estimate + qt(0.975, df = df) * se,
+      p = ifelse(p < 0.001, "< 0.001", signif(p, 3))) %>%
+  select(estimate, lci, uci, rse, p)
+
+parameters %>% 
+  kable(caption = "Model parameters")
+
+grid <- ref.grid(
+  mod,
+  at = list(
+    CONC = seq(0, max(dof$CONC, na.rm = TRUE)),
+    ACTIVE = c(FALSE, TRUE),
+    DPM_BL_QTCF = 0))
+
+temp1 <- summary(lsmeans::lsmeans(
+  grid,
+  c("CONC", "ACTIVE"),
+  level = 0.9)) %>%
+  filter(ACTIVE == TRUE)
+
+dof %>%
+  cqtc_ntile_plot(param = "DQTCF", n = 10) +
+  geom_line(data = temp1, aes(x = CONC, y = lsmean)) +
+  geom_ribbon(
+    data = temp1,
+    aes(x = CONC, ymin = lower.CL, ymax = upper.CL, y = lsmean),
+    alpha = 0.2)
+```
+
+## Model diagnostics
+
+```{r}
+cqtc_gof_plot(mod)
+```
+
+
+
+
+
