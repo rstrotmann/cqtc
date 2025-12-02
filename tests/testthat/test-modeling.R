@@ -27,9 +27,6 @@ test_that("Modeling for dofetilitde works as intended", {
           p = ifelse(p < 0.001, "< 0.001", signif(p, 3))) %>%
       select(estimate, lci, uci, rse, p)
 
-
-    # grid <- ref.grid(mod, at = list(CONC = seq(0, max(dof$CONC, na.rm = TRUE))))
-
     grid <- ref.grid(
       mod,
       at = list(
@@ -44,7 +41,7 @@ test_that("Modeling for dofetilitde works as intended", {
       filter(ACTIVE == TRUE)
 
     dofetilide_cqtc %>%
-      cqtc_decile_plot(param = "DQTCF", n = 10) +
+      cqtc_ntile_plot(param = "DQTCF", n = 10) +
       geom_line(data = temp1, aes(x = CONC, y = lsmean)) +
       geom_ribbon(
         data = temp1,

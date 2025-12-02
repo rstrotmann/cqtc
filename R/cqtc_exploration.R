@@ -240,7 +240,7 @@ cqtc_plot <- function(
 #'
 #' @examples
 #' cqtc_decile_plot(dofetilide_cqtc)
-cqtc_decile_plot <- function(
+cqtc_ntile_plot <- function(
     obj,
     param = "DQTCF",
     n = 10,
@@ -311,6 +311,45 @@ cqtc_decile_plot <- function(
     theme_bw()
 
   return(out)
+}
+
+
+#' Exploratory decile plot.
+#'
+#' #' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' Please use cqtc_ntile_plot instead.
+#'
+#' @param obj A cqtc object.
+#' @param param The parameter to plot.
+#' @param n The number of quantiles, defaults to 10.
+#' @param ... Further parameters to geom_point.
+#' @param x_label The x axis label.
+#' @param y_label The y axis label.
+#' @param title The plot title.
+#' @param size Point size.
+#' @param alpha Alpha for points.
+#' @param lwd Line width for point range.
+#'
+#' @returns A ggplot object.
+#' @export
+#'
+#' @examples
+#' cqtc_decile_plot(dofetilide_cqtc)
+cqtc_decile_plot <- function(
+    obj,
+    param = "DQTCF",
+    n = 10,
+    x_label = "concentration (ng/ml)",
+    y_label = NULL,
+    title = "",
+    size = 2,
+    alpha = 0.1,
+    lwd = 0.6,
+    ...) {
+  lifecycle::deprecate_warn("0.3.1", "cqtc_decile_plot()", "cqtc_ntile_plot()")
+  cqtc_ntile_plot(obj, param, n, x_label, y_label, title, size, alpha, lwd, ...)
 }
 
 
