@@ -4,12 +4,22 @@
 \alias{add_bl_popmean}
 \title{Add population mean column}
 \usage{
-add_bl_popmean(cqtc, param = "BL_QTCF")
+add_bl_popmean(
+  cqtc,
+  param = "BL_QTCF",
+  baseline_filter = "TRUE",
+  silent = NULL
+)
 }
 \arguments{
 \item{cqtc}{A cqtc object.}
 
 \item{param}{The column name for the baseline value.}
+
+\item{baseline_filter}{A filter term to identify the baseline condition, as
+character.}
+
+\item{silent}{Suppress messages.}
 }
 \value{
 a cqtc object with the population mean column(n) added for the

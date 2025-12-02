@@ -2,6 +2,9 @@
 #'
 #' @param cqtc A cqtc object.
 #' @param param The column name for the baseline value.
+#' @param baseline_filter A filter term to identify the baseline condition, as
+#' character.
+#' @param silent Suppress messages.
 #'
 #' @returns a cqtc object with the population mean column(n) added for the
 #' specified parameters. The name(s) follow the naming "PM_xx", where "xx" is

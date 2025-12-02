@@ -1,6 +1,11 @@
 validate_cqtc <- function(obj) {
   if (!inherits(obj, "cqtc"))
     stop("Input must be a cqtc object")
+
+  expected_columns <- c("ID", "NTIME", "CONC", "QTCF")
+  missing_columns <- setdiff(expected_columns, names(obj))
+  if(length(missing_columns) > 0)
+    stop("Missing expected columns: ", nif::nice_enumeration(missing_columns))
 }
 
 

@@ -135,11 +135,23 @@ print.summary_cqtc <- function(x, ...) {
 
   cat("Data from", nrow(x$subjects), "subjects\n\n")
 
+  # cat(paste0(
+  #   "Observations per time point:\n",
+  #   nif:::df_to_string(x$disposition, indent = 2),
+  #   "\n\n"
+  # ))
+
   cat(paste0(
-    "Observations per time point:\n",
-    nif:::df_to_string(x$disposition, indent = 2),
+    "QTcF observations per time point:\n",
+    x$disposition %>%
+      select(all_of(c("NTIME", "ACTIVE", "QTCF"))) %>%
+      mutate(GROUP = case_match(ACTIVE, TRUE ~ "ACTIVE", FALSE ~ "CONTROL")) %>%
+      select(-c("ACTIVE")) %>%
+      pivot_wider(names_from = "GROUP", values_from = "QTCF") %>%
+      nif:::df_to_string(indent = 2),
     "\n\n"
   ))
+
 
   cat("Columns:\n")
   cat(stringr::str_wrap(paste(names(x$cqtc), collapse = ", "),
