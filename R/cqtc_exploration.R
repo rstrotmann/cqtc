@@ -273,7 +273,7 @@ cqtc_ntile_plot <- function(
     add_ntile("CONC", n = n) %>%
     reframe(
       n = n(),
-      mean_conc = mean(.data[["CONC"]]),
+      mean_conc = median(.data[["CONC"]]),
       mean = mean(.data[[param]], na.rm = TRUE),
       sd = sd(.data[[param]]), na.rm = TRUE,
       UCL = .data$mean + qnorm(0.95)  * .data$sd/sqrt(.data$n),
@@ -335,7 +335,7 @@ cqtc_ntile_plot <- function(
       x = x_label,
       y = y_label,
       title = title,
-      caption = "Quantiles shown as mean and 90% CI") +
+      caption = "Quantiles shown at the median bin concentration as mean and 90% CI") +
     theme_bw()
 
   return(out)

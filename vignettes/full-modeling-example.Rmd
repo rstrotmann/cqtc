@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 library(tidyverse)
 library(knitr)
 library(lme4)
+library(lmerTest)
 library(lsmeans)
 library(cqtc)
 ```
@@ -100,7 +101,7 @@ mod <- lmerTest::lmer(
   data = dof)
 
 # parameter estimates
-temp <-as.data.frame(coef(summary(mod, ddf="Kenward-Roger")))
+temp <- as.data.frame(coef(summary(mod, ddf="Kenward-Roger")))
 colnames(temp) <- c("estimate", "se", "df", "t", "p")
 parameters <- temp %>%
   mutate(
