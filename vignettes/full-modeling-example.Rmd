@@ -15,7 +15,8 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, warning = F, message=F}
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
 library(knitr)
 library(lme4)
 library(lmerTest)

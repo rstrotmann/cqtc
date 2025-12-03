@@ -42,15 +42,12 @@ hr_plot <- function(
       nif::nice_enumeration(allowed_methods, conjunction = "or")
     ))
 
-  # Business logic
-  obj %>%
-    as.data.frame() %>%
-    # ggplot(aes(x = .data$HR, y = .data[[param]])) +
-    {if(!is.null(group))
-      ggplot(., aes(
-        x = .data$HR, y = .data[[param]],
-        color = as.factor(.data[[group]]))) else
-      ggplot(., aes(x = .data$HR, y = .data[[param]]))} +
+  # plotting
+  {if(!is.null(group))
+    ggplot(obj, aes(
+      x = .data$HR, y = .data[[param]],
+      color = as.factor(.data[[group]]))) else
+    ggplot(obj, aes(x = .data$HR, y = .data[[param]]))} +
 
     geom_point() +
     {if(fit == TRUE) {
@@ -115,14 +112,12 @@ rr_plot <- function(
       nif::nice_enumeration(allowed_methods, conjunction = "or")
     ))
 
-  # Business logic
-  obj %>%
-    as.data.frame() %>%
-    {if(!is.null(group))
-      ggplot(., aes(
-        x = .data$RR, y = .data[[param]],
-        color = as.factor(.data[[group]]))) else
-          ggplot(., aes(x = .data$RR, y = .data[[param]]))} +
+  # plotting
+  {if(!is.null(group))
+    ggplot(obj, aes(
+      x = .data$RR, y = .data[[param]],
+      color = as.factor(.data[[group]]))) else
+        ggplot(obj, aes(x = .data$RR, y = .data[[param]]))} +
 
     geom_point() +
     {if(fit == TRUE) {
@@ -178,7 +173,7 @@ cqtc_plot <- function(
     x_label = "concentration (ng/ml)",
     y_label = NULL,
     title = "",
-    model = NULL,
+    # model = NULL,
     ...) {
   # input validation
   validate_cqtc(obj)
@@ -201,9 +196,9 @@ cqtc_plot <- function(
   #   y_label = "QTcF (ms)"
 
   # model paramters
-  if(!is.null(model)) {
-    coef = coef(summary(model))
-  }
+  # if(!is.null(model)) {
+  #   coef = coef(summary(model))
+  # }
 
   # business logic
   obj %>%
@@ -239,6 +234,7 @@ cqtc_plot <- function(
 #'
 #' @returns A ggplot object.
 #' @export
+#' @importFrom stats median
 #'
 #' @examples
 #' cqtc_decile_plot(dofetilide_cqtc)
@@ -273,7 +269,7 @@ cqtc_ntile_plot <- function(
     add_ntile("CONC", n = n) %>%
     reframe(
       n = n(),
-      mean_conc = median(.data[["CONC"]]),
+      mean_conc = stats::median(.data[["CONC"]]),
       mean = mean(.data[[param]], na.rm = TRUE),
       sd = sd(.data[[param]]), na.rm = TRUE,
       UCL = .data$mean + qnorm(0.95)  * .data$sd/sqrt(.data$n),
@@ -455,23 +451,27 @@ cqtc_time_course_plot <- function(
 
   temp <- obj %>%
     as.data.frame() %>%
-    mutate(NTIME = as.numeric(as.character(NTIME))) %>%
-    filter(ACTIVE == TRUE) %>%
+    mutate(NTIME = as.numeric(as.character(.data$NTIME))) %>%
+    filter(.data$ACTIVE == TRUE) %>%
     mutate(PAR = .data[[param]]) %>%
     select(all_of(c("ID", "NTIME", "ACTIVE", "CONC", "PAR"))) %>%
     pivot_longer(cols = c("CONC", "PAR"), names_to = "PARAM", values_to = "VAL")
 
   temp %>%
     reframe(
-      mean = mean(VAL, na.rm = TRUE), sd = sd(VAL, na.rm = TRUE), n = n(),
+      mean = mean(.data$VAL, na.rm = TRUE),
+      sd = sd(.data$VAL, na.rm = TRUE),
+      n = n(),
       .by = c("NTIME", "ACTIVE", "PARAM")) %>%
     filter(!is.na(mean)) %>%
-    ggplot(aes(x = NTIME, y = mean)) +
+    ggplot(aes(x = .data$NTIME, y = mean)) +
     geom_pointrange(aes(ymin = mean - sd, ymax = mean + sd)) +
     geom_point() +
     geom_line() +
-    facet_grid(PARAM ~ ., scales = "free_y",
-               labeller = labeller(PARAM = c(CONC = "concentration", PAR = param))) +
+    facet_grid(
+      PARAM ~ .,
+      scales = "free_y",
+      labeller = labeller(PARAM = c(CONC = "concentration", PAR = param))) +
     labs(y = "", title = title, caption = "mean and SD") +
     theme_bw() +
     theme(strip.background = element_rect(fill = "white"))

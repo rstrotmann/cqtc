@@ -1,3 +1,53 @@
+#' Add baseline field for parameter across treatment groups
+#'
+#' @param obj A cqtc object.
+#' @param param The parameter to find the baseline for.
+#' @param baseline_filter A filter term to identify unique baseline values.
+#' @param silent Suppress messages.
+#'
+#' @returns A cqtc object with the baseline columns added.
+#' @export
+cqtc_add_baseline <- function(
+    obj,
+    param = "QTCF",
+    baseline_filter = "NTIME < 0",
+    silent = NULL) {
+  # input validation
+  validate_cqtc(obj)
+  validate_col_param(param, obj, allow_multiple = TRUE)
+
+  # identify baseline
+  bl <- obj %>%
+    as.data.frame() %>%
+    filter(eval(parse(text = baseline_filter))) %>%
+    select(all_of(c("ID", "ACTIVE", param))) %>%
+    rename_with(.fn = function(x) {paste0("BL_", x)}, .cols = all_of(param)) %>%
+    distinct()
+
+  # Missing baseline values
+  missing_baseline_sbs <- setdiff(unique(obj$ID), unique(bl$ID))
+  if(length(missing_baseline_sbs) > 0)
+    nif:::conditional_message(
+      "Missing baseline values in ", length(missing_baseline_sbs),
+      " subjects!", silent = silent)
+
+  # Duplicate baseline values
+  test <- bl %>%
+    reframe(n = n(), .by = c("ID", "ACTIVE")) %>%
+    filter(n > 1)
+  if(nrow(test) > 0)
+    stop(paste0(
+      "Multiple baseline values for ", length(unique(test$ID)), " subjects. ",
+      "Consider providing an appropriate baseline_filter term!"
+    ))
+
+  out <- obj %>%
+    left_join(bl, by = c("ID", "ACTIVE"))
+
+  return(out)
+}
+
+
 #' Add population mean column
 #'
 #' @param cqtc A cqtc object.
@@ -10,6 +60,7 @@
 #' specified parameters. The name(s) follow the naming "PM_xx", where "xx" is
 #' the parameter name.
 #' @export
+#'
 add_bl_popmean <- function(
     cqtc,
     param = "BL_QTCF",
@@ -81,7 +132,7 @@ derive_group_delta <- function(
     pivot_longer(
       cols = all_of(parameter),
       names_to = "PARAM", values_to = "VAL") %>%
-    reframe(REF = mean(VAL), .by = c("NTIME"))
+    reframe(REF = mean(.data$VAL), .by = c("NTIME"))
 
   if(nrow(ref) == 0)
     stop(paste0("No data after applying filter term '", reference_filter, "'!"))
@@ -93,14 +144,14 @@ derive_group_delta <- function(
       names_to = "PARAM", values_to = "VAL")
 
   delta <- temp %>%
-    filter(PARAM == parameter) %>%
+    filter(.data$PARAM == parameter) %>%
     left_join(ref, by = c("NTIME")) %>%
-    mutate(VAL = VAL- REF) %>%
+    mutate(VAL = .data$VAL - .data$REF) %>%
     mutate(PARAM = out_name) %>%
     select(-c("REF"))
 
   out <- bind_rows(temp, delta) %>%
-    pivot_wider(names_from = PARAM, values_from = VAL) %>%
+    pivot_wider(names_from = "PARAM", values_from = "VAL") %>%
     new_cqtc()
 
   return(out)

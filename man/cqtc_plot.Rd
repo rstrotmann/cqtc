@@ -13,7 +13,6 @@ cqtc_plot(
   x_label = "concentration (ng/ml)",
   y_label = NULL,
   title = "",
-  model = NULL,
   ...
 )
 }

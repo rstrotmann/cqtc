@@ -68,7 +68,7 @@ new_cqtc <- function(obj = NULL, silent = NULL) {
         mutate(ACTIVE = TRUE)
     } else {
       out <- out %>%
-        mutate(ACTIVE = as.logical(ACTIVE))
+        mutate(ACTIVE = as.logical(.data$ACTIVE))
     }
 
   }
@@ -104,6 +104,7 @@ summary.cqtc <- function(object, ...) {
   validate_cqtc(object)
 
   temp <- as.data.frame(object)
+
   out <- list(
     cqtc = as.data.frame(temp),
     subjects = distinct(temp, across(any_of(c("ID", "USUBJID", "SUBJID")))),
@@ -113,7 +114,7 @@ summary.cqtc <- function(object, ...) {
         cols = any_of(c("QT", "QTCF", "DQTCF", "RR", "HR")),
         names_to = "param", values_to = "value"
       ) %>%
-      reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "ACTIVE", param)) %>%
+      reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "ACTIVE", "param")) %>%
       pivot_wider(names_from = "param", values_from = "n") %>%
       arrange(.data$ACTIVE, .data$NTIME),
     hash = hash(object)
@@ -157,7 +158,7 @@ print.summary_cqtc <- function(x, ...) {
     "QTcF observations per time point:\n",
     x$disposition %>%
       select(all_of(c("NTIME", "ACTIVE", "QTCF"))) %>%
-      mutate(GROUP = case_match(ACTIVE, TRUE ~ "ACTIVE", FALSE ~ "CONTROL")) %>%
+      mutate(GROUP = case_match(.data$ACTIVE, TRUE ~ "ACTIVE", FALSE ~ "CONTROL")) %>%
       select(-c("ACTIVE")) %>%
       pivot_wider(names_from = "GROUP", values_from = "QTCF") %>%
       nif:::df_to_string(indent = 2),
@@ -259,5 +260,5 @@ subjects.cqtc <- function(obj) {
 
   obj %>%
     as.data.frame() %>%
-    distinct(ID, ACTIVE)
+    distinct(.data$ID, .data$ACTIVE)
 }
