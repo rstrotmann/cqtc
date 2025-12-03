@@ -1,5 +1,6 @@
 pandoc: '3.4'
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
-articles: {}
-last_built: 2025-11-25T11:54Z
+articles:
+  full-modeling-example: full-modeling-example.html
+last_built: 2025-12-03T06:32Z
