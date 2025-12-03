@@ -16,7 +16,8 @@ cqtc_add_baseline(
 
 \item{param}{The parameter to find the baseline for.}
 
-\item{baseline_filter}{A filter term to identify unique baseline values.}
+\item{baseline_filter}{A filter term to identify the baseline condition, as
+character.}
 
 \item{silent}{Suppress messages.}
 }

@@ -2,8 +2,9 @@
 #'
 #' @param obj A cqtc object.
 #' @param param The parameter to find the baseline for.
-#' @param baseline_filter A filter term to identify unique baseline values.
 #' @param silent Suppress messages.
+#' @param baseline_filter A filter term to identify the baseline condition, as
+#' character.
 #'
 #' @returns A cqtc object with the baseline columns added.
 #' @export
@@ -41,7 +42,21 @@ cqtc_add_baseline <- function(
       "Consider providing an appropriate baseline_filter term!"
     ))
 
+  # existing baseline fields
+  new_bl_fields <- names(bl)[-(1:2)]
+  duplicate_bl_fields <- intersect(new_bl_fields, names(obj))
+  if(length(duplicate_bl_fields) > 0) {
+    nif:::conditional_message(
+      "The following baseline ",
+      ifelse(length(duplicate_bl_fields) == 1, "field is", "fields are"),
+      " already in the input and will be ",
+      "overwritten: ",
+      nif::nice_enumeration(duplicate_bl_fields),
+      silent = silent)
+  }
+
   out <- obj %>%
+    select(-all_of(duplicate_bl_fields)) %>%
     left_join(bl, by = c("ID", "ACTIVE"))
 
   return(out)
@@ -52,8 +67,6 @@ cqtc_add_baseline <- function(
 #'
 #' @param cqtc A cqtc object.
 #' @param param The column name for the baseline value.
-#' @param baseline_filter A filter term to identify the baseline condition, as
-#' character.
 #' @param silent Suppress messages.
 #'
 #' @returns a cqtc object with the population mean column(n) added for the
@@ -64,7 +77,7 @@ cqtc_add_baseline <- function(
 add_bl_popmean <- function(
     cqtc,
     param = "BL_QTCF",
-    baseline_filter = "TRUE",
+    # baseline_filter = "TRUE",
     silent = NULL) {
   # input validation
   validate_cqtc(cqtc)
@@ -73,7 +86,7 @@ add_bl_popmean <- function(
   # business logic
   bl <- cqtc %>%
     as.data.frame() %>%
-    filter(eval(parse(text = baseline_filter))) %>%
+    # filter(eval(parse(text = baseline_filter))) %>%
     select(all_of(c("ID", "ACTIVE", param))) %>%
     distinct()
 
@@ -89,8 +102,7 @@ add_bl_popmean <- function(
     filter(n > 1)
   if(nrow(test) > 0)
     stop(paste0(
-      "Multiple baseline values for ", length(unique(test$ID)), " subjects. ",
-      "Consider providing an appropriate baseline_filter term!"
+      "Multiple baseline values for ", length(unique(test$ID)), " subjects!"
     ))
 
   popmean <- bl %>%

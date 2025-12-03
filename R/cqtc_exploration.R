@@ -237,7 +237,7 @@ cqtc_plot <- function(
 #' @importFrom stats median
 #'
 #' @examples
-#' cqtc_decile_plot(dofetilide_cqtc)
+#' cqtc_ntile_plot(dofetilide_cqtc)
 cqtc_ntile_plot <- function(
     obj,
     param = "DQTCF",

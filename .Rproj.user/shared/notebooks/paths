@@ -12,6 +12,7 @@
 /Users/rainerstrotmann/Documents/Programming/R/cqtc/data-raw/make_cqtc_data.R="179C9557"
 /Users/rainerstrotmann/Documents/Programming/R/cqtc/data-raw/qtpk_dofetilide.csv="4742FC1B"
 /Users/rainerstrotmann/Documents/Programming/R/cqtc/tests/testthat.R="E9402934"
+/Users/rainerstrotmann/Documents/Programming/R/cqtc/tests/testthat/test-add_baseline.R="8052D72B"
 /Users/rainerstrotmann/Documents/Programming/R/cqtc/tests/testthat/test-add_bl_popmean.R="1580EFD5"
 /Users/rainerstrotmann/Documents/Programming/R/cqtc/tests/testthat/test-make_cqtc.R="3F502F18"
 /Users/rainerstrotmann/Documents/Programming/R/cqtc/tests/testthat/test-modeling.R="EC6CCBE9"

@@ -1,5 +1,5 @@
 ---
-title: "full-modeling-example"
+title: "Concentration-QTc modeling example"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{full-modeling-example}
@@ -37,6 +37,8 @@ head(dofetilide_cqtc, 5)
 
 # DATA PREPROCESSING
 
+The data set is extended with the following:
+
 * add individual baseline QTcF (BL_QTCF):
 
 $$DQTCF = \Delta QTcF_{i,t} = QTcF_{i,t} - QTcF_{i,predose}$$
@@ -54,13 +56,13 @@ $$DPM\_BL\_QTCF = QTc_{i,j=0} - \overline {QTc_0}$$
 * calculate the difference between DQTCF and the group mean DQTCF of the control
 population by time point (DDQTCF):
 
-$$DDQTCF = \Delta \Delta QTcF_{i,t} = \Delta QTcF_{i,t} - \overline{\Delta QTcF_{control,t}} $$
+$$DDQTCF = \Delta \Delta QTcF_{i,t} = \Delta QTcF_{i,t} - \overline{\Delta QTcF_{control,t}}$$
 
 * change the numeric nominal time field (NTIME) to factors
 
 ```{r}
 dof <- dofetilide_cqtc %>%
-  mutate(BL_QTCF = QTCF[NTIME == -0.5], .by = c("ID", "ACTIVE")) %>%
+  cqtc_add_baseline("QTCF", baseline_filter = "NTIME == -0.5") %>% 
   add_bl_popmean("BL_QTCF") %>%
   mutate(DPM_BL_QTCF = BL_QTCF - PM_BL_QTCF) %>%
   derive_group_delta("DQTCF") %>% 
@@ -71,24 +73,24 @@ dof <- dofetilide_cqtc %>%
 
 ## Drug effect on heart rate
 
-```{r}
+```{r, fig.width=5, fig.asp=0.7}
 rr_plot(dof, "QT", group = "ACTIVE")
 rr_plot(dof, "QTCF", group = "ACTIVE")
 ```
 
 ## Assessment of hysteresis
 
-```{r}
+```{r, fig.width=5, fig.asp=0.7}
 cqtc_time_course_plot(dof, "QTCF")
 ```
 
-```{r}
+```{r, fig.width=5, fig.asp=0.7}
 cqtc_hysteresis_plot(dof, "DDQTCF")
 ```
 
 ## Linear concentration-QTc relationship
 
-```{r}
+```{r, fig.width=5, fig.asp=0.7}
 cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
 ```
 
@@ -96,7 +98,7 @@ cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
 
 ## Modeling
 
-```{r}
+```{r, fig.width=5, fig.asp=0.7}
 mod <- lmerTest::lmer(
   DQTCF ~ NTIME + ACTIVE + DPM_BL_QTCF + CONC + (CONC||ID),
   data = dof)
@@ -139,8 +141,10 @@ dof %>%
 
 ## Model diagnostics
 
-```{r}
-cqtc_gof_plot(mod)
+```{r, fig.width=5, fig.asp=0.7, results='hide'}
+invisible(capture.output(
+  cqtc_gof_plot(mod)
+))
 ```
 
 

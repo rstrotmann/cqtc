@@ -51,5 +51,5 @@ A ggplot object.
 Exploratory decile plot.
 }
 \examples{
-cqtc_decile_plot(dofetilide_cqtc)
+cqtc_ntile_plot(dofetilide_cqtc)
 }

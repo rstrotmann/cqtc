@@ -1,6 +1,6 @@
 test_that("Modeling for dofetilitde works as intended", {
-  library(lsmeans)
-  library(lmerTest)
+  # library(lsmeans)
+  # library(lmerTest)
 
   expect_no_error({
     # add baseline QTcF, population mean-centered baseline QTcF
@@ -27,7 +27,7 @@ test_that("Modeling for dofetilitde works as intended", {
           p = ifelse(p < 0.001, "< 0.001", signif(p, 3))) %>%
       select(estimate, lci, uci, rse, p)
 
-    grid <- ref.grid(
+    grid <- lsmeans::ref.grid(
       mod,
       at = list(
         CONC = seq(0, max(dof$CONC, na.rm = TRUE)),

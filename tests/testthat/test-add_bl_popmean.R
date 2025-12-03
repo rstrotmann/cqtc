@@ -25,6 +25,13 @@ test_that("add_bl_popmean works as intended for multiple parameters", {
   test <- new_cqtc(test_data)
 
   result <- test %>%
-    add_bl_popmean(param = c("QTCF", "HR"), baseline_filter = "NTIME == 0")
+    cqtc_add_baseline(param = c("QTCF", "HR"), baseline_filter = "NTIME == 0") %>%
+    add_bl_popmean(param = c("BL_QTCF"))
+
+  temp <- distinct(result, ACTIVE, PM_BL_QTCF) %>%
+    as.data.frame()
+
+  expect_equal(filter(temp, ACTIVE == TRUE)$PM_BL_QTCF, 15)
+  expect_equal(filter(temp, ACTIVE == FALSE)$PM_BL_QTCF, 35)
 })
 
