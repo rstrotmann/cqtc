@@ -6,7 +6,7 @@ Create a cqtc object from a data frame, or an empty cqtc object if the
 ## Usage
 
 ``` r
-new_cqtc(obj = NULL, silent = NULL)
+new_cqtc(obj = NULL, silent = NULL, rr_threshold = 0.1)
 ```
 
 ## Arguments
@@ -18,6 +18,11 @@ new_cqtc(obj = NULL, silent = NULL)
 - silent:
 
   Suppress warnings, as logical.
+
+- rr_threshold:
+
+  The allowed fractional deviation between the recorded RR interval and
+  the RR interval back-calculated from the recorded HR.
 
 ## Value
 

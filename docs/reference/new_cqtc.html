@@ -9,7 +9,7 @@ argument is NULL."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">cqtc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@ argument is NULL.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">new_cqtc</span><span class="op">(</span>obj <span class="op">=</span> <span class="cn">NULL</span>, silent <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">new_cqtc</span><span class="op">(</span>obj <span class="op">=</span> <span class="cn">NULL</span>, silent <span class="op">=</span> <span class="cn">NULL</span>, rr_threshold <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -57,6 +57,11 @@ argument is NULL.</p>
 
 <dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
 <dd><p>Suppress warnings, as logical.</p></dd>
+
+
+<dt id="arg-rr-threshold">rr_threshold<a class="anchor" aria-label="anchor" href="#arg-rr-threshold"></a></dt>
+<dd><p>The allowed fractional deviation between the recorded RR
+interval and the RR interval back-calculated from the recorded HR.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -23,9 +23,10 @@ Functions to conduct and report concentration-QTc analyses.
 - [`derive_group_delta()`](derive_group_delta.md) : Add delta to
   reference group by NTIME
 - [`dofetilide_cqtc`](dofetilide_cqtc.md) : Dofetilide c-QTc data set
-- [`hash()`](hash.md) : Generic hash function
-- [`hash(`*`<cqtc>`*`)`](hash.cqtc.md) : Generate the XXH128 hash of a
-  cqtc object
+- [`find_inconsistent_rr_hr()`](find_inconsistent_rr_hr.md) : Identify
+  entries with inconsistent RR and HR fields.
+- [`hash_cqtc()`](hash_cqtc.md) : Generate the XXH128 hash of a cqtc
+  object
 - [`hr_plot()`](hr_plot.md) : Plot ECG parameter by HR
 - [`new_cqtc()`](new_cqtc.md) : Make a cqtc object
 - [`plot(`*`<cqtc>`*`)`](plot.cqtc.md) : Print function for cqtc object
