@@ -137,7 +137,8 @@ summary.cqtc <- function(object, ...) {
       reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "ACTIVE", "param")) %>%
       pivot_wider(names_from = "param", values_from = "n") %>%
       arrange(.data$ACTIVE, .data$NTIME),
-    hash = hash_cqtc(object)
+    # hash = hash_cqtc(object)
+    hash = hash(object)
   )
   class(out) <- "summary_cqtc"
   return(out)
@@ -236,9 +237,22 @@ head.cqtc <- function(x, ...) {
 #' @returns The XXH128 hash of the catc object as character.
 #' @export
 #' @importFrom rlang hash
-#'
+#' @examples
 #' hash_cqtc(dofetilide_cqtc)
 hash_cqtc <- function(obj) {
+  validate_cqtc(obj)
+  rlang::hash(obj)
+}
+
+
+#' Generate the XXH128 hash of a cqtc object
+#'
+#' @param obj A catc object.
+#'
+#' @returns The XXH128 hash of the catc object as character.
+#' @export
+#' @importFrom rlang hash
+hash.cqtc <- function(obj) {
   validate_cqtc(obj)
   rlang::hash(obj)
 }

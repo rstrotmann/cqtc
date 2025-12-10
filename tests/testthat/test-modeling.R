@@ -25,7 +25,7 @@ test_that("Modeling for dofetilitde works as intended", {
           lci = estimate + qt(0.025, df = df) * se,
           uci = estimate + qt(0.975, df = df) * se,
           p = ifelse(p < 0.001, "< 0.001", signif(p, 3))) %>%
-      select(estimate, lci, uci, rse, p)
+      select(all_of(c("estimate", "lci", "uci", "rse", "p")))
 
     grid <- lsmeans::ref.grid(
       mod,
