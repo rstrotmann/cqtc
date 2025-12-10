@@ -20,13 +20,19 @@
 #'
 #' @param obj A data frame.
 #' @param silent Suppress warnings, as logical.
+#' @param rr_threshold The allowed fractional deviation between the recorded RR
+#' interval and the RR interval back-calculated from the recorded HR.
 #'
 #' @import dplyr
+#' @import cli
 #' @return A cqtc object from the input data set.
 #' @export
-new_cqtc <- function(obj = NULL, silent = NULL) {
+new_cqtc <- function(obj = NULL, silent = NULL, rr_threshold = 0.1) {
   # input validation
   nif:::validate_logical_param(silent, allow_null = TRUE)
+  nif:::validate_numeric_param(rr_threshold, "threshold")
+  if(rr_threshold < 0 | rr_threshold > 1)
+    stop("rr_threshold must be between 0 and 1!")
 
   if (is.null(obj)) {
     out <- data.frame(
@@ -62,6 +68,20 @@ new_cqtc <- function(obj = NULL, silent = NULL) {
     if("HR" %in% fields & !"RR" %in% fields)
       out <- out %>%
         mutate(RR = 60/.data$HR * 1000)
+
+    # if(all(c("HR", "RR") %in% names(out)))
+    rr_inconsistency <- find_inconsistent_rr_hr(out, rr_threshold)
+    n_incons <- nrow(rr_inconsistency)
+    if(n_incons > 0){
+      cli::cli_alert_warning(paste0(
+        n_incons, " data points with inconsistent HR and RR values"))
+      cli::cli_text()
+      cli::cli_verbatim(
+        nif:::df_to_string(
+          round(rr_inconsistency, 1),
+          abbr_lines = 10, abbr_threshold = 15)
+      )
+    }
 
     if(!"ACTIVE" %in% fields) {
       out <- out %>%
@@ -117,7 +137,7 @@ summary.cqtc <- function(object, ...) {
       reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "ACTIVE", "param")) %>%
       pivot_wider(names_from = "param", values_from = "n") %>%
       arrange(.data$ACTIVE, .data$NTIME),
-    hash = hash(object)
+    hash = hash_cqtc(object)
   )
   class(out) <- "summary_cqtc"
   return(out)
@@ -204,18 +224,9 @@ head.cqtc <- function(x, ...) {
   x <- x %>%
     as.data.frame()
   NextMethod("head")
-}
 
+  }
 
-#' Generic hash function
-#'
-#' @param obj A cqtc object.
-#'
-#' @return The XXH128 hash of the nif object as character.
-#' @export
-hash <- function(obj) {
-  UseMethod("hash")
-}
 
 
 #' Generate the XXH128 hash of a cqtc object
@@ -226,9 +237,8 @@ hash <- function(obj) {
 #' @export
 #' @importFrom rlang hash
 #'
-#' @examples
-#' hash(dofetilide_cqtc)
-hash.cqtc <- function(obj) {
+#' hash_cqtc(dofetilide_cqtc)
+hash_cqtc <- function(obj) {
   validate_cqtc(obj)
   rlang::hash(obj)
 }

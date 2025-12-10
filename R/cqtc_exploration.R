@@ -1,3 +1,31 @@
+#' Identify entries with inconsistent RR and HR fields.
+#'
+#' @param obj A cqtc object.
+#' @param threshold The allowed fractional deviation.
+#'
+#' @returns A data frame with entries in which the reported RR and the RR
+#' re-calculated from the reported HR (i.e., rr_recalc) are different by the
+#' specified threshold.
+#'
+#' @export
+#'
+#' @examples
+#' find_inconsistent_rr_hr(dofetilide_cqtc, 0.01)
+find_inconsistent_rr_hr <- function(obj, threshold = 0.1) {
+  # input validation
+  nif:::validate_numeric_param(threshold, "threshold")
+  if(threshold < 0 | threshold > 1)
+    stop("Threshold must be between 0 and 1!")
+
+  out <- obj %>%
+    as.data.frame() %>%
+    mutate(RR_recalc = 60/.data$HR * 1000) %>%
+    mutate(RR_delta = .data$RR_recalc - .data$RR) %>%
+    filter(abs(.data$RR_delta / .data$RR_recalc) > threshold)
+
+  return(out)
+}
+
 
 #' Plot ECG parameter by HR
 #'

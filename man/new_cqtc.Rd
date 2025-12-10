@@ -4,12 +4,15 @@
 \alias{new_cqtc}
 \title{Make a cqtc object}
 \usage{
-new_cqtc(obj = NULL, silent = NULL)
+new_cqtc(obj = NULL, silent = NULL, rr_threshold = 0.1)
 }
 \arguments{
 \item{obj}{A data frame.}
 
 \item{silent}{Suppress warnings, as logical.}
+
+\item{rr_threshold}{The allowed fractional deviation between the recorded RR
+interval and the RR interval back-calculated from the recorded HR.}
 }
 \value{
 A cqtc object from the input data set.
