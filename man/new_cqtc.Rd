@@ -4,10 +4,13 @@
 \alias{new_cqtc}
 \title{Make a cqtc object}
 \usage{
-new_cqtc(obj = NULL, silent = NULL, rr_threshold = 0.1)
+new_cqtc(obj = NULL, conc_field = NULL, silent = NULL, rr_threshold = 0.1)
 }
 \arguments{
 \item{obj}{A data frame.}
+
+\item{conc_field}{The field in the input data set that represents the
+independent concentration variable, if 'CONC' is not provided.}
 
 \item{silent}{Suppress warnings, as logical.}
 

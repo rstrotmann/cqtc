@@ -22,18 +22,26 @@
 #' @param silent Suppress warnings, as logical.
 #' @param rr_threshold The allowed fractional deviation between the recorded RR
 #' interval and the RR interval back-calculated from the recorded HR.
+#' @param conc_field The field in the input data set that represents the
+#' independent concentration variable, if 'CONC' is not provided.
 #'
 #' @import dplyr
 #' @import cli
 #' @return A cqtc object from the input data set.
 #' @export
-new_cqtc <- function(obj = NULL, silent = NULL, rr_threshold = 0.1) {
+new_cqtc <- function(
+    obj = NULL,
+    conc_field = NULL,
+    silent = NULL,
+    rr_threshold = 0.1) {
   # input validation
+  nif:::validate_char_param(conc_field, "conc_field", allow_null = TRUE)
   nif:::validate_logical_param(silent, allow_null = TRUE)
   nif:::validate_numeric_param(rr_threshold, "threshold")
   if(rr_threshold < 0 | rr_threshold > 1)
     stop("rr_threshold must be between 0 and 1!")
 
+  # Empty cqtc object
   if (is.null(obj)) {
     out <- data.frame(
       ID = numeric(0),
@@ -42,59 +50,83 @@ new_cqtc <- function(obj = NULL, silent = NULL, rr_threshold = 0.1) {
       CONC= numeric(0),
       QTCF = numeric(0)
     )
-  } else {
-    # input validation
-    if(!inherits(obj, "data.frame")) {
-      stop("Input must be a data frame!")
-    }
-    minimal_fields <- c("ID", "NTIME", "CONC", "QTCF")
-    missing_minimal <- setdiff(minimal_fields, names(obj))
-    if(length(missing_minimal) > 0) {
-      stop(paste0(
-        "Missing expected ",
-        nif::plural("field", length(missing_minimal) > 1), ": ",
-        nif::nice_enumeration(missing_minimal), "!"))
-    }
-
-    out <- obj
-    fields <- names(obj)
-    if(!"HR" %in% fields & !"RR" %in% fields)
-      warning("Neither RR nor HR fields found!")
-
-    if("RR" %in% fields & !"HR" %in% fields)
-      out <- out %>%
-        mutate(HR = round(1000/.data$RR*60, 0))
-
-    if("HR" %in% fields & !"RR" %in% fields)
-      out <- out %>%
-        mutate(RR = 60/.data$HR * 1000)
-
-    # if(all(c("HR", "RR") %in% names(out)))
-    rr_inconsistency <- find_inconsistent_rr_hr(out, rr_threshold)
-    n_incons <- nrow(rr_inconsistency)
-    if(n_incons > 0){
-      cli::cli_alert_warning(paste0(
-        n_incons, " data points with inconsistent HR and RR values"))
-      cli::cli_text()
-      cli::cli_verbatim(
-        nif:::df_to_string(
-          round(rr_inconsistency, 1),
-          abbr_lines = 10, abbr_threshold = 15)
-      )
-    }
-
-    if(!"ACTIVE" %in% fields) {
-      out <- out %>%
-        mutate(ACTIVE = TRUE)
-    } else {
-      out <- out %>%
-        mutate(ACTIVE = as.logical(.data$ACTIVE))
-    }
-
+    class(out) <- c("cqtc", "data.frame")
+    return(out)
   }
-  class(out) <- c("cqtc", "data.frame")
 
+  # cqtc object based on input data
+  # input validation
+  if(!inherits(obj, "data.frame")) {
+    stop("Input must be a data frame!")
+  }
+
+  if(!is.null(conc_field)) {
+    if(!conc_field %in% names(obj))
+      stop("Concentration field (", conc_field, ") not found in input!")
+    obj <- mutate(obj, CONC = .data[[conc_field]])
+  }
+
+  minimal_fields <- c("ID", "NTIME", "CONC", "QTCF")
+  missing_minimal <- setdiff(minimal_fields, names(obj))
+  if(length(missing_minimal) > 0) {
+    stop(paste0(
+      "Missing expected ",
+      nif::plural("field", length(missing_minimal) > 1), ": ",
+      nif::nice_enumeration(missing_minimal), "!"))
+  }
+
+  out <- obj
+  fields <- names(obj)
+  if(!"HR" %in% fields & !"RR" %in% fields)
+    warning("Neither RR nor HR fields found!")
+
+  if("RR" %in% fields & !"HR" %in% fields)
+    out <- out %>%
+      mutate(HR = round(1000/.data$RR*60, 0))
+
+  if("HR" %in% fields & !"RR" %in% fields)
+    out <- out %>%
+      mutate(RR = 60/.data$HR * 1000)
+
+  rr_inconsistency <- find_inconsistent_rr_hr(out, rr_threshold)
+  n_incons <- nrow(rr_inconsistency)
+  if(n_incons > 0){
+    cli::cli_alert_warning(paste0(
+      n_incons, " data points with inconsistent HR and RR values"))
+    cli::cli_text()
+    cli::cli_verbatim(
+      nif:::df_to_string(
+        round(rr_inconsistency, 1),
+        abbr_lines = 10, abbr_threshold = 15)
+    )
+  }
+
+  if(!"ACTIVE" %in% fields) {
+    out <- out %>%
+      mutate(ACTIVE = TRUE)
+  } else {
+    out <- out %>%
+      mutate(ACTIVE = as.logical(.data$ACTIVE))
+  }
+
+  class(out) <- c("cqtc", "data.frame")
   return(out)
+}
+
+
+#' Create cqtc object
+#'
+#' @param obj A data frame.
+#' @inheritParams new_cqtc
+#'
+#' @returns A cqtc object.
+#' @export
+cqtc <- function(
+    obj = NULL,
+    conc_field = NULL,
+    silent = NULL,
+    rr_threshold = 0.1) {
+  new_cqtc(obj, conc_field, silent, rr_threshold)
 }
 
 
