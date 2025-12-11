@@ -17,3 +17,10 @@ hash_cqtc(obj)
 ## Value
 
 The XXH128 hash of the catc object as character.
+
+## Examples
+
+``` r
+hash_cqtc(dofetilide_cqtc)
+#> [1] "1bdc4638d07dea941ca833398945214a"
+```

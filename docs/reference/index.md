@@ -8,6 +8,7 @@
 - [`add_ntile(`*`<cqtc>`*`)`](add_ntile.cqtc.md) : Add ntiles
   (quantiles) for a specific column across all subjects
 - [`auto_cqtc()`](auto_cqtc.md) : Title
+- [`cqtc()`](cqtc.md) : Create cqtc object
 - [`cqtc_add_baseline()`](cqtc_add_baseline.md) : Add baseline field for
   parameter across treatment groups
 - [`cqtc_decile_plot()`](cqtc_decile_plot.md) : Exploratory decile plot.
@@ -23,6 +24,8 @@
 - [`dofetilide_cqtc`](dofetilide_cqtc.md) : Dofetilide c-QTc data set
 - [`find_inconsistent_rr_hr()`](find_inconsistent_rr_hr.md) : Identify
   entries with inconsistent RR and HR fields.
+- [`hash.cqtc()`](hash.cqtc.md) : Generate the XXH128 hash of a cqtc
+  object
 - [`hash_cqtc()`](hash_cqtc.md) : Generate the XXH128 hash of a cqtc
   object
 - [`hr_plot()`](hr_plot.md) : Plot ECG parameter by HR

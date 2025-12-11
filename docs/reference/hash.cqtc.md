@@ -5,8 +5,7 @@ Generate the XXH128 hash of a cqtc object
 ## Usage
 
 ``` r
-# S3 method for class 'cqtc'
-hash(obj)
+hash.cqtc(obj)
 ```
 
 ## Arguments
@@ -18,10 +17,3 @@ hash(obj)
 ## Value
 
 The XXH128 hash of the catc object as character.
-
-## Examples
-
-``` r
-hash(dofetilide_cqtc)
-#> [1] "1bdc4638d07dea941ca833398945214a"
-```
