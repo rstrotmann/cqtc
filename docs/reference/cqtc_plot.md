@@ -66,13 +66,13 @@ A ggplot object.
 library(dplyr)
 library(magrittr)
 
-verapamil_cqtc %>%
+verapamil_cqtc |>
   cqtc_plot(color = "ACTIVE")
 #> `geom_smooth()` using formula = 'y ~ x'
 
 
-dofetilide_cqtc %>%
-filter(ACTIVE == 1) %>%
+dofetilide_cqtc |>
+filter(ACTIVE == 1) |>
   cqtc_plot()
 #> `geom_smooth()` using formula = 'y ~ x'
 

@@ -44,10 +44,10 @@ A ggplot object.
 library(dplyr)
 library(magrittr)
 
-dofetilide_cqtc %>%
+dofetilide_cqtc |>
   hr_plot(param = "QT", group = "ACTIVE")
 
 
-verapamil_cqtc %>%
+verapamil_cqtc |>
   hr_plot(param = "QTCF", group = "ACTIVE")
 ```

@@ -24,10 +24,6 @@
 - [`dofetilide_cqtc`](dofetilide_cqtc.md) : Dofetilide c-QTc data set
 - [`find_inconsistent_rr_hr()`](find_inconsistent_rr_hr.md) : Identify
   entries with inconsistent RR and HR fields.
-- [`hash.cqtc()`](hash.cqtc.md) : Generate the XXH128 hash of a cqtc
-  object
-- [`hash_cqtc()`](hash_cqtc.md) : Generate the XXH128 hash of a cqtc
-  object
 - [`hr_plot()`](hr_plot.md) : Plot ECG parameter by HR
 - [`new_cqtc()`](new_cqtc.md) : Make a cqtc object
 - [`plot(`*`<cqtc>`*`)`](plot.cqtc.md) : Print function for cqtc object

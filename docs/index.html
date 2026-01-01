@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">cqtc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,13 +31,8 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="articles/cqtc.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/full-modeling-example.html">Concentration-QTc modeling example</a></li>
-  </ul>
-</li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -50,8 +45,54 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9">
-Functions to conduct and report concentration-QTc analyses.
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="cqtc">cqtc<a class="anchor" aria-label="anchor" href="#cqtc"></a>
+</h1></div>
+<!-- badges: start -->
+<!-- badges: end -->
+<p>This package provides functions to streamline concentration-QTc analysis of clinical ECG data.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the development version of cqtc like so:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"rstrotmann/cqtc"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<p>The basic building block for further analyses is the <code><a href="reference/cqtc.html">cqtc()</a></code> data object. The package includes data for dofetilide and verapamil copied from</p>
+<p>Parkinson, J., Dota, C. &amp; Rekić, D. Practical guide to concentration-QTc modeling: a hands-on tutorial. J Pharmacokinet Pharmacodyn 52, 43 (2025). <a href="https://doi.org/10.1007/s10928-025-09981-8" class="external-link uri">https://doi.org/10.1007/s10928-025-09981-8</a>.</p>
+<p>The following is a basic example which shows you how to create an exploratory c-QTc plot for the dofetilide data set. For further analysis, including linear mixed effects modeling, see <code><a href="articles/cqtc.html">vignette("cqtc")</a></code>.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">cqtc</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstrotmann/nif" class="external-link">nif</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'nif'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:cqtc':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     add_ntile, subjects</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span></span>
+<span><span class="va">dof</span> <span class="op">&lt;-</span> <span class="va">dofetilide_cqtc</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/cqtc_add_baseline.html">cqtc_add_baseline</a></span><span class="op">(</span><span class="st">"QTCF"</span>, baseline_filter <span class="op">=</span> <span class="st">"NTIME == -0.5"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/add_bl_popmean.html">add_bl_popmean</a></span><span class="op">(</span><span class="st">"BL_QTCF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>DPM_BL_QTCF <span class="op">=</span> <span class="va">BL_QTCF</span> <span class="op">-</span> <span class="va">PM_BL_QTCF</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/derive_group_delta.html">derive_group_delta</a></span><span class="op">(</span><span class="st">"DQTCF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>NTIME <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">NTIME</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/cqtc_ntile_plot.html">cqtc_ntile_plot</a></span><span class="op">(</span><span class="va">dof</span>, lm <span class="op">=</span> <span class="cn">TRUE</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-example-1.png" alt="" width="100%"></p>
+</div>
+</div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">

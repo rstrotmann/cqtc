@@ -2,4 +2,4 @@
 
 ### All vignettes
 
-- [Concentration-QTc modeling example](full-modeling-example.md):
+- [Concentration-QTc modeling example](cqtc.md):
