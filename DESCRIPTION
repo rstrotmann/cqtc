@@ -1,7 +1,7 @@
 Package: cqtc
 Type: Package
 Title: Conduct concentration-QTc analysis
-Version: 0.3.5
+Version: 0.3.6
 Authors@R: 
     person("Rainer", "Strotmann", email = "rainer.strotmann@mailbox.org",
     role = c("aut", "cre", "cph"),
