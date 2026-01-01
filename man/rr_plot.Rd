@@ -29,9 +29,9 @@ Plot ECG parameter by RR interval
 library(dplyr)
 library(magrittr)
 
-dofetilide_cqtc \%>\%
+dofetilide_cqtc |>
   rr_plot(param = "QT", group = "ACTIVE")
 
-verapamil_cqtc \%>\%
+verapamil_cqtc |>
   rr_plot(param = "QTCF", group = "ACTIVE")
 }

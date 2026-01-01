@@ -85,8 +85,8 @@ auto_cqtc <- function(
     }
   }
 
-  nif <- nif() %>%
-    add_administration(sdtm, actual_treatment, silent = T) %>%
+  nif <- nif() |>
+    add_administration(sdtm, actual_treatment, silent = T) |>
     add_observation(
       sdtm, "pc", actual_pc_analyte, silent = T, duplicates = "resolve")
 
@@ -96,7 +96,7 @@ auto_cqtc <- function(
     nif:::conditional_message(
       "Adding ECG observations for ", analyte, " (", testcd, ")",
       silent = !verbose)
-    nif <- nif %>%
+    nif <- nif |>
       add_observation(
         sdtm, "eg", testcd, analyte = analyte, parent = actual_pc_analyte,
         duplicates = "resolve", cat = egcat,
@@ -104,8 +104,8 @@ auto_cqtc <- function(
   }
 
 
-  out <- nif::correlate_obs(nif, actual_pc_analyte, names(eg_analyte)) %>%
-    mutate(CONC = .data[[actual_pc_analyte]]) %>%
+  out <- nif::correlate_obs(nif, actual_pc_analyte, names(eg_analyte)) |>
+    mutate(CONC = .data[[actual_pc_analyte]]) |>
     new_cqtc()
 
   return(out)

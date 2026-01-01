@@ -17,10 +17,10 @@ find_inconsistent_rr_hr <- function(obj, threshold = 0.1) {
   if(threshold < 0 | threshold > 1)
     stop("Threshold must be between 0 and 1!")
 
-  out <- obj %>%
-    as.data.frame() %>%
-    mutate(RR_recalc = 60/.data$HR * 1000) %>%
-    mutate(RR_delta = .data$RR_recalc - .data$RR) %>%
+  out <- obj |>
+    as.data.frame() |>
+    mutate(RR_recalc = 60/.data$HR * 1000) |>
+    mutate(RR_delta = .data$RR_recalc - .data$RR) |>
     filter(abs(.data$RR_delta / .data$RR_recalc) > threshold)
 
   return(out)
@@ -43,10 +43,10 @@ find_inconsistent_rr_hr <- function(obj, threshold = 0.1) {
 #' library(dplyr)
 #' library(magrittr)
 #'
-#' dofetilide_cqtc %>%
+#' dofetilide_cqtc |>
 #'   hr_plot(param = "QT", group = "ACTIVE")
 #'
-#' verapamil_cqtc %>%
+#' verapamil_cqtc |>
 #'   hr_plot(param = "QTCF", group = "ACTIVE")
 hr_plot <- function(
     obj,
@@ -113,10 +113,10 @@ hr_plot <- function(
 #' library(dplyr)
 #' library(magrittr)
 #'
-#' dofetilide_cqtc %>%
+#' dofetilide_cqtc |>
 #'   rr_plot(param = "QT", group = "ACTIVE")
 #'
-#' verapamil_cqtc %>%
+#' verapamil_cqtc |>
 #'   rr_plot(param = "QTCF", group = "ACTIVE")
 rr_plot <- function(
     obj,
@@ -185,11 +185,11 @@ rr_plot <- function(
 #' library(dplyr)
 #' library(magrittr)
 #'
-#' verapamil_cqtc %>%
+#' verapamil_cqtc |>
 #'   cqtc_plot(color = "ACTIVE")
 #'
-#' dofetilide_cqtc %>%
-#' filter(ACTIVE == 1) %>%
+#' dofetilide_cqtc |>
+#' filter(ACTIVE == 1) |>
 #'   cqtc_plot()
 #'
 cqtc_plot <- function(
@@ -229,10 +229,10 @@ cqtc_plot <- function(
   # }
 
   # business logic
-  obj %>%
-    as.data.frame() %>%
-    filter(!is.na(.data$CONC)) %>%
-    filter(!is.na(.data[[param]])) %>%
+  obj |>
+    as.data.frame() |>
+    filter(!is.na(.data$CONC)) |>
+    filter(!is.na(.data[[param]])) |>
     ggplot(aes(x = .data$CONC, y = .data[[param]])) +
     {if(is.null(color))
       geom_point(...) else
@@ -284,17 +284,17 @@ cqtc_ntile_plot <- function(
   validate_col_param(param, obj)
   nif:::validate_numeric_param(n, "n")
 
-  individual <- obj %>%
+  individual <- obj |>
     filter(.data$CONC != 0)
 
-  baseline <- obj %>%
+  baseline <- obj |>
     filter(.data$CONC == 0)
 
-  deciles <- obj %>%
-    filter(!is.na(.data[[param]])) %>%
-    filter(!is.na(.data[["CONC"]])) %>%
-    filter(.data$CONC != 0) %>%
-    add_ntile("CONC", n = n) %>%
+  deciles <- obj |>
+    filter(!is.na(.data[[param]])) |>
+    filter(!is.na(.data[["CONC"]])) |>
+    filter(.data$CONC != 0) |>
+    add_ntile("CONC", n = n) |>
     reframe(
       n = n(),
       mean_conc = stats::median(.data[["CONC"]]),
@@ -420,8 +420,8 @@ cqtc_decile_plot <- function(
 #' library(dplyr)
 #' library(magrittr)
 #'
-#' dofetilide_cqtc %>%
-#'   filter(ACTIVE == 1) %>%
+#' dofetilide_cqtc |>
+#'   filter(ACTIVE == 1) |>
 #'   cqtc_hysteresis_plot()
 #'
 cqtc_hysteresis_plot <- function(
@@ -433,21 +433,21 @@ cqtc_hysteresis_plot <- function(
   validate_col_param(param, obj)
 
   # business logic
-  temp <- obj %>%
-    filter(!is.na(.data$CONC), !is.na(.data[[param]])) %>%
+  temp <- obj |>
+    filter(!is.na(.data$CONC), !is.na(.data[[param]])) |>
     reframe(
       c_mean = mean(.data$CONC),
       dqtcf_mean = mean(.data[[param]], na.rm = T),
       dqtcf_sd = sd(.data[[param]], na.rm = T),
       n = n(),
-      .by = .data$NTIME) %>%
+      .by = .data$NTIME) |>
     mutate(
       dqtcf_lcl = .data$dqtcf_mean + stats::qnorm(0.05) * .data$dqtcf_sd/sqrt(.data$n),
       dqtcf_ucl = .data$dqtcf_mean + stats::qnorm(0.95) * .data$dqtcf_sd/sqrt(.data$n)
-    ) %>%
+    ) |>
     arrange("NTIME")
 
-  temp %>%
+  temp |>
     ggplot(aes(x = .data$c_mean, y = .data$dqtcf_mean)) +
     geom_point() +
     geom_pointrange(aes(ymin = .data$dqtcf_lcl, ymax = .data$dqtcf_ucl)) +
@@ -477,21 +477,21 @@ cqtc_time_course_plot <- function(
   validate_cqtc(obj)
   validate_col_param(param, obj)
 
-  temp <- obj %>%
-    as.data.frame() %>%
-    mutate(NTIME = as.numeric(as.character(.data$NTIME))) %>%
-    filter(.data$ACTIVE == TRUE) %>%
-    mutate(PAR = .data[[param]]) %>%
-    select(all_of(c("ID", "NTIME", "ACTIVE", "CONC", "PAR"))) %>%
+  temp <- obj |>
+    as.data.frame() |>
+    mutate(NTIME = as.numeric(as.character(.data$NTIME))) |>
+    filter(.data$ACTIVE == TRUE) |>
+    mutate(PAR = .data[[param]]) |>
+    select(all_of(c("ID", "NTIME", "ACTIVE", "CONC", "PAR"))) |>
     pivot_longer(cols = c("CONC", "PAR"), names_to = "PARAM", values_to = "VAL")
 
-  temp %>%
+  temp |>
     reframe(
       mean = mean(.data$VAL, na.rm = TRUE),
       sd = sd(.data$VAL, na.rm = TRUE),
       n = n(),
-      .by = c("NTIME", "ACTIVE", "PARAM")) %>%
-    filter(!is.na(mean)) %>%
+      .by = c("NTIME", "ACTIVE", "PARAM")) |>
+    filter(!is.na(mean)) |>
     ggplot(aes(x = .data$NTIME, y = mean)) +
     geom_pointrange(aes(ymin = mean - sd, ymax = mean + sd)) +
     geom_point() +

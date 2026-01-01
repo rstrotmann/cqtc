@@ -18,11 +18,11 @@ cqtc_add_baseline <- function(
   validate_col_param(param, obj, allow_multiple = TRUE)
 
   # identify baseline
-  bl <- obj %>%
-    as.data.frame() %>%
-    filter(eval(parse(text = baseline_filter))) %>%
-    select(all_of(c("ID", "ACTIVE", param))) %>%
-    rename_with(.fn = function(x) {paste0("BL_", x)}, .cols = all_of(param)) %>%
+  bl <- obj |>
+    as.data.frame() |>
+    filter(eval(parse(text = baseline_filter))) |>
+    select(all_of(c("ID", "ACTIVE", param))) |>
+    rename_with(.fn = function(x) {paste0("BL_", x)}, .cols = all_of(param)) |>
     distinct()
 
   # Missing baseline values
@@ -33,8 +33,8 @@ cqtc_add_baseline <- function(
       " subjects!", silent = silent)
 
   # Duplicate baseline values
-  test <- bl %>%
-    reframe(n = n(), .by = c("ID", "ACTIVE")) %>%
+  test <- bl |>
+    reframe(n = n(), .by = c("ID", "ACTIVE")) |>
     filter(n > 1)
   if(nrow(test) > 0)
     stop(paste0(
@@ -55,8 +55,8 @@ cqtc_add_baseline <- function(
       silent = silent)
   }
 
-  out <- obj %>%
-    select(-all_of(duplicate_bl_fields)) %>%
+  out <- obj |>
+    select(-all_of(duplicate_bl_fields)) |>
     left_join(bl, by = c("ID", "ACTIVE"))
 
   return(out)
@@ -77,17 +77,15 @@ cqtc_add_baseline <- function(
 add_bl_popmean <- function(
     cqtc,
     param = "BL_QTCF",
-    # baseline_filter = "TRUE",
     silent = NULL) {
   # input validation
   validate_cqtc(cqtc)
   validate_col_param(param, cqtc, allow_multiple = TRUE)
 
   # business logic
-  bl <- cqtc %>%
-    as.data.frame() %>%
-    # filter(eval(parse(text = baseline_filter))) %>%
-    select(all_of(c("ID", "ACTIVE", param))) %>%
+  bl <- cqtc |>
+    as.data.frame() |>
+    select(all_of(c("ID", "ACTIVE", param))) |>
     distinct()
 
   missing_baseline_sbs <- setdiff(unique(cqtc$ID), unique(bl$ID))
@@ -97,22 +95,22 @@ add_bl_popmean <- function(
       " subjects!", silent = silent)
 
   # Duplicate baseline values
-  test <- bl %>%
-    reframe(n = n(), .by = c("ID", "ACTIVE")) %>%
+  test <- bl |>
+    reframe(n = n(), .by = c("ID", "ACTIVE")) |>
     filter(n > 1)
   if(nrow(test) > 0)
     stop(paste0(
       "Multiple baseline values for ", length(unique(test$ID)), " subjects!"
     ))
 
-  popmean <- bl %>%
-    pivot_longer(cols = param, names_to = "param", values_to = "value") %>%
+  popmean <- bl |>
+    pivot_longer(cols = all_of(param), names_to = "param", values_to = "value") |>
     reframe(popmean = mean(.data$value, na.rm = TRUE),
-            .by = c("ACTIVE", param)) %>%
-    pivot_wider(names_from = "param", values_from = popmean, names_prefix = "PM_")
+            .by = c("ACTIVE", param)) |>
+    pivot_wider(names_from = "param", values_from = "popmean", names_prefix = "PM_")
 
   # Bind popmean to each row of cqtc (recycling single row)
-  cqtc %>%
+  cqtc |>
     left_join(popmean, by = "ACTIVE")
 }
 
@@ -138,32 +136,32 @@ derive_group_delta <- function(
   if(out_name %in% names(cqtc))
     stop(paste0("Parameter ", out_name, " alread in data set!"))
 
-  ref <- cqtc %>%
-    # as.data.frame() %>%
-    filter(eval(parse(text = reference_filter))) %>%
+  ref <- cqtc |>
+    # as.data.frame() |>
+    filter(eval(parse(text = reference_filter))) |>
     pivot_longer(
       cols = all_of(parameter),
-      names_to = "PARAM", values_to = "VAL") %>%
+      names_to = "PARAM", values_to = "VAL") |>
     reframe(REF = mean(.data$VAL), .by = c("NTIME"))
 
   if(nrow(ref) == 0)
     stop(paste0("No data after applying filter term '", reference_filter, "'!"))
 
-  temp <- cqtc %>%
-    as.data.frame() %>%
+  temp <- cqtc |>
+    as.data.frame() |>
     pivot_longer(
       cols = any_of(c("QT", "QTCF", "DQTCF", "RR", "HR")),
       names_to = "PARAM", values_to = "VAL")
 
-  delta <- temp %>%
-    filter(.data$PARAM == parameter) %>%
-    left_join(ref, by = c("NTIME")) %>%
-    mutate(VAL = .data$VAL - .data$REF) %>%
-    mutate(PARAM = out_name) %>%
+  delta <- temp |>
+    filter(.data$PARAM == parameter) |>
+    left_join(ref, by = c("NTIME")) |>
+    mutate(VAL = .data$VAL - .data$REF) |>
+    mutate(PARAM = out_name) |>
     select(-c("REF"))
 
-  out <- bind_rows(temp, delta) %>%
-    pivot_wider(names_from = "PARAM", values_from = "VAL") %>%
+  out <- bind_rows(temp, delta) |>
+    pivot_wider(names_from = "PARAM", values_from = "VAL") |>
     new_cqtc()
 
   return(out)
@@ -223,7 +221,7 @@ add_ntile.cqtc <- function(obj, input_col = "CONC", n = 10, ntile_name = NULL) {
     stop("Column '", input_col, "' must contain numeric values")
   }
 
-  out <- obj %>%
+  out <- obj |>
     mutate(!!ntile_name := ntile(.data[[input_col]], n = n))
 
   return(out)

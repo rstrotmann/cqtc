@@ -30,24 +30,26 @@
 #' @return A cqtc object from the input data set.
 #' @export
 new_cqtc <- function(
-    obj = NULL,
-    conc_field = NULL,
-    silent = NULL,
-    rr_threshold = 0.1) {
+  obj = NULL,
+  conc_field = NULL,
+  silent = NULL,
+  rr_threshold = 0.1
+) {
   # input validation
   nif:::validate_char_param(conc_field, "conc_field", allow_null = TRUE)
   nif:::validate_logical_param(silent, allow_null = TRUE)
   nif:::validate_numeric_param(rr_threshold, "threshold")
-  if(rr_threshold < 0 | rr_threshold > 1)
+  if (rr_threshold < 0 || rr_threshold > 1) {
     stop("rr_threshold must be between 0 and 1!")
+  }
 
   # Empty cqtc object
   if (is.null(obj)) {
     out <- data.frame(
       ID = numeric(0),
       ACTIVE = logical(0),
-      NTIME  = numeric(0),
-      CONC= numeric(0),
+      NTIME = numeric(0),
+      CONC = numeric(0),
       QTCF = numeric(0)
     )
     class(out) <- c("cqtc", "data.frame")
@@ -56,61 +58,68 @@ new_cqtc <- function(
 
   # cqtc object based on input data
   # input validation
-  if(!inherits(obj, "data.frame")) {
+  if (!inherits(obj, "data.frame")) {
     stop("Input must be a data frame!")
   }
 
-  if(!is.null(conc_field)) {
-    if(!conc_field %in% names(obj))
+  if (!is.null(conc_field)) {
+    if (!conc_field %in% names(obj)) {
       stop("Concentration field (", conc_field, ") not found in input!")
+    }
     obj <- mutate(obj, CONC = .data[[conc_field]])
   }
 
   minimal_fields <- c("ID", "NTIME", "CONC", "QTCF")
   missing_minimal <- setdiff(minimal_fields, names(obj))
-  if(length(missing_minimal) > 0) {
+  if (length(missing_minimal) > 0) {
     stop(paste0(
       "Missing expected ",
       nif::plural("field", length(missing_minimal) > 1), ": ",
-      nif::nice_enumeration(missing_minimal), "!"))
+      nif::nice_enumeration(missing_minimal), "!"
+    ))
   }
 
   out <- obj
   fields <- names(obj)
-  if(!"HR" %in% fields & !"RR" %in% fields)
+  if (!"HR" %in% fields && !"RR" %in% fields) {
     warning("Neither RR nor HR fields found!")
+  }
 
-  if("RR" %in% fields & !"HR" %in% fields)
-    out <- out %>%
-      mutate(HR = round(1000/.data$RR*60, 0))
+  if ("RR" %in% fields && !"HR" %in% fields) {
+    out <- out |>
+      mutate(HR = round(1000 / .data$RR * 60, 0))
+  }
 
-  if("HR" %in% fields & !"RR" %in% fields)
-    out <- out %>%
-      mutate(RR = 60/.data$HR * 1000)
+  if ("HR" %in% fields && !"RR" %in% fields) {
+    out <- out |>
+      mutate(RR = 60 / .data$HR * 1000)
+  }
 
   rr_inconsistency <- find_inconsistent_rr_hr(out, rr_threshold)
   n_incons <- nrow(rr_inconsistency)
-  if(n_incons > 0){
+  if (n_incons > 0) {
     cli::cli_alert_warning(paste0(
-      n_incons, " data points with inconsistent HR and RR values"))
+      n_incons, " data points with inconsistent HR and RR values"
+    ))
     cli::cli_text()
     cli::cli_verbatim(
       nif:::df_to_string(
         round(rr_inconsistency, 1),
-        abbr_lines = 10, abbr_threshold = 15)
+        abbr_lines = 10, abbr_threshold = 15
+      )
     )
   }
 
-  if(!"ACTIVE" %in% fields) {
-    out <- out %>%
+  if (!"ACTIVE" %in% fields) {
+    out <- out |>
       mutate(ACTIVE = TRUE)
   } else {
-    out <- out %>%
+    out <- out |>
       mutate(ACTIVE = as.logical(.data$ACTIVE))
   }
 
   class(out) <- c("cqtc", "data.frame")
-  return(out)
+  out
 }
 
 
@@ -122,10 +131,11 @@ new_cqtc <- function(
 #' @returns A cqtc object.
 #' @export
 cqtc <- function(
-    obj = NULL,
-    conc_field = NULL,
-    silent = NULL,
-    rr_threshold = 0.1) {
+  obj = NULL,
+  conc_field = NULL,
+  silent = NULL,
+  rr_threshold = 0.1
+) {
   new_cqtc(obj, conc_field, silent, rr_threshold)
 }
 
@@ -152,6 +162,7 @@ print.cqtc <- function(x, ...) {
 #' @noRd
 #' @export
 #' @import tidyr
+#' @importFrom rlang hash
 summary.cqtc <- function(object, ...) {
   validate_cqtc(object)
 
@@ -161,19 +172,19 @@ summary.cqtc <- function(object, ...) {
     cqtc = as.data.frame(temp),
     subjects = distinct(temp, across(any_of(c("ID", "USUBJID", "SUBJID")))),
     ntime = sort(unique(temp$NTIME)),
-    disposition = temp %>%
+    disposition = temp |>
       pivot_longer(
         cols = any_of(c("QT", "QTCF", "DQTCF", "RR", "HR")),
         names_to = "param", values_to = "value"
-      ) %>%
-      reframe(n = sum(!is.na(.data$value)), .by = c("NTIME", "ACTIVE", "param")) %>%
-      pivot_wider(names_from = "param", values_from = "n") %>%
+      ) |>
+      reframe(n = sum(!is.na(.data$value)),
+              .by = c("NTIME", "ACTIVE", "param")) |>
+      pivot_wider(names_from = "param", values_from = "n") |>
       arrange(.data$ACTIVE, .data$NTIME),
-    # hash = hash_cqtc(object)
-    hash = hash(object)
+    hash = rlang::hash(object)
   )
   class(out) <- "summary_cqtc"
-  return(out)
+  out
 }
 
 
@@ -200,8 +211,8 @@ plot.cqtc <- function(x, ...) {
 #' @export
 #' @importFrom stringr str_wrap
 print.summary_cqtc <- function(x, ...) {
-  indent = 2
-  spacer = paste(replicate(indent, " "), collapse = "")
+  indent <- 2
+  # spacer <- paste(replicate(indent, " "), collapse = "")
   hline <- "-----"
   cat(paste0(hline, " c-QTc data set summary ", hline, "\n"))
 
@@ -209,11 +220,12 @@ print.summary_cqtc <- function(x, ...) {
 
   cat(paste0(
     "QTcF observations per time point:\n",
-    x$disposition %>%
-      select(all_of(c("NTIME", "ACTIVE", "QTCF"))) %>%
-      mutate(GROUP = case_match(.data$ACTIVE, TRUE ~ "ACTIVE", FALSE ~ "CONTROL")) %>%
-      select(-c("ACTIVE")) %>%
-      pivot_wider(names_from = "GROUP", values_from = "QTCF") %>%
+    x$disposition |>
+      select(all_of(c("NTIME", "ACTIVE", "QTCF"))) |>
+      mutate(GROUP = case_match(.data$ACTIVE, TRUE ~ "ACTIVE",
+                                FALSE ~ "CONTROL")) |>
+      select(-c("ACTIVE")) |>
+      pivot_wider(names_from = "GROUP", values_from = "QTCF") |>
       nif:::df_to_string(indent = 2),
     "\n\n"
   ))
@@ -221,20 +233,16 @@ print.summary_cqtc <- function(x, ...) {
 
   cat("Columns:\n")
   cat(stringr::str_wrap(paste(names(x$cqtc), collapse = ", "),
-               width = 80, indent = 2, exdent = 2), "\n")
+                        width = 80, indent = 2, exdent = 2
+  ), "\n")
 
-  # cat(paste0(
-  #   "Time points:\n",
-  #   paste(x$ntime$NTIME, collapse = ", "),
-  #   "\n"
-  # ))
-
-  temp <- x$cqtc %>%
-    as.data.frame() %>%
+  temp <- x$cqtc |>
+    as.data.frame() |>
     select(any_of(
-      c("ID", "ACTIVE", "NTIME", "CONC", "QT", "QTCF", "DQTCF", "RR", "HR"))) %>%
-    utils::head(10) %>%
-    mutate(across(where(is.numeric), ~ round(., 1))) %>%
+      c("ID", "ACTIVE", "NTIME", "CONC", "QT", "QTCF", "DQTCF", "RR", "HR")
+    )) |>
+    utils::head(10) |>
+    mutate(across(where(is.numeric), ~ round(., 1))) |>
     nif:::df_to_string(indent = 2)
   cat(paste0("\nData (selected columns):\n", temp, "\n"))
   cat(paste0(nif::positive_or_zero(nrow(x$cqtc) - 10), " more rows"))
@@ -254,39 +262,9 @@ print.summary_cqtc <- function(x, ...) {
 #' @export
 #' @noRd
 head.cqtc <- function(x, ...) {
-  x <- x %>%
+  x <- x |>
     as.data.frame()
   NextMethod("head")
-
-  }
-
-
-
-#' Generate the XXH128 hash of a cqtc object
-#'
-#' @param obj A catc object.
-#'
-#' @returns The XXH128 hash of the catc object as character.
-#' @export
-#' @importFrom rlang hash
-#' @examples
-#' hash_cqtc(dofetilide_cqtc)
-hash_cqtc <- function(obj) {
-  validate_cqtc(obj)
-  rlang::hash(obj)
-}
-
-
-#' Generate the XXH128 hash of a cqtc object
-#'
-#' @param obj A catc object.
-#'
-#' @returns The XXH128 hash of the catc object as character.
-#' @export
-#' @importFrom rlang hash
-hash.cqtc <- function(obj) {
-  validate_cqtc(obj)
-  rlang::hash(obj)
 }
 
 
@@ -314,7 +292,7 @@ subjects.cqtc <- function(obj) {
   # input validation
   validate_cqtc(obj)
 
-  obj %>%
-    as.data.frame() %>%
+  obj |>
+    as.data.frame() |>
     distinct(.data$ID, .data$ACTIVE)
 }

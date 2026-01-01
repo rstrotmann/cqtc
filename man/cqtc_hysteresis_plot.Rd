@@ -23,8 +23,8 @@ Hysteresis plot
 library(dplyr)
 library(magrittr)
 
-dofetilide_cqtc \%>\%
-  filter(ACTIVE == 1) \%>\%
+dofetilide_cqtc |>
+  filter(ACTIVE == 1) |>
   cqtc_hysteresis_plot()
 
 }

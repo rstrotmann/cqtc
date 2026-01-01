@@ -11,11 +11,11 @@
 #' @export
 cqtc_gof_plot <- function(mod) {
 
-  result <- augment(mod) %>%
+  result <- augment(mod) |>
     mutate(scaled_res = stats::residuals(mod, scaled = TRUE))
 
-  mod_call <- mod@call[2] %>%
-    stats::as.formula() %>%
+  mod_call <- mod@call[2] |>
+    stats::as.formula() |>
     rlang::f_rhs()
   mod_formula <- deparse(mod_call)
   mod_elements <- unique(unlist(rlang::flatten(
@@ -23,7 +23,7 @@ cqtc_gof_plot <- function(mod) {
 
   out <- list(
     # IPRED plot as in publication:
-    ipred_plot = result %>%
+    ipred_plot = result |>
       ggplot(aes(x = .data$.fitted, y = .data$DQTCF)) +
       geom_point(alpha = 0.2) +
       geom_smooth(method="loess", se = TRUE, formula = y ~ x) +
@@ -33,7 +33,7 @@ cqtc_gof_plot <- function(mod) {
       theme_bw(),
 
     # QQ plot as in publication
-    qqplot = result %>%
+    qqplot = result |>
       ggplot(aes(sample = .data$scaled_res)) +
       stat_qq(alpha = 0.2) +
       geom_abline(intercept = 0, slope = 1) +
@@ -43,7 +43,7 @@ cqtc_gof_plot <- function(mod) {
     )
 
   res_plot <- function(element) {
-    result %>%
+    result |>
       ggplot(aes(x = .data[[element]], y = .data$scaled_res)) +
       geom_point(alpha = 0.2) +
       geom_hline(yintercept = c(-1.96, 1.96), linetype = "dashed") +
