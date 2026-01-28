@@ -323,7 +323,7 @@ cqtc_ntile_plot <- function(
       aes(x = .data$CONC, y = .data[[param]]),
       data = baseline,
       size = size,
-      alpha = 0.1,
+      alpha = alpha,
       color = "red",
       # ...
     ) +
@@ -335,6 +335,7 @@ cqtc_ntile_plot <- function(
         formula = y ~ x,
         data = deciles,
         color = "red",
+        lwd = lwd,
         se = FALSE,
         lwd = lwd)} +
 
@@ -349,7 +350,11 @@ cqtc_ntile_plot <- function(
         lwd = lwd,
         linetype = "dashed")} +
 
-    geom_point(aes(x = .data$mean_conc, y = .data$mean), data = deciles) +
+    geom_point(
+      aes(x = .data$mean_conc, y = .data$mean),
+      data = deciles,
+      size = size
+    ) +
     geom_pointrange(
       aes(x = .data$mean_conc, y = .data$mean, ymin = .data$LCL, ymax = .data$UCL),
       data = deciles,
@@ -504,6 +509,87 @@ cqtc_time_course_plot <- function(
     theme_bw() +
     theme(strip.background = element_rect(fill = "white"))
 }
+
+
+
+#' Plot predicted dQTcF over concentration
+#'
+#' @param obj A cqtc object.
+#' @param mod A linear model.
+#' @param title The plot title.
+#' @param level The prediction interval.
+#' @param size The point size.
+#' @param alpha The point alpha value.
+#' @param lwd The line width.
+#' @param loess Show LOESS fit.
+#'
+#' @returns A ggplot2 object.
+#' @importFrom emmeans ref_grid emmeans
+#' @export
+cqtc_model_plot <- function(
+    obj,
+    mod,
+    title = NULL,
+    level = 0.9,
+    size = 2,
+    alpha = 0.1,
+    lwd = 0.6,
+    loess = FALSE
+    ) {
+  # input validateion
+  validate_cqtc(obj)
+  nif:::validate_numeric_param(level, "level")
+  nif:::validate_numeric_param(size, "size")
+  nif:::validate_numeric_param(alpha, "alpha")
+  nif:::validate_numeric_param(lwd, "lwd")
+  nif:::validate_logical_param(loess, "loess")
+
+  # make reference grid
+  length_out <- 20
+  max_conc <- max(obj$CONC, na.rm = TRUE)
+
+  temp = list(
+    CONC = seq(0, max_conc, length.out = length_out)
+  )
+  if ("DPM_BL_QTCF" %in% names(obj))
+    temp <- c(temp, DPM_BL_QTCF = 0)
+
+  rg <- emmeans::ref_grid(mod, at=temp)
+
+  emm <- summary(emmeans(rg, specs = "CONC", level = level))
+
+  p <- obj %>%
+    cqtc_ntile_plot(param = "DQTCF", n = 10, size = size, alpha = alpha,
+                    lwd = lwd, loess = loess) +
+    geom_line(
+      data = emm,
+      aes(x = .data$CONC, y = .data$emmean),
+      lwd = lwd
+    ) +
+    geom_ribbon(
+      data = emm,
+      aes(x = .data$CONC, ymin = .data$lower.CL, ymax = .data$upper.CL,
+          y = .data$emmean),
+      alpha = 0.2,
+      lwd = lwd) +
+    labs(caption = paste0("Grey: Model prediction (mean and ", level*100, "% PI)"))
+
+  if (!is.null(title))
+    p <- p + ggtitle(title)
+
+  p
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,3 +1,5 @@
+# Data source: https://github.com/joannaparkinson/C-QTc-hands-on-tutorial
+
 dof <- read.csv("data-raw/qtpk_dofetilide.csv")
 ver <- read.csv("data-raw/qtpk_verapamil.csv")
 

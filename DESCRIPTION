@@ -22,7 +22,8 @@ Imports:
     rlang,
     broom.mixed,
     cli,
-    rlang
+    rlang, 
+    emmeans
 Suggests: 
     testthat (>= 3.0.0),
     tibble,
