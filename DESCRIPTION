@@ -32,7 +32,8 @@ Suggests:
     rmarkdown, 
     lmerTest,
     lsmeans,
-    lme4
+    lme4,
+    data.table
 Config/testthat/edition: 3
 RoxygenNote: 7.3.3
 Depends: 
