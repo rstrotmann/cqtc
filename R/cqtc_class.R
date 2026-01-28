@@ -298,6 +298,16 @@ subjects.cqtc <- function(obj) {
 }
 
 
+#' Average triplicate observations
+#'
+#' @param obj A cqtc object.
+#'
+#' @returns A cqtc object with the HR, RR, QT, QTCF, DQTCF fields
+#' averaged over ID, NTIME and CONC.
+#' @export
+#'
+#' @examples
+#' average_triplicates(quinidine_cqtc)
 average_triplicates <- function(obj) {
   # validate input
   validate_cqtc(obj)
