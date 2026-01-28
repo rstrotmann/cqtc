@@ -60,12 +60,16 @@ cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
 
 ## All functions
 
+- [`SCR_002_Clinical_Data`](SCR_002_Clinical_Data.md) : ECG data set
+  "ECG Effects of Ranolazine, Dofetilide, Verapamil, and Quinidine"
 - [`add_bl_popmean()`](add_bl_popmean.md) : Add population mean column
 - [`add_ntile()`](add_ntile.md) : Add ntiles (quantiles) for a specific
   column across all subjects
 - [`add_ntile(`*`<cqtc>`*`)`](add_ntile.cqtc.md) : Add ntiles
   (quantiles) for a specific column across all subjects
 - [`auto_cqtc()`](auto_cqtc.md) : Title
+- [`average_triplicates()`](average_triplicates.md) : Average triplicate
+  observations
 - [`cqtc()`](cqtc.md) : Create cqtc object
 - [`cqtc_add_baseline()`](cqtc_add_baseline.md) : Add baseline field for
   parameter across treatment groups
@@ -87,6 +91,8 @@ cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
 - [`hr_plot()`](hr_plot.md) : Plot ECG parameter by HR
 - [`new_cqtc()`](new_cqtc.md) : Make a cqtc object
 - [`plot(`*`<cqtc>`*`)`](plot.cqtc.md) : Print function for cqtc object
+- [`quinidine_cqtc`](quinidine_cqtc.md) : Quinidine c-QTc data set
+- [`ranolazine_cqtc`](ranolazine_cqtc.md) : Ranolazine c-QTc data set
 - [`rr_plot()`](rr_plot.md) : Plot ECG parameter by RR interval
 - [`subjects()`](subjects.md) : Generic subjects function
 - [`subjects(`*`<cqtc>`*`)`](subjects.cqtc.md) : Subjects in a cqtc

@@ -7,10 +7,12 @@
 <url><loc>/articles/index.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
+<url><loc>/reference/SCR_002_Clinical_Data.html</loc></url>
 <url><loc>/reference/add_bl_popmean.html</loc></url>
 <url><loc>/reference/add_ntile.cqtc.html</loc></url>
 <url><loc>/reference/add_ntile.html</loc></url>
 <url><loc>/reference/auto_cqtc.html</loc></url>
+<url><loc>/reference/average_triplicates.html</loc></url>
 <url><loc>/reference/cqtc.html</loc></url>
 <url><loc>/reference/cqtc_add_baseline.html</loc></url>
 <url><loc>/reference/cqtc_decile_plot.html</loc></url>
@@ -31,6 +33,8 @@
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/new_cqtc.html</loc></url>
 <url><loc>/reference/plot.cqtc.html</loc></url>
+<url><loc>/reference/quinidine_cqtc.html</loc></url>
+<url><loc>/reference/ranolazine_cqtc.html</loc></url>
 <url><loc>/reference/rr_plot.html</loc></url>
 <url><loc>/reference/subjects.cqtc.html</loc></url>
 <url><loc>/reference/subjects.html</loc></url>
