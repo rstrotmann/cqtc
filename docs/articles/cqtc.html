@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cqtc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -141,7 +141,9 @@ the control population by time point (DDQTCF):</li>
 <h3 id="linear-concentration-qtc-relationship">Linear concentration-QTc relationship<a class="anchor" aria-label="anchor" href="#linear-concentration-qtc-relationship"></a>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cqtc_ntile_plot.html">cqtc_ntile_plot</a></span><span class="op">(</span><span class="va">dof</span>, lm <span class="op">=</span> <span class="cn">TRUE</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/cqtc_ntile_plot.html">cqtc_ntile_plot</a></span><span class="op">(</span><span class="va">dof</span>, lm <span class="op">=</span> <span class="cn">TRUE</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in geom_smooth(aes(x = .data$mean_conc, y = .data$mean), method =</span></span>
+<span><span class="co">#&gt; "loess", : Ignoring unknown parameters: `lwd`</span></span></code></pre></div>
 <p><img src="cqtc_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 </div>

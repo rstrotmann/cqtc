@@ -8,11 +8,11 @@
 ## Citation
 
 Strotmann R (2026). *cqtc: Conduct concentration-QTc analysis*. R
-package version 0.3.6.
+package version 0.3.7.
 
     @Manual{,
       title = {cqtc: Conduct concentration-QTc analysis},
       author = {Rainer Strotmann},
       year = {2026},
-      note = {R package version 0.3.6},
+      note = {R package version 0.3.7},
     }

@@ -105,6 +105,8 @@ cqtc_hysteresis_plot(dof, "DDQTCF")
 
 ``` r
 cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
+#> Warning in geom_smooth(aes(x = .data$mean_conc, y = .data$mean), method =
+#> "loess", : Ignoring unknown parameters: `lwd`
 ```
 
 ![](cqtc_files/figure-html/unnamed-chunk-7-1.png)

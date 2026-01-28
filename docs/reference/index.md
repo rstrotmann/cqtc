@@ -15,6 +15,8 @@
 - [`cqtc_gof_plot()`](cqtc_gof_plot.md) : Goodness of fit plots for
   linear mixed effects model
 - [`cqtc_hysteresis_plot()`](cqtc_hysteresis_plot.md) : Hysteresis plot
+- [`cqtc_model_plot()`](cqtc_model_plot.md) : Plot predicted dQTcF over
+  concentration
 - [`cqtc_ntile_plot()`](cqtc_ntile_plot.md) : Exploratory decile plot.
 - [`cqtc_plot()`](cqtc_plot.md) : Exploratory c-QTc plot
 - [`cqtc_time_course_plot()`](cqtc_time_course_plot.md) : Time course
