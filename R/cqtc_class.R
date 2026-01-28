@@ -296,3 +296,16 @@ subjects.cqtc <- function(obj) {
     as.data.frame() |>
     distinct(.data$ID, .data$ACTIVE)
 }
+
+
+average_triplicates <- function(obj) {
+  # validate input
+  validate_cqtc(obj)
+
+  obj |>
+    reframe(
+      across(any_of(c("HR", "RR", "QT", "QTCF", "DQTCF")), mean),
+      .by = c("ID", "NTIME", "CONC")
+    ) |>
+    cqtc()
+}

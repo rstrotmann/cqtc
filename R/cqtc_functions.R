@@ -226,3 +226,4 @@ add_ntile.cqtc <- function(obj, input_col = "CONC", n = 10, ntile_name = NULL) {
 
   return(out)
 }
+

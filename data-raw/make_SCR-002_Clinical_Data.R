@@ -11,3 +11,24 @@ SCR_002_Clinical_Data <- data.table::fread(
 )
 
 usethis::use_data(SCR_002_Clinical_Data, overwrite = TRUE)
+
+
+ranolazine_cqtc <- SCR_002_Clinical_Data |>
+  filter(EXTRT == "Ranolazine") |>
+  mutate(ID = RANDID) |>
+  mutate(NTIME = TPT) |>
+  mutate(CONC = PCSTRESN) |>
+  mutate(QTCF = qtcf(QT, RR)) |>
+  cqtc()
+
+usethis::use_data(ranolazine_cqtc, overwrite = TRUE)
+
+quinidine_cqtc <- SCR_002_Clinical_Data |>
+  filter(EXTRT == "Quinidine Sulph") |>
+  mutate(ID = RANDID) |>
+  mutate(NTIME = TPT) |>
+  mutate(CONC = PCSTRESN) |>
+  mutate(QTCF = qtcf(QT, RR)) |>
+  cqtc()
+
+usethis::use_data(quinidine_cqtc, overwrite = TRUE)

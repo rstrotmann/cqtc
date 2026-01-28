@@ -99,3 +99,68 @@
 #'  10.1038/clpt.2014.155.
 #'
 "SCR_002_Clinical_Data"
+
+
+#' Quinidine c-QTc data set
+#'
+#' A concentration-QTc analysis set for quinidine with triplicate observations,
+#' derived from 'SCR_002_Clinical_Data'.
+#'
+#' @format
+#' A cqtc object, i.e., a class wrapper around a data frame with 1008 rows and
+#' 38 columns:
+#'
+#' \describe{
+#'   \item{ID}{Subject ID}
+#'   \item{NTIME}{Nominal time in hours}
+#'   \item{Dofetilide}{Dofetilide plasma concentration in ng/ml}
+#'   \item{QT}{The QT interval in ms}
+#'   \item{QTCF}{The QTcF interval in ms}
+#'   \item{DQTCF}{The change from baseline in QTCF in ms}
+#'   \item{RR}{The RR interval in ms}
+#'   \item{HR}{Heart rate, derived from RR in the original data set}
+#'   \item{BL_QTCF}{Baseline QTCF, derived from QTCF at NTIME -0.5}
+#'   ...
+#' }
+#' @source Derived from <https://physionet.org/content/ecgrdvq/1.0.0/#files-panel>
+#' @references Johannesen L, Vicente J, Mason JW, Sanabria C, Waite-Labott K,
+#'  Hong M, Guo P, Lin J, Sørensen JS, Galeotti L, Florian J, Ugander M,
+#'  Stockbridge N, Strauss DG. Differentiating Drug-Induced Multichannel Block
+#'  on the Electrocardiogram: Randomized Study of Dofetilide, Quinidine,
+#'  Ranolazine, and Verapamil. Clin Pharmacol Ther. 2014 Jul 23. doi:
+#'  10.1038/clpt.2014.155.
+"quinidine_cqtc"
+
+
+#' Ranolazine c-QTc data set
+#'
+#' A concentration-QTc analysis set for ranolazine with triplicate observations,
+#' derived from 'SCR_002_Clinical_Data'.
+#'
+#' @format
+#' A cqtc object, i.e., a class wrapper around a data frame with 1056 rows and
+#' 38 columns:
+#'
+#' \describe{
+#'   \item{ID}{Subject ID}
+#'   \item{NTIME}{Nominal time in hours}
+#'   \item{Dofetilide}{Dofetilide plasma concentration in ng/ml}
+#'   \item{QT}{The QT interval in ms}
+#'   \item{QTCF}{The QTcF interval in ms}
+#'   \item{DQTCF}{The change from baseline in QTCF in ms}
+#'   \item{RR}{The RR interval in ms}
+#'   \item{HR}{Heart rate, derived from RR in the original data set}
+#'   \item{BL_QTCF}{Baseline QTCF, derived from QTCF at NTIME -0.5}
+#'   ...
+#' }
+#' @source Derived from <https://physionet.org/content/ecgrdvq/1.0.0/#files-panel>
+#' @references Johannesen L, Vicente J, Mason JW, Sanabria C, Waite-Labott K,
+#'  Hong M, Guo P, Lin J, Sørensen JS, Galeotti L, Florian J, Ugander M,
+#'  Stockbridge N, Strauss DG. Differentiating Drug-Induced Multichannel Block
+#'  on the Electrocardiogram: Randomized Study of Dofetilide, Quinidine,
+#'  Ranolazine, and Verapamil. Clin Pharmacol Ther. 2014 Jul 23. doi:
+#'  10.1038/clpt.2014.155.
+"ranolazine_cqtc"
+
+
+
