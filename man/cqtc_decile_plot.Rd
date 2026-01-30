@@ -48,6 +48,3 @@ A ggplot object.
 \details{
 Please use cqtc_ntile_plot instead.
 }
-\examples{
-cqtc_decile_plot(dofetilide_cqtc)
-}

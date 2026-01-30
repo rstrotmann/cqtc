@@ -21,6 +21,3 @@ A cqtc object with the ntile_name colunn added.
 \description{
 Add ntiles (quantiles) for a specific column across all subjects
 }
-\examples{
-head(add_ntile(dofetilide_cqtc, "CONC", 10))
-}

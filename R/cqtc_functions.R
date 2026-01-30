@@ -193,8 +193,6 @@ add_ntile <- function(obj, input_col, n, ntile_name = NULL) {
 #' @export
 #' @importFrom rlang :=
 #'
-#' @examples
-#' head(add_ntile(dofetilide_cqtc, "CONC", 10))
 add_ntile.cqtc <- function(obj, input_col = "CONC", n = 10, ntile_name = NULL) {
   # Validate that input is a nif object
   if (!inherits(obj, "cqtc")) {
@@ -225,5 +223,111 @@ add_ntile.cqtc <- function(obj, input_col = "CONC", n = 10, ntile_name = NULL) {
     mutate(!!ntile_name := ntile(.data[[input_col]], n = n))
 
   return(out)
+}
+
+
+#' Derive HR from RR
+#'
+#' @param obj A cqtc object.
+#' @param silent Suppress messages.
+#'
+#' @returns A cqtc object with the HR field added.
+#' @export
+#'
+#' @examples
+#' derive_hr(dofetilide_cqtc)
+#' dplyr::select(dofetilide_cqtc, -"HR") |>
+#'   derive_hr()
+derive_hr <- function(obj, silent = NULL) {
+  # input validation
+  validate_cqtc(obj)
+  nif:::validate_logical_param(silent, allow_null = TRUE)
+
+  if (!"RR" %in% names(obj))
+    stop("RR field not found!")
+
+  if ("HR" %in% names(obj))
+    nif:::conditional_cli(
+      cli_alert_warning("HR field will be replaced!"),
+      silent = silent
+    )
+
+  obj |>
+    mutate(HR = round(1000 / .data$RR * 60, 0))
+}
+
+
+#' Derive RR from HR
+#'
+#' @param obj A cqtc object.
+#' @param silent Suppress messages.
+#'
+#' @returns A cqtc object with the RR field added.
+#' @export
+#'
+#' @examples
+#' derive_rr(dofetilide_cqtc)
+#' dplyr::select(dofetilide_cqtc, -"RR") |>
+#'   derive_rr()
+derive_rr <- function(obj, silent = NULL) {
+  # input validation
+  validate_cqtc(obj)
+  nif:::validate_logical_param(silent, allow_null = TRUE)
+
+  if (!"HR" %in% names(obj))
+    stop("HR field not found!")
+
+  if ("RR" %in% names(obj))
+    nif:::conditional_cli(
+      cli_alert_warning("RR field will be replaced!"),
+      silent = silent
+    )
+
+  obj |>
+    mutate(RR = round(60 / .data$HR * 1000))
+}
+
+
+#' Test whether the HR and RR fields are consistent with each other
+#'
+#' @param obj A cqtc object.
+#' @param threshold The allowed relative difference between the original RR and
+#'   the RR as recalculated from HR, defaults to 0.05.
+#' @param silent Suppress messages.
+#'
+#' @returns A logical value.
+#' @export
+#'
+#' @examples
+#' is_hr_rr_consistent(dofetilide_cqtc)
+is_hr_rr_consistent <- function(
+    obj,
+    threshold = 0.05,
+    silent = NULL) {
+  # input validation
+  validate_cqtc(obj)
+  nif:::validate_logical_param(silent, allow_null = TRUE)
+  missing_fields <- setdiff(c("HR", "RR"), names(obj))
+  if (length(missing_fields) > 0)
+    stop(paste0(
+      "Missing ", plural("field", length(missing_fields) > 1),
+      ": ", nice_enumeration(missing_fields)
+    ))
+
+  temp <- obj |>
+    rename(.rr_original = "RR") |>
+    derive_rr() |>
+    mutate(.rr_rel_diff = abs(.data$RR - .data$.rr_original)/.data$.rr_original) |>
+    filter(.data$.rr_rel_diff > threshold)
+
+  if (nrow(temp) > 0)
+    nif:::conditional_cli(
+      cli_alert_warning(paste0(
+        "Inconsistency between HR and RR above ", round(threshold *100, 1),
+        "% in ", nrow(temp), plural(" observation", nrow(temp) > 1), "!")),
+      silent = silent
+    )
+
+  return(nrow(temp) == 0)
 }
 

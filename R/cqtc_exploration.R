@@ -391,9 +391,6 @@ cqtc_ntile_plot <- function(
 #'
 #' @returns A ggplot object.
 #' @export
-#'
-#' @examples
-#' cqtc_decile_plot(dofetilide_cqtc)
 cqtc_decile_plot <- function(
     obj,
     param = "DQTCF",
