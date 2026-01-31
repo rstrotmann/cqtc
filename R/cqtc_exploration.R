@@ -259,6 +259,8 @@ cqtc_plot <- function(
 #' @param lwd Line width for point range.
 #' @param loess Show LOESS, as logical.
 #' @param lm Show linear regression, as logical.
+#' @param refline Plot horizontal dashed reference lines at thse y axis values,
+#' dafaults to NULL (no lines).
 #'
 #' @returns A ggplot object.
 #' @export
@@ -278,14 +280,24 @@ cqtc_ntile_plot <- function(
     lwd = 0.6,
     loess = FALSE,
     lm = FALSE,
+    refline = NULL,
     ...) {
   # input validation
   validate_cqtc(obj)
   validate_col_param(param, obj)
-  nif:::validate_numeric_param(n, "n")
+  validate_param("numeric", n)
+  validate_param("character", x_label)
+  validate_param("character", y_label, allow_null = TRUE)
+  validate_param("numeric", size)
+  validate_param("numeric", alpha)
+  validate_param("numeric", lwd)
+  validate_param("logical", loess)
+  validate_param("logical", lm)
+  validate_param("numeric", refline, allow_multiple = TRUE, allow_null = TRUE)
 
   individual <- obj |>
-    filter(.data$CONC != 0)
+    filter(.data$CONC != 0) |>
+    filter(!is.na(.data$CONC), !is.na(.data[[param]]))
 
   baseline <- obj |>
     filter(.data$CONC == 0)
@@ -305,10 +317,6 @@ cqtc_ntile_plot <- function(
       .by = "CONC_NTILE")
 
   y_label = ifelse(is.null(y_label), param, y_label)
-  # if(y_label == "DQTCF")
-  #   y_label = "\u0394QTcF (ms)"
-  # if(y_label == "QTCF")
-  #   y_label = "QTcF (ms)"
 
   out <- ggplot() +
     geom_point(
@@ -317,7 +325,6 @@ cqtc_ntile_plot <- function(
       size = size,
       alpha = alpha,
       color = "blue",
-      # ...
       ) +
     geom_point(
       aes(x = .data$CONC, y = .data[[param]]),
@@ -335,7 +342,6 @@ cqtc_ntile_plot <- function(
         formula = y ~ x,
         data = deciles,
         color = "red",
-        lwd = lwd,
         se = FALSE,
         lwd = lwd)} +
 
@@ -350,11 +356,17 @@ cqtc_ntile_plot <- function(
         lwd = lwd,
         linetype = "dashed")} +
 
+    {if (!is.null(refline))
+      geom_hline(yintercept = refline, color = "red", linetype = "dashed",
+                 lwd = lwd)
+    } +
+
     geom_point(
       aes(x = .data$mean_conc, y = .data$mean),
       data = deciles,
       size = size
     ) +
+
     geom_pointrange(
       aes(x = .data$mean_conc, y = .data$mean, ymin = .data$LCL, ymax = .data$UCL),
       data = deciles,
@@ -513,12 +525,8 @@ cqtc_time_course_plot <- function(
 #'
 #' @param obj A cqtc object.
 #' @param mod A linear model.
-#' @param title The plot title.
 #' @param level The prediction interval.
-#' @param size The point size.
-#' @param alpha The point alpha value.
-#' @param lwd The line width.
-#' @param loess Show LOESS fit.
+#' @inheritParams cqtc_ntile_plot
 #'
 #' @returns A ggplot2 object.
 #' @importFrom emmeans ref_grid emmeans
@@ -526,20 +534,27 @@ cqtc_time_course_plot <- function(
 cqtc_model_plot <- function(
     obj,
     mod,
+    x_label = "concentration (ng/ml)",
+    y_label = "dQTcF",
     title = NULL,
     level = 0.9,
     size = 2,
     alpha = 0.1,
     lwd = 0.6,
-    loess = FALSE
+    loess = FALSE,
+    refline = NULL
     ) {
   # input validateion
   validate_cqtc(obj)
-  nif:::validate_numeric_param(level, "level")
-  nif:::validate_numeric_param(size, "size")
-  nif:::validate_numeric_param(alpha, "alpha")
-  nif:::validate_numeric_param(lwd, "lwd")
-  nif:::validate_logical_param(loess, "loess")
+  validate_param("character", title, allow_null = TRUE)
+  validate_param("character", x_label)
+  validate_param("character", y_label)
+  validate_param("numeric", level)
+  validate_param("numeric", size)
+  validate_param("numeric", alpha)
+  validate_param("numeric", lwd)
+  validate_param("logical", loess)
+  validate_param("numeric", refline, allow_multiple = TRUE, allow_null = TRUE)
 
   # make reference grid
   length_out <- 20
@@ -557,19 +572,24 @@ cqtc_model_plot <- function(
 
   p <- obj %>%
     cqtc_ntile_plot(param = "DQTCF", n = 10, size = size, alpha = alpha,
-                    lwd = lwd, loess = loess) +
+                    lwd = lwd, loess = loess, refline = refline) +
     geom_line(
       data = emm,
       aes(x = .data$CONC, y = .data$emmean),
       lwd = lwd
     ) +
+
     geom_ribbon(
       data = emm,
       aes(x = .data$CONC, ymin = .data$lower.CL, ymax = .data$upper.CL,
           y = .data$emmean),
       alpha = 0.2,
       lwd = lwd) +
-    labs(caption = paste0("Grey: Model prediction (mean and ", level*100, "% PI)"))
+
+    labs(
+      x = x_label,
+      y = y_label,
+      caption = paste0("Grey: Model prediction (mean and ", level*100, "% PI)"))
 
   if (!is.null(title))
     p <- p + ggtitle(title)

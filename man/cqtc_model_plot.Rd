@@ -7,12 +7,15 @@
 cqtc_model_plot(
   obj,
   mod,
+  x_label = "concentration (ng/ml)",
+  y_label = "dQTcF",
   title = NULL,
   level = 0.9,
   size = 2,
   alpha = 0.1,
   lwd = 0.6,
-  loess = FALSE
+  loess = FALSE,
+  refline = NULL
 )
 }
 \arguments{
@@ -20,17 +23,24 @@ cqtc_model_plot(
 
 \item{mod}{A linear model.}
 
+\item{x_label}{The x axis label.}
+
+\item{y_label}{The y axis label.}
+
 \item{title}{The plot title.}
 
 \item{level}{The prediction interval.}
 
-\item{size}{The point size.}
+\item{size}{Point size.}
 
-\item{alpha}{The point alpha value.}
+\item{alpha}{Alpha for points.}
 
-\item{lwd}{The line width.}
+\item{lwd}{Line width for point range.}
 
-\item{loess}{Show LOESS fit.}
+\item{loess}{Show LOESS, as logical.}
+
+\item{refline}{Plot horizontal dashed reference lines at thse y axis values,
+dafaults to NULL (no lines).}
 }
 \value{
 A ggplot2 object.

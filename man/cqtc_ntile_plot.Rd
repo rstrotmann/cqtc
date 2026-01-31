@@ -16,6 +16,7 @@ cqtc_ntile_plot(
   lwd = 0.6,
   loess = FALSE,
   lm = FALSE,
+  refline = NULL,
   ...
 )
 }
@@ -41,6 +42,9 @@ cqtc_ntile_plot(
 \item{loess}{Show LOESS, as logical.}
 
 \item{lm}{Show linear regression, as logical.}
+
+\item{refline}{Plot horizontal dashed reference lines at thse y axis values,
+dafaults to NULL (no lines).}
 
 \item{...}{Further parameters to geom_point.}
 }
