@@ -8,6 +8,7 @@ cqtc_add_baseline(
   obj,
   param = "QTCF",
   baseline_filter = "NTIME < 0",
+  summary_function = mean,
   silent = NULL
 )
 }
@@ -18,6 +19,9 @@ cqtc_add_baseline(
 
 \item{baseline_filter}{A filter term to identify the baseline condition, as
 character.}
+
+\item{summary_function}{Function to resolve multiple individual baseline
+values.}
 
 \item{silent}{Suppress messages.}
 }

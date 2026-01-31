@@ -9,8 +9,7 @@ dofetilide_cqtc <- dof %>%
     QTCF = QTcF, DQTCF = QTcF.CFB, QT = QTm, RR = RRm, CONC = CONC,
     NTIME = TIME, ACTIVE = as.logical(ACTIVE)) %>%
   select(ID, ACTIVE, NTIME, CONC, QT, QTCF, DQTCF, RR) %>%
-  new_cqtc() #%>%
-  # mutate(BL_QTCF = QTCF[NTIME == -0.5], .by = "ID")
+  cqtc()
 
 verapamil_cqtc <- ver %>%
   mutate(ID = as.numeric(as.factor(USUBJID))) %>%
@@ -18,7 +17,6 @@ verapamil_cqtc <- ver %>%
     QTCF = QTcF, DQTCF = QTcF.CFB, QT = QTm, RR = RRm, CONC = CONC,
     NTIME = TIME, ACTIVE = as.logical(ACTIVE)) %>%
   select(ID, ACTIVE, NTIME, CONC, QT, QTCF, DQTCF, RR) %>%
-  new_cqtc() #%>%
-  # mutate(BL_QTCF = QTCF[NTIME == -0.5], .by = "ID")
+  cqtc()
 
 

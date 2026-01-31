@@ -5,6 +5,8 @@
 #' @param silent Suppress messages.
 #' @param baseline_filter A filter term to identify the baseline condition, as
 #' character.
+#' @param summary_function Function to resolve multiple individual baseline
+#' values.
 #'
 #' @returns A cqtc object with the baseline columns added.
 #' @export
@@ -12,6 +14,7 @@ cqtc_add_baseline <- function(
     obj,
     param = "QTCF",
     baseline_filter = "NTIME < 0",
+    summary_function = mean,
     silent = NULL) {
   # input validation
   validate_cqtc(obj)
@@ -27,20 +30,44 @@ cqtc_add_baseline <- function(
 
   # Missing baseline values
   missing_baseline_sbs <- setdiff(unique(obj$ID), unique(bl$ID))
-  if(length(missing_baseline_sbs) > 0)
-    nif:::conditional_message(
-      "Missing baseline values in ", length(missing_baseline_sbs),
-      " subjects!", silent = silent)
+  n_no_baseline <- length(missing_baseline_sbs)
+  if(n_no_baseline > 0)
+    nif:::conditional_cli(
+      cli_alert_warning(paste0(
+        "Missing baseline values in ", n_no_baseline,
+        plural(" subject", n_no_baseline > 1), "!"
+      )),
+      silent = silent
+    )
 
   # Duplicate baseline values
-  test <- bl |>
+  multiple_baseline <- bl |>
     reframe(n = n(), .by = c("ID", "ACTIVE")) |>
     filter(n > 1)
-  if(nrow(test) > 0)
-    stop(paste0(
-      "Multiple baseline values for ", length(unique(test$ID)), " subjects. ",
-      "Consider providing an appropriate baseline_filter term!"
-    ))
+  n_id_multiple <- length(unique(multiple_baseline$ID))
+
+  if(n_id_multiple > 0) {
+    nif:::conditional_cli({
+      cli_alert_warning(paste0(
+        "Multiple baseline values in ", n_id_multiple,
+        plural(" subject", n_id_multiple > 1),
+        " resolved using function '",
+        deparse(substitute(summary_function)), "'!"
+        ))
+      },
+      silent = silent
+    )
+
+    bl <- bl |>
+      pivot_longer(
+        cols = all_of(names(bl)[-(1:2)]),
+        names_to = "param",
+        values_to = "value") |>
+      reframe(
+        value = summary_function(.data$value),
+        .by = c("ID", "ACTIVE", "param")) |>
+      pivot_wider(names_from = "param", values_from = "value")
+  }
 
   # existing baseline fields
   new_bl_fields <- names(bl)[-(1:2)]
@@ -160,11 +187,9 @@ derive_group_delta <- function(
     mutate(PARAM = out_name) |>
     select(-c("REF"))
 
-  out <- bind_rows(temp, delta) |>
+  bind_rows(temp, delta) |>
     pivot_wider(names_from = "PARAM", values_from = "VAL") |>
-    new_cqtc()
-
-  return(out)
+    cqtc()
 }
 
 
@@ -248,12 +273,12 @@ derive_hr <- function(obj, silent = NULL) {
 
   if ("HR" %in% names(obj)) {
     nif:::conditional_cli(
-      cli_alert_warning("HR field will be replaced!"),
+      cli_alert_warning("HR field was be replaced!"),
       silent = silent
     )
   } else {
     nif:::conditional_cli(
-      cli_alert_info("HR will be derived from RR!"),
+      cli_alert_info("HR was derived from RR!"),
       silent = silent
     )
   }
@@ -285,12 +310,12 @@ derive_rr <- function(obj, silent = NULL) {
 
   if ("RR" %in% names(obj)) {
     nif:::conditional_cli(
-      cli_alert_warning("RR field will be replaced!"),
+      cli_alert_warning("RR field was replaced!"),
       silent = silent
     )
   } else {
     nif:::conditional_cli(
-      cli_alert_info("RR will be derived from HR!"),
+      cli_alert_info("RR was derived from HR!"),
       silent = silent
     )
   }

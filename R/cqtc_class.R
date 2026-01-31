@@ -3,29 +3,45 @@
 #' Create a cqtc object from a data frame, or an empty cqtc object if the 'obj'
 #' argument is NULL.
 #'
-#' The minimally required fields are:
+#' @details
+#' If not input data is provided in the 'obj argument, an empty cqtc object is
+#' returned. If 'obj' is a data frame, the minimally required fields are:
+#'
 #' * ID, the subject ID as numeric
 #' * NTIME, the nominal time in hours as numeric
 #' * CONC, the pharmacokinetic concentration as numeric
 #' * QTCF, the QTcF interval in ms, as numeric
-#'
-#' Further expected fields are:
-#' * ACTIVE, active/control treatment flag, as logical
-#' * QT, the QT interval in ms, as numeric
-#' * DQTCF, the delta QTcF to baseline in ms, as numeric
 #' * HR, the heart rate in 1/min, as numeric
 #' * RR, the RR interval in ms, as numeric
 #'
+#' The following additional fields will be recognized:
+#' * ACTIVE, active/control treatment flag, as logical
+#' * QT, the QT interval in ms, as numeric
+#' * DQTCF, the delta QTcF to baseline in ms, as numeric
+#'
 #' If only one of HR or RR is included, the other will be derived.
+#'
+#' If a baseline filter is provided, the following fields will be automatically
+#' derived and added to the cqtc object:
+#'
+#' * BL_QTCF, the baseline QTcF value. If applying the baseline filter results
+#' in multiple individual baseline values, they will be summarized using the
+#' function provided by the 'summrary_function' argument.
+#' * DQTCF, the difference between QTCF and BL_QTCF.
+#' * PM_BL_QTCF, the population mean baseline QTcF value for the populations
+#' defined by 'ACTIVE' field.
+#' * DPM_BL_QTCF, the difference between BL_QTCF and PM_BL_QTCF.
 #'
 #' @param obj A data frame.
 #' @param silent Suppress warnings, as logical.
 #' @param conc_field The field in the input data set that represents the
 #' independent concentration variable, if 'CONC' is not provided.
 #' @param rr_inconsistency allowed relative difference between RR and the RR as
-#' back-calculated from HR, defaults to 0.1 (10%).
+#' back-calculated from HR, defaults to 0.1 (10\%).
 #' @param baseline_filter A filter term to identify baseline QTcF. If NULL,
 #' the 'BL_QTCF' field will not be added.
+#' @param summary_function Summarizing function to consolidate multiple
+#'   individual baseline values.
 #'
 #' @import dplyr
 #' @import cli
@@ -36,16 +52,18 @@ cqtc <- function(
   conc_field = NULL,
   silent = NULL,
   rr_inconsistency = 0.1,
-  baseline_filter = NULL
+  baseline_filter = NULL,
+  summary_function = mean
 ) {
   # input validation
-  nif:::validate_char_param(conc_field, "conc_field", allow_null = TRUE)
-  nif:::validate_logical_param(silent, "silent", allow_null = TRUE)
-  nif:::validate_numeric_param(rr_inconsistency, "rr_inconsistency")
+  validate_param("character", conc_field, allow_null = TRUE)
+  validate_param("logical", silent, allow_null = TRUE)
+  validate_param("numeric", rr_inconsistency, allow_null = TRUE)
   if (rr_inconsistency < 0 | rr_inconsistency > 1) {
     stop("rr_inconsistency threshold must be between 0 and 1!")
   }
-  nif:::validate_char_param(baseline_filter, "baseline_filter", allow_null = TRUE)
+  validate_param("character", baseline_filter, allow_null = TRUE)
+
   if (!is.null(baseline_filter)) {
     valid_filter <- nif:::is_valid_filter(obj, baseline_filter, silent = TRUE)
     if (!valid_filter)
@@ -81,7 +99,10 @@ cqtc <- function(
     obj <- mutate(obj, CONC = .data[[conc_field]])
   }
 
-  minimal_fields <- c("ID", "NTIME", "CONC", "QTCF")
+  if (!any(c("QT", "QTCF") %in% names(obj)))
+    stop("At least one of QT and QTCF must be in the input!")
+
+  minimal_fields <- c("ID", "NTIME", "CONC")
   missing_minimal <- setdiff(minimal_fields, names(obj))
   if (length(missing_minimal) > 0) {
     stop(paste0(
@@ -92,7 +113,8 @@ cqtc <- function(
   }
 
   out <- obj
-  fields <- names(obj)
+  fields <- names(out)
+
   if (!"HR" %in% fields && !"RR" %in% fields) {
     stop("Neither RR nor HR fields found, at least one must be present!")
   }
@@ -111,38 +133,33 @@ cqtc <- function(
       mutate(ACTIVE = as.logical(.data$ACTIVE))
   }
 
+  # calculate QTcF, if needed
+  if (!"QTCF" %in% fields && "QT" %in% fields) {
+    out <- mutate(out, QTCF = qtcf(.data$QT, .data$RR))
+
+    nif:::conditional_cli(
+      cli_alert_info("QTCF was derived from QT and RR!"),
+      silent = silent
+    )
+  }
+
+  out <- out |>
+    arrange("ID", "ACTIVE", "NTIME")
+
   class(out) <- c("cqtc", "data.frame")
   dummy = is_hr_rr_consistent(out, rr_inconsistency, silent = silent)
 
   # add QTcF baseline, if possible
   if (!is.null(baseline_filter)) {
-    out <- cqtc_add_baseline(out, "QTCF", baseline_filter = baseline_filter,
-                             silent = silent)
+    out <- cqtc_add_baseline(
+        out, "QTCF", baseline_filter = baseline_filter,
+        summary_function = summary_function, silent = silent) |>
+      mutate(DQTCF = .data$QTCF - .data$BL_QTCF) |>
+      add_bl_popmean("BL_QTCF") |>
+      mutate(DPM_BL_QTCF = .data$BL_QTCF - .data$PM_BL_QTCF)
   }
 
   out
-}
-
-
-#' Create cqtc object
-#'
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' @param obj A data frame.
-#' @inheritParams new_cqtc
-#'
-#' @returns A cqtc object.
-#' @export
-new_cqtc <- function(
-    obj = NULL,
-    conc_field = NULL,
-    silent = NULL,
-    rr_inconsistency = 0.1
-) {
-  lifecycle::deprecate_warn("0.3.8", "new_cqtc()", "cqtc()")
-
-  cqtc(obj, conc_field, silent, rr_threshold)
 }
 
 

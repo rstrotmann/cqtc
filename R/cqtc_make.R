@@ -106,7 +106,7 @@ auto_cqtc <- function(
 
   out <- nif::correlate_obs(nif, actual_pc_analyte, names(eg_analyte)) |>
     mutate(CONC = .data[[actual_pc_analyte]]) |>
-    new_cqtc()
+    cqtc()
 
   return(out)
 }
