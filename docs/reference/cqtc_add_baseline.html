@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cqtc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,7 @@
 <span>  <span class="va">obj</span>,</span>
 <span>  param <span class="op">=</span> <span class="st">"QTCF"</span>,</span>
 <span>  baseline_filter <span class="op">=</span> <span class="st">"NTIME &lt; 0"</span>,</span>
+<span>  summary_function <span class="op">=</span> <span class="va">mean</span>,</span>
 <span>  silent <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -61,6 +62,11 @@
 <dt id="arg-baseline-filter">baseline_filter<a class="anchor" aria-label="anchor" href="#arg-baseline-filter"></a></dt>
 <dd><p>A filter term to identify the baseline condition, as
 character.</p></dd>
+
+
+<dt id="arg-summary-function">summary_function<a class="anchor" aria-label="anchor" href="#arg-summary-function"></a></dt>
+<dd><p>Function to resolve multiple individual baseline
+values.</p></dd>
 
 
 <dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>

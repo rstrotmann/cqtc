@@ -23,6 +23,8 @@
 <url><loc>/reference/cqtc_plot.html</loc></url>
 <url><loc>/reference/cqtc_time_course_plot.html</loc></url>
 <url><loc>/reference/derive_group_delta.html</loc></url>
+<url><loc>/reference/derive_hr.html</loc></url>
+<url><loc>/reference/derive_rr.html</loc></url>
 <url><loc>/reference/dofetilide_cqtc.html</loc></url>
 <url><loc>/reference/find_inconsistent_rr_hr.html</loc></url>
 <url><loc>/reference/hash.cqtc.html</loc></url>
@@ -31,6 +33,7 @@
 <url><loc>/reference/hr_plot.html</loc></url>
 <url><loc>/reference/hysteresis_plot.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/is_hr_rr_consistent.html</loc></url>
 <url><loc>/reference/new_cqtc.html</loc></url>
 <url><loc>/reference/plot.cqtc.html</loc></url>
 <url><loc>/reference/quinidine_cqtc.html</loc></url>

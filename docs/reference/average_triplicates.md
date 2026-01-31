@@ -27,18 +27,18 @@ average_triplicates(quinidine_cqtc)
 #> Data from 21 subjects
 #> 
 #> QTcF observations per time point:
-#>   NTIME   ACTIVE   
-#>   -0.5    21       
-#>   0.5     21       
-#>   1       21       
-#>   1.5     21       
-#>   2       21       
-#>   2.5     20       
-#>   3       20       
-#>   3.5     20       
-#>   4       21       
-#>   5       21        
-#>   (6 more rows)
+#>   NTIME   ACTIVE   NA   
+#>   -0.5    21       NA   
+#>   0.5     21       NA   
+#>   1       21       NA   
+#>   1.5     21       NA   
+#>   2       21       NA   
+#>   2.5     20       NA   
+#>   3       20       NA   
+#>   3.5     20       NA   
+#>   4       21       NA   
+#>   5       21       NA    
+#>   (7 more rows)
 #> 
 #> Columns:
 #>   ID, NTIME, CONC, HR, RR, QT, QTCF, ACTIVE 

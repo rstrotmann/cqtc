@@ -9,6 +9,7 @@ cqtc_add_baseline(
   obj,
   param = "QTCF",
   baseline_filter = "NTIME < 0",
+  summary_function = mean,
   silent = NULL
 )
 ```
@@ -26,6 +27,10 @@ cqtc_add_baseline(
 - baseline_filter:
 
   A filter term to identify the baseline condition, as character.
+
+- summary_function:
+
+  Function to resolve multiple individual baseline values.
 
 - silent:
 

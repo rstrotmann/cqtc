@@ -68,11 +68,3 @@ A ggplot object.
 ## Details
 
 Please use cqtc_ntile_plot instead.
-
-## Examples
-
-``` r
-cqtc_decile_plot(dofetilide_cqtc)
-#> Warning: `cqtc_decile_plot()` was deprecated in cqtc 0.3.1.
-#> ℹ Please use `cqtc_ntile_plot()` instead.
-```

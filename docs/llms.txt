@@ -70,7 +70,7 @@ cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
 - [`auto_cqtc()`](auto_cqtc.md) : Title
 - [`average_triplicates()`](average_triplicates.md) : Average triplicate
   observations
-- [`cqtc()`](cqtc.md) : Create cqtc object
+- [`cqtc()`](cqtc.md) : Make a cqtc object
 - [`cqtc_add_baseline()`](cqtc_add_baseline.md) : Add baseline field for
   parameter across treatment groups
 - [`cqtc_decile_plot()`](cqtc_decile_plot.md) : Exploratory decile plot.
@@ -85,11 +85,14 @@ cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
   plot for QT parameter and drug concentration
 - [`derive_group_delta()`](derive_group_delta.md) : Add delta to
   reference group by NTIME
+- [`derive_hr()`](derive_hr.md) : Derive HR from RR
+- [`derive_rr()`](derive_rr.md) : Derive RR from HR
 - [`dofetilide_cqtc`](dofetilide_cqtc.md) : Dofetilide c-QTc data set
 - [`find_inconsistent_rr_hr()`](find_inconsistent_rr_hr.md) : Identify
   entries with inconsistent RR and HR fields.
 - [`hr_plot()`](hr_plot.md) : Plot ECG parameter by HR
-- [`new_cqtc()`](new_cqtc.md) : Make a cqtc object
+- [`is_hr_rr_consistent()`](is_hr_rr_consistent.md) : Test whether the
+  HR and RR fields are consistent with each other
 - [`plot(`*`<cqtc>`*`)`](plot.cqtc.md) : Print function for cqtc object
 - [`quinidine_cqtc`](quinidine_cqtc.md) : Quinidine c-QTc data set
 - [`ranolazine_cqtc`](ranolazine_cqtc.md) : Ranolazine c-QTc data set
