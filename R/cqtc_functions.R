@@ -20,10 +20,21 @@ cqtc_add_baseline <- function(
   validate_cqtc(obj)
   validate_col_param(param, obj, allow_multiple = TRUE)
 
-  # identify baseline
+  # identify baseline and add BL column
+  obj <- obj |>
+    mutate(BL = case_when(
+      eval(parse(text = baseline_filter)) ~ TRUE,
+      .default = FALSE))
+
+  # bl <- obj |>
+  #   as.data.frame() |>
+  #   filter(eval(parse(text = baseline_filter))) |>
+  #   select(all_of(c("ID", "ACTIVE", param))) |>
+  #   rename_with(.fn = function(x) {paste0("BL_", x)}, .cols = all_of(param)) |>
+  #   distinct()
+
   bl <- obj |>
-    as.data.frame() |>
-    filter(eval(parse(text = baseline_filter))) |>
+    filter(.data$BL == TRUE) |>
     select(all_of(c("ID", "ACTIVE", param))) |>
     rename_with(.fn = function(x) {paste0("BL_", x)}, .cols = all_of(param)) |>
     distinct()

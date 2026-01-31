@@ -38,16 +38,7 @@ find_inconsistent_rr_hr <- function(obj, threshold = 0.1) {
 #'
 #' @returns A ggplot object.
 #' @import ggplot2
-#' @export
-#' @examples
-#' library(dplyr)
-#' library(magrittr)
-#'
-#' dofetilide_cqtc |>
-#'   hr_plot(param = "QT", group = "ACTIVE")
-#'
-#' verapamil_cqtc |>
-#'   hr_plot(param = "QTCF", group = "ACTIVE")
+#' @noRd
 hr_plot <- function(
     obj,
     param = "QTCF",
@@ -598,8 +589,31 @@ cqtc_model_plot <- function(
 }
 
 
+#' Tabulate model parameters
+#'
+#' @param mod The linear mixed-effects model
+#'
+#' @returns A data frame.
+#' @export
+#' @importFrom stats coef
+#' @importFrom stats qt
+#'
+cqtc_model_table <- function(
+    mod
+) {
+  # parameter estimates
+  temp <- as.data.frame(coef(summary(mod, ddf = "Kenward-Roger")))
+  colnames(temp) <- c("estimate", "se", "df", "t", "p")
+  parameters <- temp %>%
+    mutate(
+      rse = .data$se/.data$estimate * 100,
+      lci = .data$estimate + qt(0.025, df = .data$df) * .data$se,
+      uci = .data$estimate + qt(0.975, df = .data$df) * .data$se,
+      p = ifelse(.data$p < 0.001, "< 0.001", signif(.data$p, 3))) %>%
+    select("estimate", "lci", "uci", "rse", "p")
 
-
+  parameters
+}
 
 
 
