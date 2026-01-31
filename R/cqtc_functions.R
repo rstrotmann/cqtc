@@ -240,17 +240,23 @@ add_ntile.cqtc <- function(obj, input_col = "CONC", n = 10, ntile_name = NULL) {
 #'   derive_hr()
 derive_hr <- function(obj, silent = NULL) {
   # input validation
-  validate_cqtc(obj)
+  # validate_cqtc(obj)
   nif:::validate_logical_param(silent, allow_null = TRUE)
 
   if (!"RR" %in% names(obj))
     stop("RR field not found!")
 
-  if ("HR" %in% names(obj))
+  if ("HR" %in% names(obj)) {
     nif:::conditional_cli(
       cli_alert_warning("HR field will be replaced!"),
       silent = silent
     )
+  } else {
+    nif:::conditional_cli(
+      cli_alert_info("HR will be derived from RR!"),
+      silent = silent
+    )
+  }
 
   obj |>
     mutate(HR = round(1000 / .data$RR * 60, 0))
@@ -271,17 +277,23 @@ derive_hr <- function(obj, silent = NULL) {
 #'   derive_rr()
 derive_rr <- function(obj, silent = NULL) {
   # input validation
-  validate_cqtc(obj)
+  # validate_cqtc(obj)
   nif:::validate_logical_param(silent, allow_null = TRUE)
 
   if (!"HR" %in% names(obj))
     stop("HR field not found!")
 
-  if ("RR" %in% names(obj))
+  if ("RR" %in% names(obj)) {
     nif:::conditional_cli(
       cli_alert_warning("RR field will be replaced!"),
       silent = silent
     )
+  } else {
+    nif:::conditional_cli(
+      cli_alert_info("RR will be derived from HR!"),
+      silent = silent
+    )
+  }
 
   obj |>
     mutate(RR = round(60 / .data$HR * 1000))
@@ -316,7 +328,7 @@ is_hr_rr_consistent <- function(
 
   temp <- obj |>
     rename(.rr_original = "RR") |>
-    derive_rr() |>
+    derive_rr(silent = TRUE) |>
     mutate(.rr_rel_diff = abs(.data$RR - .data$.rr_original)/.data$.rr_original) |>
     filter(.data$.rr_rel_diff > threshold)
 

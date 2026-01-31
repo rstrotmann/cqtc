@@ -22,7 +22,7 @@ test_that("add_bl_popmean works as intended for multiple parameters", {
     4,       0,      3,     7,    70,  70
   )
 
-  test <- new_cqtc(test_data)
+  test <- cqtc(test_data)
 
   result <- test %>%
     cqtc_add_baseline(param = c("QTCF", "HR"), baseline_filter = "NTIME == 0") %>%

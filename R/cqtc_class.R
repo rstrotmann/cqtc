@@ -20,27 +20,36 @@
 #'
 #' @param obj A data frame.
 #' @param silent Suppress warnings, as logical.
-#' @param rr_threshold The allowed fractional deviation between the recorded RR
-#' interval and the RR interval back-calculated from the recorded HR.
 #' @param conc_field The field in the input data set that represents the
 #' independent concentration variable, if 'CONC' is not provided.
+#' @param rr_inconsistency allowed relative difference between RR and the RR as
+#' back-calculated from HR, defaults to 0.1 (10%).
+#' @param baseline_filter A filter term to identify baseline QTcF. If NULL,
+#' the 'BL_QTCF' field will not be added.
 #'
 #' @import dplyr
 #' @import cli
 #' @return A cqtc object from the input data set.
 #' @export
-new_cqtc <- function(
+cqtc <- function(
   obj = NULL,
   conc_field = NULL,
   silent = NULL,
-  rr_threshold = 0.1
+  rr_inconsistency = 0.1,
+  baseline_filter = NULL
 ) {
   # input validation
   nif:::validate_char_param(conc_field, "conc_field", allow_null = TRUE)
-  nif:::validate_logical_param(silent, allow_null = TRUE)
-  nif:::validate_numeric_param(rr_threshold, "threshold")
-  if (rr_threshold < 0 || rr_threshold > 1) {
-    stop("rr_threshold must be between 0 and 1!")
+  nif:::validate_logical_param(silent, "silent", allow_null = TRUE)
+  nif:::validate_numeric_param(rr_inconsistency, "rr_inconsistency")
+  if (rr_inconsistency < 0 | rr_inconsistency > 1) {
+    stop("rr_inconsistency threshold must be between 0 and 1!")
+  }
+  nif:::validate_char_param(baseline_filter, "baseline_filter", allow_null = TRUE)
+  if (!is.null(baseline_filter)) {
+    valid_filter <- nif:::is_valid_filter(obj, baseline_filter, silent = TRUE)
+    if (!valid_filter)
+      stop("Invalid baseline filter!")
   }
 
   # Empty cqtc object
@@ -50,7 +59,10 @@ new_cqtc <- function(
       ACTIVE = logical(0),
       NTIME = numeric(0),
       CONC = numeric(0),
-      QTCF = numeric(0)
+      QT = numeric(0),
+      QTCF = numeric(0),
+      HR = numeric(0),
+      RR = numeric(0)
     )
     class(out) <- c("cqtc", "data.frame")
     return(out)
@@ -82,33 +94,14 @@ new_cqtc <- function(
   out <- obj
   fields <- names(obj)
   if (!"HR" %in% fields && !"RR" %in% fields) {
-    warning("Neither RR nor HR fields found!")
+    stop("Neither RR nor HR fields found, at least one must be present!")
   }
 
-  if ("RR" %in% fields && !"HR" %in% fields) {
-    out <- out |>
-      mutate(HR = round(1000 / .data$RR * 60, 0))
-  }
+  if ("RR" %in% fields && !"HR" %in% fields)
+    out <- derive_hr(out, silent = silent)
 
-  if ("HR" %in% fields && !"RR" %in% fields) {
-    out <- out |>
-      mutate(RR = 60 / .data$HR * 1000)
-  }
-
-  rr_inconsistency <- find_inconsistent_rr_hr(out, rr_threshold)
-  n_incons <- nrow(rr_inconsistency)
-  if (n_incons > 0) {
-    cli::cli_alert_warning(paste0(
-      n_incons, " data points with inconsistent HR and RR values"
-    ))
-    cli::cli_text()
-    cli::cli_verbatim(
-      nif:::df_to_string(
-        round(rr_inconsistency, 1),
-        abbr_lines = 10, abbr_threshold = 15
-      )
-    )
-  }
+  if ("HR" %in% fields && !"RR" %in% fields)
+    out <- derive_rr(out, silent = silent)
 
   if (!"ACTIVE" %in% fields) {
     out <- out |>
@@ -119,24 +112,37 @@ new_cqtc <- function(
   }
 
   class(out) <- c("cqtc", "data.frame")
+  dummy = is_hr_rr_consistent(out, rr_inconsistency, silent = silent)
+
+  # add QTcF baseline, if possible
+  if (!is.null(baseline_filter)) {
+    out <- cqtc_add_baseline(out, "QTCF", baseline_filter = baseline_filter,
+                             silent = silent)
+  }
+
   out
 }
 
 
 #' Create cqtc object
 #'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param obj A data frame.
 #' @inheritParams new_cqtc
 #'
 #' @returns A cqtc object.
 #' @export
-cqtc <- function(
-  obj = NULL,
-  conc_field = NULL,
-  silent = NULL,
-  rr_threshold = 0.1
+new_cqtc <- function(
+    obj = NULL,
+    conc_field = NULL,
+    silent = NULL,
+    rr_inconsistency = 0.1
 ) {
-  new_cqtc(obj, conc_field, silent, rr_threshold)
+  lifecycle::deprecate_warn("0.3.8", "new_cqtc()", "cqtc()")
+
+  cqtc(obj, conc_field, silent, rr_threshold)
 }
 
 
@@ -168,10 +174,13 @@ summary.cqtc <- function(object, ...) {
 
   temp <- as.data.frame(object)
 
+  # add mock row to facilitate the disposition calculation
+  temp[nrow(temp) +1,] <- rep(NA, ncol(temp))
+
   out <- list(
-    cqtc = as.data.frame(temp),
-    subjects = distinct(temp, across(any_of(c("ID", "USUBJID", "SUBJID")))),
-    ntime = sort(unique(temp$NTIME)),
+    cqtc = as.data.frame(object),
+    subjects = distinct(as.data.frame(object), across(any_of(c("ID", "USUBJID", "SUBJID")))),
+    ntime = sort(unique(object$NTIME)),
     disposition = temp |>
       pivot_longer(
         cols = any_of(c("QT", "QTCF", "DQTCF", "RR", "HR")),

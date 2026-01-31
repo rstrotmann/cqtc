@@ -2,41 +2,16 @@
 % Please edit documentation in R/cqtc_class.R
 \name{new_cqtc}
 \alias{new_cqtc}
-\title{Make a cqtc object}
+\title{Create cqtc object}
 \usage{
-new_cqtc(obj = NULL, conc_field = NULL, silent = NULL, rr_threshold = 0.1)
+new_cqtc(obj = NULL, conc_field = NULL, silent = NULL, rr_inconsistency = 0.1)
 }
 \arguments{
 \item{obj}{A data frame.}
-
-\item{conc_field}{The field in the input data set that represents the
-independent concentration variable, if 'CONC' is not provided.}
-
-\item{silent}{Suppress warnings, as logical.}
-
-\item{rr_threshold}{The allowed fractional deviation between the recorded RR
-interval and the RR interval back-calculated from the recorded HR.}
 }
 \value{
-A cqtc object from the input data set.
+A cqtc object.
 }
 \description{
-Create a cqtc object from a data frame, or an empty cqtc object if the 'obj'
-argument is NULL.
-}
-\details{
-The minimally required fields are:
-* ID, the subject ID as numeric
-* NTIME, the nominal time in hours as numeric
-* CONC, the pharmacokinetic concentration as numeric
-* QTCF, the QTcF interval in ms, as numeric
-
-Further expected fields are:
-* ACTIVE, active/control treatment flag, as logical
-* QT, the QT interval in ms, as numeric
-* DQTCF, the delta QTcF to baseline in ms, as numeric
-* HR, the heart rate in 1/min, as numeric
-* RR, the RR interval in ms, as numeric
-
-If only one of HR or RR is included, the other will be derived.
+`r lifecycle::badge("deprecated")`
 }

@@ -2,9 +2,15 @@
 % Please edit documentation in R/cqtc_class.R
 \name{cqtc}
 \alias{cqtc}
-\title{Create cqtc object}
+\title{Make a cqtc object}
 \usage{
-cqtc(obj = NULL, conc_field = NULL, silent = NULL, rr_threshold = 0.1)
+cqtc(
+  obj = NULL,
+  conc_field = NULL,
+  silent = NULL,
+  rr_inconsistency = 0.1,
+  baseline_filter = NULL
+)
 }
 \arguments{
 \item{obj}{A data frame.}
@@ -14,12 +20,31 @@ independent concentration variable, if 'CONC' is not provided.}
 
 \item{silent}{Suppress warnings, as logical.}
 
-\item{rr_threshold}{The allowed fractional deviation between the recorded RR
-interval and the RR interval back-calculated from the recorded HR.}
+\item{rr_inconsistency}{allowed relative difference between RR and the RR as
+back-calculated from HR, defaults to 0.1 (10%).}
+
+\item{baseline_filter}{}
 }
 \value{
-A cqtc object.
+A cqtc object from the input data set.
 }
 \description{
-Create cqtc object
+Create a cqtc object from a data frame, or an empty cqtc object if the 'obj'
+argument is NULL.
+}
+\details{
+The minimally required fields are:
+* ID, the subject ID as numeric
+* NTIME, the nominal time in hours as numeric
+* CONC, the pharmacokinetic concentration as numeric
+* QTCF, the QTcF interval in ms, as numeric
+
+Further expected fields are:
+* ACTIVE, active/control treatment flag, as logical
+* QT, the QT interval in ms, as numeric
+* DQTCF, the delta QTcF to baseline in ms, as numeric
+* HR, the heart rate in 1/min, as numeric
+* RR, the RR interval in ms, as numeric
+
+If only one of HR or RR is included, the other will be derived.
 }
