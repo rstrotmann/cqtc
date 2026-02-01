@@ -27,34 +27,12 @@ analysis, including linear mixed effects modeling, see
 ``` r
 library(cqtc)
 library(nif)
-#> 
-#> Attaching package: 'nif'
-#> The following objects are masked from 'package:cqtc':
-#> 
-#>     add_ntile, subjects
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
-
-dof <- dofetilide_cqtc %>%
-  cqtc_add_baseline("QTCF", baseline_filter = "NTIME == -0.5") %>% 
-  add_bl_popmean("BL_QTCF") %>%
-  mutate(DPM_BL_QTCF = BL_QTCF - PM_BL_QTCF) %>%
-  derive_group_delta("DQTCF") %>% 
-  mutate(NTIME = as.factor(NTIME))
-
 
 dof <- cqtc(
   dofetilide,
   conc_field = "Cplasma",
   baseline_filter = "NTIME == -0.5")
-#> ℹ HR was derived from RR!
 ```
 
 ## Hear rate correction

@@ -41,18 +41,10 @@ The following is a basic example which demonstrates how to create an exploratory
 c-QTc plot for the dofetilide data set. For further analysis, including linear
 mixed effects modeling, see `vignette("cqtc")`.
 
-```{r example}
+```{r setup, message=F, warning=F}
 library(cqtc)
 library(nif)
 library(dplyr)
-
-dof <- dofetilide_cqtc %>%
-  cqtc_add_baseline("QTCF", baseline_filter = "NTIME == -0.5") %>% 
-  add_bl_popmean("BL_QTCF") %>%
-  mutate(DPM_BL_QTCF = BL_QTCF - PM_BL_QTCF) %>%
-  derive_group_delta("DQTCF") %>% 
-  mutate(NTIME = as.factor(NTIME))
-
 
 dof <- cqtc(
   dofetilide,

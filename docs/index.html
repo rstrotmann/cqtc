@@ -66,34 +66,12 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">cqtc</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstrotmann/nif" class="external-link">nif</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'nif'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:cqtc':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     add_ntile, subjects</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter, lag</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
-<span></span>
-<span><span class="va">dof</span> <span class="op">&lt;-</span> <span class="va">dofetilide_cqtc</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/cqtc_add_baseline.html">cqtc_add_baseline</a></span><span class="op">(</span><span class="st">"QTCF"</span>, baseline_filter <span class="op">=</span> <span class="st">"NTIME == -0.5"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/add_bl_popmean.html">add_bl_popmean</a></span><span class="op">(</span><span class="st">"BL_QTCF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>DPM_BL_QTCF <span class="op">=</span> <span class="va">BL_QTCF</span> <span class="op">-</span> <span class="va">PM_BL_QTCF</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/derive_group_delta.html">derive_group_delta</a></span><span class="op">(</span><span class="st">"DQTCF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>NTIME <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">NTIME</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
 <span></span>
 <span><span class="va">dof</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cqtc.html">cqtc</a></span><span class="op">(</span></span>
 <span>  <span class="va">dofetilide</span>,</span>
 <span>  conc_field <span class="op">=</span> <span class="st">"Cplasma"</span>,</span>
-<span>  baseline_filter <span class="op">=</span> <span class="st">"NTIME == -0.5"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ℹ HR was derived from RR!</span></span></code></pre></div>
+<span>  baseline_filter <span class="op">=</span> <span class="st">"NTIME == -0.5"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="hear-rate-correction">Hear rate correction<a class="anchor" aria-label="anchor" href="#hear-rate-correction"></a>
