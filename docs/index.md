@@ -1,7 +1,7 @@
 # cqtc
 
-This package provides functions to streamline concentration-QTc analysis
-of clinical ECG data.
+This package provides functions to facilitate and streamline
+concentration-QTc analysis of clinical ECG data.
 
 ## Installation
 
@@ -13,15 +13,13 @@ devtools::install_github("rstrotmann/cqtc")
 
 ## Example
 
-The basic building block for further analyses is the
-[`cqtc()`](reference/cqtc.md) data object. The package includes data for
-dofetilide and verapamil copied from
+The basic building block for further analyses is the cqtc data object.
+This package includes sample data for dofetilide and verapamil copied
+from *Parkinson, J., Dota, C. & Rekić, D. Practical guide to
+concentration-QTc modeling: a hands-on tutorial. J Pharmacokinet
+Pharmacodyn 52, 43 (2025)* <https://doi.org/10.1007/s10928-025-09981-8>.
 
-Parkinson, J., Dota, C. & Rekić, D. Practical guide to concentration-QTc
-modeling: a hands-on tutorial. J Pharmacokinet Pharmacodyn 52, 43
-(2025). <https://doi.org/10.1007/s10928-025-09981-8>.
-
-The following is a basic example which shows you how to create an
+The following is a basic example which demonstrates how to create an
 exploratory c-QTc plot for the dofetilide data set. For further
 analysis, including linear mixed effects modeling, see
 [`vignette("cqtc")`](articles/cqtc.md).
@@ -51,7 +49,46 @@ dof <- dofetilide_cqtc %>%
   derive_group_delta("DQTCF") %>% 
   mutate(NTIME = as.factor(NTIME))
 
+
+dof <- cqtc(
+  dofetilide,
+  conc_field = "Cplasma",
+  baseline_filter = "NTIME == -0.5")
+#> ℹ HR was derived from RR!
+```
+
+## Hear rate correction
+
+``` r
+rr_plot(dof, "QT")
+```
+
+![](reference/figures/README-unnamed-chunk-2-1.png)
+
+``` r
+rr_plot(dof, "QTCF")
+```
+
+![](reference/figures/README-unnamed-chunk-2-2.png)
+
+## Assessment of hysteresis
+
+``` r
+cqtc_time_course_plot(dof, "QTCF")
+```
+
+![](reference/figures/README-unnamed-chunk-3-1.png)
+
+``` r
+cqtc_hysteresis_plot(dof)
+```
+
+![](reference/figures/README-unnamed-chunk-3-2.png)
+
+## Exploratory c-QTc plot
+
+``` r
 cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
 ```
 
-![](reference/figures/README-example-1.png)
+![](reference/figures/README-unnamed-chunk-4-1.png)

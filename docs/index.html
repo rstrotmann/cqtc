@@ -50,7 +50,7 @@
 </h1></div>
 <!-- badges: start -->
 <!-- badges: end -->
-<p>This package provides functions to streamline concentration-QTc analysis of clinical ECG data.</p>
+<p>This package provides functions to facilitate and streamline concentration-QTc analysis of clinical ECG data.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -61,9 +61,8 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>The basic building block for further analyses is the <code><a href="reference/cqtc.html">cqtc()</a></code> data object. The package includes data for dofetilide and verapamil copied from</p>
-<p>Parkinson, J., Dota, C. &amp; Rekić, D. Practical guide to concentration-QTc modeling: a hands-on tutorial. J Pharmacokinet Pharmacodyn 52, 43 (2025). <a href="https://doi.org/10.1007/s10928-025-09981-8" class="external-link uri">https://doi.org/10.1007/s10928-025-09981-8</a>.</p>
-<p>The following is a basic example which shows you how to create an exploratory c-QTc plot for the dofetilide data set. For further analysis, including linear mixed effects modeling, see <code><a href="articles/cqtc.html">vignette("cqtc")</a></code>.</p>
+<p>The basic building block for further analyses is the cqtc data object. This package includes sample data for dofetilide and verapamil copied from <em>Parkinson, J., Dota, C. &amp; Rekić, D. Practical guide to concentration-QTc modeling: a hands-on tutorial. J Pharmacokinet Pharmacodyn 52, 43 (2025)</em> <a href="https://doi.org/10.1007/s10928-025-09981-8" class="external-link uri">https://doi.org/10.1007/s10928-025-09981-8</a>.</p>
+<p>The following is a basic example which demonstrates how to create an exploratory c-QTc plot for the dofetilide data set. For further analysis, including linear mixed effects modeling, see <code><a href="articles/cqtc.html">vignette("cqtc")</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">cqtc</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstrotmann/nif" class="external-link">nif</a></span><span class="op">)</span></span>
@@ -89,8 +88,39 @@
 <span>  <span class="fu"><a href="reference/derive_group_delta.html">derive_group_delta</a></span><span class="op">(</span><span class="st">"DQTCF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>NTIME <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">NTIME</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/cqtc_ntile_plot.html">cqtc_ntile_plot</a></span><span class="op">(</span><span class="va">dof</span>, lm <span class="op">=</span> <span class="cn">TRUE</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-1.png" alt="" width="100%"></p>
+<span></span>
+<span><span class="va">dof</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cqtc.html">cqtc</a></span><span class="op">(</span></span>
+<span>  <span class="va">dofetilide</span>,</span>
+<span>  conc_field <span class="op">=</span> <span class="st">"Cplasma"</span>,</span>
+<span>  baseline_filter <span class="op">=</span> <span class="st">"NTIME == -0.5"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ℹ HR was derived from RR!</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="hear-rate-correction">Hear rate correction<a class="anchor" aria-label="anchor" href="#hear-rate-correction"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/rr_plot.html">rr_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"QT"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-2-1.png" alt="" width="100%"></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/rr_plot.html">rr_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"QTCF"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-2-2.png" alt="" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="assessment-of-hysteresis">Assessment of hysteresis<a class="anchor" aria-label="anchor" href="#assessment-of-hysteresis"></a>
+</h2>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/cqtc_time_course_plot.html">cqtc_time_course_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"QTCF"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-3-1.png" alt="" width="100%"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/cqtc_hysteresis_plot.html">cqtc_hysteresis_plot</a></span><span class="op">(</span><span class="va">dof</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-3-2.png" alt="" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="exploratory-c-qtc-plot">Exploratory c-QTc plot<a class="anchor" aria-label="anchor" href="#exploratory-c-qtc-plot"></a>
+</h2>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/cqtc_ntile_plot.html">cqtc_ntile_plot</a></span><span class="op">(</span><span class="va">dof</span>, lm <span class="op">=</span> <span class="cn">TRUE</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-4-1.png" alt="" width="100%"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

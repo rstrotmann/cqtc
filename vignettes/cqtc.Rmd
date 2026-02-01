@@ -118,7 +118,7 @@ pre-specified model, is extended adding the following columns:
 
 * individual baseline QTcF (BL_QTCF):
 
-$$DQTCF = \Delta QTcF_{i,t} = QTcF_{i,t} - QTcF_{i,predose}$$
+$$BL\_QTCF = QTcF_{i,0}$$
 
 * the population mean for the baseline QTcF by treatment group
 (PM_BL_QTCF):

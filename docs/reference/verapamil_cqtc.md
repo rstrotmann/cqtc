@@ -17,11 +17,15 @@ and 7 columns:
 
   Subject ID
 
+- ACTIVE:
+
+  Active treatment
+
 - NTIME:
 
   Nominal time in hours
 
-- Verapamil:
+- CONC:
 
   Verapamil plasma concentration in ng/ml
 
@@ -44,10 +48,6 @@ and 7 columns:
 - HR:
 
   Heart rate, derived from RR in the original data set
-
-- BL_QTCF:
-
-  Baseline QTCF, derived from QTCF at NTIME -0.5
 
 ## Source
 

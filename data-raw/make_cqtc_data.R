@@ -3,6 +3,13 @@
 dof <- read.csv("data-raw/qtpk_dofetilide.csv")
 ver <- read.csv("data-raw/qtpk_verapamil.csv")
 
+dofetilide <- dof |>
+  mutate(ID = as.numeric(as.factor(USUBJID))) %>%
+  mutate(
+    QTCF = QTcF, DQTCF = QTcF.CFB, QT = QTm, RR = RRm, CONC = CONC,
+    NTIME = TIME, ACTIVE = as.logical(ACTIVE)) %>%
+  select(ID, ACTIVE, NTIME, Cplasma = CONC, QT, QTCF, RR)
+
 dofetilide_cqtc <- dof %>%
   mutate(ID = as.numeric(as.factor(USUBJID))) %>%
   mutate(
@@ -10,6 +17,13 @@ dofetilide_cqtc <- dof %>%
     NTIME = TIME, ACTIVE = as.logical(ACTIVE)) %>%
   select(ID, ACTIVE, NTIME, CONC, QT, QTCF, DQTCF, RR) %>%
   cqtc()
+
+verapamil <- ver %>%
+  mutate(ID = as.numeric(as.factor(USUBJID))) %>%
+  mutate(
+    QTCF = QTcF, DQTCF = QTcF.CFB, QT = QTm, RR = RRm, CONC = CONC,
+    NTIME = TIME, ACTIVE = as.logical(ACTIVE)) %>%
+  select(ID, ACTIVE, NTIME, Cplasma = CONC, QT, QTCF, RR)
 
 verapamil_cqtc <- ver %>%
   mutate(ID = as.numeric(as.factor(USUBJID))) %>%

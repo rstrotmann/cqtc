@@ -10,14 +10,12 @@ columns:
 \describe{
   \item{ID}{Subject ID}
   \item{NTIME}{Nominal time in hours}
-  \item{Dofetilide}{Dofetilide plasma concentration in ng/ml}
+  \item{CONC}{Dofetilide plasma concentration in ng/ml}
   \item{QT}{The QT interval in ms}
   \item{QTCF}{The QTcF interval in ms}
   \item{DQTCF}{The change from baseline in QTCF in ms}
   \item{RR}{The RR interval in ms}
   \item{HR}{Heart rate, derived from RR in the original data set}
-  \item{BL_QTCF}{Baseline QTCF, derived from QTCF at NTIME -0.5}
-  ...
 }
 }
 \source{

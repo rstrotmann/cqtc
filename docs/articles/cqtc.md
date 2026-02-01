@@ -118,7 +118,7 @@ columns:
 - individual baseline QTcF (BL_QTCF):
 
 ``` math
-DQTCF = \Delta QTcF_{i,t} = QTcF_{i,t} - QTcF_{i,predose}
+BL\_QTCF = QTcF_{i,0}
 ```
 
 - the population mean for the baseline QTcF by treatment group

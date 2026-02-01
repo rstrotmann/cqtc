@@ -5,23 +5,26 @@ A concentration-QTc analysis set for dofetilide.
 ## Usage
 
 ``` r
-dofetilide_cqtc
+dofetilide
 ```
 
 ## Format
 
-A cqtc object, i.e., a class wrapper around a data frame with 704 rows
-and 7 columns:
+A data frame with 704 rows and 7 columns:
 
 - ID:
 
   Subject ID
 
+- ACTIVE:
+
+  Active treatment
+
 - NTIME:
 
   Nominal time in hours
 
-- CONC:
+- Cplasma:
 
   Dofetilide plasma concentration in ng/ml
 
@@ -33,17 +36,9 @@ and 7 columns:
 
   The QTcF interval in ms
 
-- DQTCF:
-
-  The change from baseline in QTCF in ms
-
 - RR:
 
   The RR interval in ms
-
-- HR:
-
-  Heart rate, derived from RR in the original data set
 
 ## Source
 

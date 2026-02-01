@@ -31,6 +31,7 @@
   reference group by NTIME
 - [`derive_hr()`](derive_hr.md) : Derive HR from RR
 - [`derive_rr()`](derive_rr.md) : Derive RR from HR
+- [`dofetilide`](dofetilide.md) : Dofetilide c-QTc data set
 - [`dofetilide_cqtc`](dofetilide_cqtc.md) : Dofetilide c-QTc data set
 - [`find_inconsistent_rr_hr()`](find_inconsistent_rr_hr.md) : Identify
   entries with inconsistent RR and HR fields.
@@ -45,4 +46,5 @@
   object
 - [`validate_col_param()`](validate_col_param.md) : Validate character
   parameter
+- [`verapamil`](verapamil.md) : Verapamil c-QTc data set
 - [`verapamil_cqtc`](verapamil_cqtc.md) : Verapamil c-QTc data set
