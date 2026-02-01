@@ -73,7 +73,10 @@ cqtc_hysteresis_plot(dof)
 cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
 ```
 
+# FURTHER INFORMATION
 
+For further guidance see the help for individual functions and the [project
+website](https://rstrotmann.github.io/cqtc/) on github pages.
 
 
 
