@@ -21,6 +21,8 @@
 - [`cqtc_hysteresis_plot()`](cqtc_hysteresis_plot.md) : Hysteresis plot
 - [`cqtc_model_plot()`](cqtc_model_plot.md) : Plot predicted dQTcF over
   concentration
+- [`cqtc_model_table()`](cqtc_model_table.md) : Tabulate model
+  parameters
 - [`cqtc_ntile_plot()`](cqtc_ntile_plot.md) : Exploratory decile plot.
 - [`cqtc_plot()`](cqtc_plot.md) : Exploratory c-QTc plot
 - [`cqtc_time_course_plot()`](cqtc_time_course_plot.md) : Time course
@@ -32,7 +34,6 @@
 - [`dofetilide_cqtc`](dofetilide_cqtc.md) : Dofetilide c-QTc data set
 - [`find_inconsistent_rr_hr()`](find_inconsistent_rr_hr.md) : Identify
   entries with inconsistent RR and HR fields.
-- [`hr_plot()`](hr_plot.md) : Plot ECG parameter by HR
 - [`is_hr_rr_consistent()`](is_hr_rr_consistent.md) : Test whether the
   HR and RR fields are consistent with each other
 - [`plot(`*`<cqtc>`*`)`](plot.cqtc.md) : Print function for cqtc object

@@ -58,6 +58,79 @@
 
     
     
+<div class="section level2">
+<h2 id="introduction">INTRODUCTION<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>This is a basic tutorial illustrating the use of the cqtc package to
+conduct exposure-response analyses for the QT interval of the
+electrocardiogram.</p>
+<div class="section level3">
+<h3 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
+</h3>
+<p>Investigation of the pro-arrhythmic potential of new drugs is an
+explicit regulatory concern, and the International Council for
+Harmonisation (ICH) has issued a dedicated guideline, <a href="https://www.ema.europa.eu/en/ich-e14-clinical-evaluation-qt-qtc-interval-prolongation-proarrhythmic-potential-non-antiarrhythmic-drugs-scientific-guideline" class="external-link">ICH
+E14</a>, that summarizes the expectations to such investigations.</p>
+<p>Typically, a dedicated trial to investigate the effect of the drug on
+the cardiac repolarization (‘thorough QT/QTc study’) would satisfy these
+expectations. However, alignment between industry partners and
+regulatory bodies has been achieved, that a well-designed and conducted
+QTc assessment based on concentration-QTc modeling (‘c-QTc analysis’)
+can be in many cases sufficient to exclude clinically relevant QTc
+effects. This has been summarized in a scientific white paper by Garnett
+et al., 2017 (<a href="https://doi.org/10.1007/s10928-017-9558-5" class="external-link uri">https://doi.org/10.1007/s10928-017-9558-5</a>).</p>
+<p>The central paradigm of the modeling approach established in this
+white paper is to use a pre-specified linear mixed-effects model for the
+change in the QTc interval relative to the pre-treatment baseline value
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">\Delta QTc</annotation></semantics></math>)
+with fixed effects of intercept
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\theta _0</annotation></semantics></math>),
+slope
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mn>2</mn></msub><annotation encoding="application/x-tex">\theta _2</annotation></semantics></math>),
+influence of baseline QTc on intercept
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mn>4</mn></msub><annotation encoding="application/x-tex">\theta _4</annotation></semantics></math>),
+treatment
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\theta _1</annotation></semantics></math>,
+i.e., active or placebo) and nominal time from first dose
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mn>3</mn></msub><annotation encoding="application/x-tex">\theta _3</annotation></semantics></math>).
+Random effects are included on the intercept
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>η</mi><mrow><mn>0</mn><mo>,</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\eta _{0,1}</annotation></semantics></math>),
+slope
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>η</mi><mrow><mn>2</mn><mo>,</mo><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">\eta _{2,i}</annotation></semantics></math>):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><msub><mi>c</mi><mrow><mi>i</mi><mi>j</mi><mi>k</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>θ</mi><mn>0</mn></msub><mo>+</mo><msub><mi>η</mi><mrow><mn>0</mn><mo>,</mo><mi>i</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>θ</mi><mn>1</mn></msub><mi>T</mi><mi>R</mi><msub><mi>T</mi><mi>j</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>θ</mi><mn>2</mn></msub><mo>+</mo><msub><mi>η</mi><mrow><mn>2</mn><mo>,</mo><mi>i</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>C</mi><mrow><mi>i</mi><mi>j</mi><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>θ</mi><mn>3</mn></msub><mi>T</mi><mi>I</mi><mi>M</mi><msub><mi>E</mi><mi>j</mi></msub><mo>+</mo><msub><mi>θ</mi><mn>4</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>Q</mi><mi>T</mi><msub><mi>c</mi><mrow><mi>i</mi><mi>j</mi><mo>=</mo><mn>0</mn></mrow></msub><mo>−</mo><mover><mrow><mi>Q</mi><mi>T</mi><msub><mi>c</mi><mn>0</mn></msub></mrow><mo accent="true">¯</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Delta QTc_{ijk} = (\theta _0 + \eta _{0,i}) + \theta _1 TRT_j(\theta _2 + \eta _{2,i})C_{ijk} + \theta _3 TIME_j + \theta _4 (QTc_{ij=0} - \overline{QTc_0})</annotation></semantics></math></p>
+<p>Indices refer to subject
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>),
+treatment
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>),
+and time
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>).</p>
+<p>While this pre-specified model is recommended, alternative approaches
+can be used if the data structure or the relationship between drug
+concentration and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">\Delta QTc</annotation></semantics></math>
+deviate from the assumptions. For this reason, code for the actual
+linear mixed-effects modeling is not part of this package as it may be
+subject to specific considerations.</p>
+<p>The focus of the cqtc package is to facilitate and standardize the
+generation of the c-QTc analysis data set, to support consistency checks
+and exploratory analyses, and to check the model-independent assumptions
+that underlie the linear mixed-effects modeling approach.</p>
+</div>
+<div class="section level3">
+<h3 id="outline">Outline<a class="anchor" aria-label="anchor" href="#outline"></a>
+</h3>
+<p>This example is based on <em>Parkinson, J., Dota, C. &amp; Rekić, D.
+Practical guide to concentration-QTc modeling: a hands-on tutorial. J
+Pharmacokinet Pharmacodyn 52, 43 (2025)</em>. <a href="https://doi.org/10.1007/s10928-025-09981-8" class="external-link uri">https://doi.org/10.1007/s10928-025-09981-8</a></p>
+<p>The dofetilide and verapamil data sets used in the above publication
+are provided as sample data sets as part of this package. The below
+example makes use of the dofetilide data.</p>
+<p>The first part of this tutorial demonstrates how an analysis-ready
+c-QTc data set for dofetilide is constructed from these data. The second
+part illustrates how the basic modeling assumptions are checked using
+exploratory analyses, and the third part focuses on the actual linear
+mixed-effects modeling.</p>
+<p>The tutorial relies on the following R packages:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -66,12 +139,12 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/runehaubo/lmerTestR" class="external-link">lmerTest</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">lsmeans</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">cqtc</span><span class="op">)</span></span></code></pre></div>
-<p>This example is based on Parkinson, J., Dota, C. &amp; Rekić, D.
-Practical guide to concentration-QTc modeling: a hands-on tutorial. J
-Pharmacokinet Pharmacodyn 52, 43 (2025). <a href="https://doi.org/10.1007/s10928-025-09981-8" class="external-link uri">https://doi.org/10.1007/s10928-025-09981-8</a></p>
-<p>The dofetilide and verapamil data sets used in the publication are
-provided as sample data files in this package. This example makes use of
-the dofetilide data:</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="data-preprocessing">DATA PREPROCESSING<a class="anchor" aria-label="anchor" href="#data-preprocessing"></a>
+</h2>
+<p>The structure of the dofetilide data set is:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dofetilide_cqtc</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   ID ACTIVE NTIME CONC       QT     QTCF      DQTCF       RR HR</span></span>
@@ -80,39 +153,120 @@ the dofetilide data:</p>
 <span><span class="co">#&gt; 3  1  FALSE   1.0    0 368.6667 391.3640 -0.1459669 836.0000 72</span></span>
 <span><span class="co">#&gt; 4  1  FALSE   1.5    0 368.0000 389.4623 -2.0476373 844.0000 71</span></span>
 <span><span class="co">#&gt; 5  1  FALSE   2.0    0 377.3333 394.0007  2.4907356 878.6667 68</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="data-preprocessing">DATA PREPROCESSING<a class="anchor" aria-label="anchor" href="#data-preprocessing"></a>
-</h2>
-<p>The data set is extended with the following:</p>
+<p>Note that this data set includes data from cross-over treatment with
+both active and placebo from the same subjects. This may have
+consequences on the further analysis strategy, i.e., it allows modeling
+of the intra-individual difference to placebo treatment,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><mi>F</mi></mrow><annotation encoding="application/x-tex">\Delta \Delta QTcF</annotation></semantics></math>,
+rather than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><mi>F</mi></mrow><annotation encoding="application/x-tex">\Delta QTcF</annotation></semantics></math>
+only. Real-life data sets may include only data from active treatment,
+or placebo data from an independent group of subjects.</p>
+<p>For illustrative purposes, and somewhat arbitrarily, we will act in
+the data preprocessing part of this tutorial as if the placebo data in
+the dofetilide data set were coming from an independent cohort, i.e.,
+not from cross-over treatment. In the linear mixed-effects modeling part
+of the tutorial, we will even discard the data from the placebo
+treatment entirely, and base the c-QTc analysis on
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">\Delta QTc</annotation></semantics></math>,
+i.e., the intra-individual difference to pre-treatment baseline, because
+this is a very common analysis type. Refer to the original publication
+by Parkinson, et al., 2025 to follow their full (and decidedly more
+appropriate) analysis strategy.</p>
+<p>To make the dofetilide data accessible for modeling using the
+aforementioned pre-specified model, is extended adding the following
+columns:</p>
 <ul>
-<li>add individual baseline QTcF (BL_QTCF):</li>
+<li>individual baseline QTcF (BL_QTCF):</li>
 </ul>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mi>Q</mi><mi>T</mi><mi>C</mi><mi>F</mi><mo>=</mo><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><msub><mi>F</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>=</mo><mi>Q</mi><mi>T</mi><mi>c</mi><msub><mi>F</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>−</mo><mi>Q</mi><mi>T</mi><mi>c</mi><msub><mi>F</mi><mrow><mi>i</mi><mo>,</mo><mi>p</mi><mi>r</mi><mi>e</mi><mi>d</mi><mi>o</mi><mi>s</mi><mi>e</mi></mrow></msub></mrow><annotation encoding="application/x-tex">DQTCF = \Delta QTcF_{i,t} = QTcF_{i,t} - QTcF_{i,predose}</annotation></semantics></math></p>
 <ul>
-<li>calculate the population mean for the baseline QTcF by treatment
-group (PM_BL_QTCF):</li>
+<li>the population mean for the baseline QTcF by treatment group
+(PM_BL_QTCF):</li>
 </ul>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>M</mi><mi>_</mi><mi>B</mi><mi>L</mi><mi>_</mi><mi>Q</mi><mi>T</mi><mi>F</mi><mo>=</mo><mover><mrow><mi>Q</mi><mi>T</mi><msub><mi>c</mi><mn>0</mn></msub></mrow><mo accent="true">¯</mo></mover></mrow><annotation encoding="application/x-tex">PM\_BL\_QTF = \overline {QTc_0}</annotation></semantics></math></p>
 <ul>
-<li>calculate the difference between the individual baseline QTcF and
-the respective population mean baseline QTcF:</li>
+<li>the difference between the individual baseline QTcF and the
+respective population mean baseline QTcF:</li>
 </ul>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mi>P</mi><mi>M</mi><mi>_</mi><mi>B</mi><mi>L</mi><mi>_</mi><mi>Q</mi><mi>T</mi><mi>C</mi><mi>F</mi><mo>=</mo><mi>Q</mi><mi>T</mi><msub><mi>c</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>=</mo><mn>0</mn></mrow></msub><mo>−</mo><mover><mrow><mi>Q</mi><mi>T</mi><msub><mi>c</mi><mn>0</mn></msub></mrow><mo accent="true">¯</mo></mover></mrow><annotation encoding="application/x-tex">DPM\_BL\_QTCF = QTc_{i,j=0} - \overline {QTc_0}</annotation></semantics></math></p>
 <ul>
-<li>calculate the difference between DQTCF and the group mean DQTCF of
-the control population by time point (DDQTCF):</li>
+<li>the difference between DQTCF and the group mean DQTCF of the control
+population by time point (DDQTCF):</li>
 </ul>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mi>D</mi><mi>Q</mi><mi>T</mi><mi>C</mi><mi>F</mi><mo>=</mo><mi>Δ</mi><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><msub><mi>F</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>=</mo><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><msub><mi>F</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>−</mo><mover><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><msub><mi>F</mi><mrow><mi>c</mi><mi>o</mi><mi>n</mi><mi>t</mi><mi>r</mi><mi>o</mi><mi>l</mi><mo>,</mo><mi>t</mi></mrow></msub></mrow><mo accent="true">¯</mo></mover></mrow><annotation encoding="application/x-tex">DDQTCF = \Delta \Delta QTcF_{i,t} = \Delta QTcF_{i,t} - \overline{\Delta QTcF_{control,t}}</annotation></semantics></math></p>
-<ul>
-<li>change the numeric nominal time field (NTIME) to factors</li>
-</ul>
+<p>In addition, the numeric nominal time field (NTIME) is changed to a
+factor variable:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dof</span> <span class="op">&lt;-</span> <span class="va">dofetilide_cqtc</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/cqtc_add_baseline.html">cqtc_add_baseline</a></span><span class="op">(</span><span class="st">"QTCF"</span>, baseline_filter <span class="op">=</span> <span class="st">"NTIME == -0.5"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="../reference/add_bl_popmean.html">add_bl_popmean</a></span><span class="op">(</span><span class="st">"BL_QTCF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>DPM_BL_QTCF <span class="op">=</span> <span class="va">BL_QTCF</span> <span class="op">-</span> <span class="va">PM_BL_QTCF</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/derive_group_delta.html">derive_group_delta</a></span><span class="op">(</span><span class="st">"DQTCF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>NTIME <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">NTIME</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/cqtc_add_baseline.html">cqtc_add_baseline</a></span><span class="op">(</span><span class="st">"QTCF"</span>, baseline_filter <span class="op">=</span> <span class="st">"NTIME == -0.5"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/add_bl_popmean.html">add_bl_popmean</a></span><span class="op">(</span><span class="st">"BL_QTCF"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>DPM_BL_QTCF <span class="op">=</span> <span class="va">BL_QTCF</span> <span class="op">-</span> <span class="va">PM_BL_QTCF</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/derive_group_delta.html">derive_group_delta</a></span><span class="op">(</span><span class="st">"DQTCF"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>NTIME <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">NTIME</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/cqtc.html">cqtc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>The last line in the above code pipeline converts the input data to a
+cqtc object. This object is essentially only a wrapper around an
+ordinary R data frame. However, during the conversion to a cqtc object,
+some consistency checks are automatically conducted and missing fields
+added, where possible. In addition printing a cqtc object will
+automatically show only a summary of the data set:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dof</span></span>
+<span><span class="co">#&gt; ----- c-QTc data set summary -----</span></span>
+<span><span class="co">#&gt; Data from 44 subjects</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; QTcF observations per time point:</span></span>
+<span><span class="co">#&gt;   NTIME   CONTROL   ACTIVE   NA   </span></span>
+<span><span class="co">#&gt;   -0.5    22        22       NA   </span></span>
+<span><span class="co">#&gt;   0.5     22        22       NA   </span></span>
+<span><span class="co">#&gt;   1       22        22       NA   </span></span>
+<span><span class="co">#&gt;   1.5     22        22       NA   </span></span>
+<span><span class="co">#&gt;   2       22        22       NA   </span></span>
+<span><span class="co">#&gt;   2.5     22        22       NA   </span></span>
+<span><span class="co">#&gt;   3       22        22       NA   </span></span>
+<span><span class="co">#&gt;   3.5     22        22       NA   </span></span>
+<span><span class="co">#&gt;   4       22        22       NA   </span></span>
+<span><span class="co">#&gt;   5       22        22       NA    </span></span>
+<span><span class="co">#&gt;   (7 more rows)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Columns:</span></span>
+<span><span class="co">#&gt;   ID, ACTIVE, NTIME, CONC, BL, BL_QTCF, PM_BL_QTCF, DPM_BL_QTCF, QT, QTCF,</span></span>
+<span><span class="co">#&gt;   DQTCF, RR, HR, DDQTCF </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Data (selected columns):</span></span>
+<span><span class="co">#&gt;   ID   ACTIVE   NTIME   CONC   QT      QTCF    DQTCF   RR      HR   </span></span>
+<span><span class="co">#&gt;   1    FALSE    -0.5    0      371     391.5   0       851     71   </span></span>
+<span><span class="co">#&gt;   1    FALSE    0.5     0      381.3   385.5   -6      968     62   </span></span>
+<span><span class="co">#&gt;   1    FALSE    1       0      368.7   391.4   -0.1    836     72   </span></span>
+<span><span class="co">#&gt;   1    FALSE    1.5     0      368     389.5   -2      844     71   </span></span>
+<span><span class="co">#&gt;   1    FALSE    2       0      377.3   394     2.5     878.7   68   </span></span>
+<span><span class="co">#&gt;   1    FALSE    2.5     0      364     390.2   -1.3    811.7   74   </span></span>
+<span><span class="co">#&gt;   1    FALSE    3       0      355     384.4   -7.1    788     76   </span></span>
+<span><span class="co">#&gt;   1    FALSE    3.5     0      360.3   384.7   -6.8    823.3   73   </span></span>
+<span><span class="co">#&gt;   1    FALSE    4       0      355.3   386.2   -5.3    779     77   </span></span>
+<span><span class="co">#&gt;   1    FALSE    5       0      361     391.5   0       784     77    </span></span>
+<span><span class="co">#&gt; 694 more rows</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Hash: 395095bd5d173cf31a4b94cb4ccbaefb</span></span></code></pre></div>
+<p>The underlying data frame can be printed using:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">dof</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   ID ACTIVE NTIME CONC    BL  BL_QTCF PM_BL_QTCF DPM_BL_QTCF       QT     QTCF</span></span>
+<span><span class="co">#&gt; 1  1  FALSE  -0.5    0  TRUE 391.5099   395.7591   -4.249215 371.0000 391.5099</span></span>
+<span><span class="co">#&gt; 2  1  FALSE   0.5    0 FALSE 391.5099   395.7591   -4.249215 381.3333 385.5113</span></span>
+<span><span class="co">#&gt; 3  1  FALSE     1    0 FALSE 391.5099   395.7591   -4.249215 368.6667 391.3640</span></span>
+<span><span class="co">#&gt; 4  1  FALSE   1.5    0 FALSE 391.5099   395.7591   -4.249215 368.0000 389.4623</span></span>
+<span><span class="co">#&gt; 5  1  FALSE     2    0 FALSE 391.5099   395.7591   -4.249215 377.3333 394.0007</span></span>
+<span><span class="co">#&gt; 6  1  FALSE   2.5    0 FALSE 391.5099   395.7591   -4.249215 364.0000 390.2416</span></span>
+<span><span class="co">#&gt;        DQTCF       RR HR   DDQTCF</span></span>
+<span><span class="co">#&gt; 1  0.0000000 851.0000 71 0.000000</span></span>
+<span><span class="co">#&gt; 2 -5.9985922 968.0000 62 2.279150</span></span>
+<span><span class="co">#&gt; 3 -0.1459669 836.0000 72 5.279840</span></span>
+<span><span class="co">#&gt; 4 -2.0476373 844.0000 71 3.367856</span></span>
+<span><span class="co">#&gt; 5  2.4907356 878.6667 68 4.774198</span></span>
+<span><span class="co">#&gt; 6 -1.2683179 811.6667 74 2.797502</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="exploratory-data-analysis">EXPLORATORY DATA ANALYSIS<a class="anchor" aria-label="anchor" href="#exploratory-data-analysis"></a>
@@ -120,31 +274,29 @@ the control population by time point (DDQTCF):</li>
 <div class="section level3">
 <h3 id="drug-effect-on-heart-rate">Drug effect on heart rate<a class="anchor" aria-label="anchor" href="#drug-effect-on-heart-rate"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/rr_plot.html">rr_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"QT"</span>, group <span class="op">=</span> <span class="st">"ACTIVE"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cqtc_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="480"></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p><img src="cqtc_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="480"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/rr_plot.html">rr_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"QTCF"</span>, group <span class="op">=</span> <span class="st">"ACTIVE"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cqtc_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" alt="" width="480"></p>
+<p><img src="cqtc_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" alt="" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="assessment-of-hysteresis">Assessment of hysteresis<a class="anchor" aria-label="anchor" href="#assessment-of-hysteresis"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cqtc_time_course_plot.html">cqtc_time_course_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"QTCF"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cqtc_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="480"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p><img src="cqtc_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="480"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cqtc_hysteresis_plot.html">cqtc_hysteresis_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"DDQTCF"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cqtc_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="480"></p>
+<p><img src="cqtc_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="linear-concentration-qtc-relationship">Linear concentration-QTc relationship<a class="anchor" aria-label="anchor" href="#linear-concentration-qtc-relationship"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cqtc_ntile_plot.html">cqtc_ntile_plot</a></span><span class="op">(</span><span class="va">dof</span>, lm <span class="op">=</span> <span class="cn">TRUE</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in geom_smooth(aes(x = .data$mean_conc, y = .data$mean), method =</span></span>
-<span><span class="co">#&gt; "loess", : Ignoring unknown parameters: `lwd`</span></span></code></pre></div>
-<p><img src="cqtc_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="480"></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/cqtc_ntile_plot.html">cqtc_ntile_plot</a></span><span class="op">(</span><span class="va">dof</span>, lm <span class="op">=</span> <span class="cn">TRUE</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cqtc_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 </div>
 <div class="section level2">
@@ -153,7 +305,7 @@ the control population by time point (DDQTCF):</li>
 <div class="section level3">
 <h3 id="modeling">Modeling<a class="anchor" aria-label="anchor" href="#modeling"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu">lmerTest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmerTest/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span></span>
 <span>  <span class="va">DQTCF</span> <span class="op">~</span> <span class="va">NTIME</span> <span class="op">+</span> <span class="va">ACTIVE</span> <span class="op">+</span> <span class="va">DPM_BL_QTCF</span> <span class="op">+</span> <span class="va">CONC</span> <span class="op">+</span> <span class="op">(</span><span class="va">CONC</span><span class="op">||</span><span class="va">ID</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">dof</span><span class="op">)</span></span>
@@ -344,7 +496,7 @@ the control population by time point (DDQTCF):</li>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lsmeans/man/ref.grid.html" class="external-link">ref.grid</a></span><span class="op">(</span></span>
 <span>  <span class="va">mod</span>,</span>
@@ -366,16 +518,16 @@ the control population by time point (DDQTCF):</li>
 <span>    data <span class="op">=</span> <span class="va">temp1</span>,</span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">CONC</span>, ymin <span class="op">=</span> <span class="va">lower.CL</span>, ymax <span class="op">=</span> <span class="va">upper.CL</span>, y <span class="op">=</span> <span class="va">lsmean</span><span class="op">)</span>,</span>
 <span>    alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cqtc_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="480"></p>
+<p><img src="cqtc_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="model-diagnostics">Model diagnostics<a class="anchor" aria-label="anchor" href="#model-diagnostics"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/cqtc_gof_plot.html">cqtc_gof_plot</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cqtc_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-9-2.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-9-3.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-9-4.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-9-5.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-9-6.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-9-7.png" class="r-plt" alt="" width="480"></p>
+<p><img src="cqtc_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-11-2.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-11-3.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-11-4.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-11-5.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-11-6.png" class="r-plt" alt="" width="480"><img src="cqtc_files/figure-html/unnamed-chunk-11-7.png" class="r-plt" alt="" width="480"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

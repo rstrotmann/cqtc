@@ -8,12 +8,15 @@ Plot predicted dQTcF over concentration
 cqtc_model_plot(
   obj,
   mod,
+  x_label = "concentration (ng/ml)",
+  y_label = "dQTcF",
   title = NULL,
   level = 0.9,
   size = 2,
   alpha = 0.1,
   lwd = 0.6,
-  loess = FALSE
+  loess = FALSE,
+  refline = NULL
 )
 ```
 
@@ -27,6 +30,14 @@ cqtc_model_plot(
 
   A linear model.
 
+- x_label:
+
+  The x axis label.
+
+- y_label:
+
+  The y axis label.
+
 - title:
 
   The plot title.
@@ -37,19 +48,24 @@ cqtc_model_plot(
 
 - size:
 
-  The point size.
+  Point size.
 
 - alpha:
 
-  The point alpha value.
+  Alpha for points.
 
 - lwd:
 
-  The line width.
+  Line width for point range.
 
 - loess:
 
-  Show LOESS fit.
+  Show LOESS, as logical.
+
+- refline:
+
+  Plot horizontal dashed reference lines at thse y axis values, dafaults
+  to NULL (no lines).
 
 ## Value
 

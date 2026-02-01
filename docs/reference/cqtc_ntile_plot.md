@@ -17,6 +17,7 @@ cqtc_ntile_plot(
   lwd = 0.6,
   loess = FALSE,
   lm = FALSE,
+  refline = NULL,
   ...
 )
 ```
@@ -66,6 +67,11 @@ cqtc_ntile_plot(
 - lm:
 
   Show linear regression, as logical.
+
+- refline:
+
+  Plot horizontal dashed reference lines at thse y axis values, dafaults
+  to NULL (no lines).
 
 - ...:
 
