@@ -64,8 +64,8 @@ cqtc_model_plot(
 
 - refline:
 
-  Plot horizontal dashed reference lines at thse y axis values, dafaults
-  to NULL (no lines).
+  Plot horizontal dashed reference lines at these y axis values,
+  defaults to NULL (no lines).
 
 ## Value
 

@@ -5,7 +5,7 @@ Tabulate model parameters
 ## Usage
 
 ``` r
-cqtc_model_table(mod)
+cqtc_model_table(mod, level = 0.95)
 ```
 
 ## Arguments
@@ -13,6 +13,10 @@ cqtc_model_table(mod)
 - mod:
 
   The linear mixed-effects model
+
+- level:
+
+  The confidence interval level.
 
 ## Value
 

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cqtc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@ electrocardiogram.</p>
 </h3>
 <p>Investigation of the pro-arrhythmic potential of new drugs is an
 explicit regulatory concern, and the International Council for
-Harmonisation (ICH) has issued a dedicated guideline, <a href="https://www.ema.europa.eu/en/ich-e14-clinical-evaluation-qt-qtc-interval-prolongation-proarrhythmic-potential-non-antiarrhythmic-drugs-scientific-guideline" class="external-link">ICH
+Harmonisation (ICH) has issued a dedicated guideline, <a href="https://www.ema.europa.eu/en/documents/scientific-guideline/ich-e-14-clinical-evaluation-qtqts-interval-prolongation-and-proarrhythmic-potential-non-antiarrhythmic-drugs-step-5_en.pdf" class="external-link">ICH
 E14</a>, that summarizes the expectations to such investigations.</p>
 <p>Typically, a dedicated trial to investigate the effect of the drug on
 the cardiac repolarization (‘thorough QT/QTc study’) would satisfy these
@@ -153,21 +153,25 @@ mixed-effects modeling.</p>
 <span><span class="co">#&gt; 3  1  FALSE   1.0    0 368.6667 391.3640 -0.1459669 836.0000 72</span></span>
 <span><span class="co">#&gt; 4  1  FALSE   1.5    0 368.0000 389.4623 -2.0476373 844.0000 71</span></span>
 <span><span class="co">#&gt; 5  1  FALSE   2.0    0 377.3333 394.0007  2.4907356 878.6667 68</span></span></code></pre></div>
-<p>Note that this data set includes data from cross-over treatment with
-both active and placebo from the same subjects. This may have
-consequences on the further analysis strategy, i.e., it allows modeling
-of the intra-individual difference to placebo treatment,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><mi>F</mi></mrow><annotation encoding="application/x-tex">\Delta \Delta QTcF</annotation></semantics></math>,
-rather than
+<p>Dedicated thorough QT studies will usually provide data from
+cross-over treatment with both active and placebo treatments in the same
+subjects. This allows modeling of the intra-individual difference to
+placebo treatment,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><mi>F</mi></mrow><annotation encoding="application/x-tex">\Delta
+\Delta QTcF</annotation></semantics></math>, rather than
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><mi>F</mi></mrow><annotation encoding="application/x-tex">\Delta QTcF</annotation></semantics></math>
-only. Real-life data sets may include only data from active treatment,
-or placebo data from an independent group of subjects.</p>
-<p>For illustrative purposes, and somewhat arbitrarily, we will act in
-the data preprocessing part of this tutorial as if the placebo data in
-the dofetilide data set were coming from an independent cohort, i.e.,
-not from cross-over treatment. In the linear mixed-effects modeling part
-of the tutorial, we will even discard the data from the placebo
-treatment entirely, and base the c-QTc analysis on
+only. The dofetilide data set includes concentration-QTc data for active
+and placebo treatments from a parallel group design. The analysis
+endpoint is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi><mi>F</mi></mrow><annotation encoding="application/x-tex">\Delta \Delta QTcF</annotation></semantics></math>,
+where the placebo group mean
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">\Delta QTc</annotation></semantics></math>
+for each time points is subtracted from the individual
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">\Delta
+QTc</annotation></semantics></math> of the active group.</p>
+<p>In the linear mixed-effects modeling part of the tutorial, we will
+even discard the data from the placebo treatment entirely, and base the
+c-QTc analysis on
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">\Delta QTc</annotation></semantics></math>,
 i.e., the intra-individual difference to pre-treatment baseline, because
 this is a very common analysis type. Refer to the original publication

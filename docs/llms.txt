@@ -108,6 +108,7 @@ cqtc_ntile_plot(dof, lm = TRUE, loess = TRUE)
 - [`dofetilide_cqtc`](dofetilide_cqtc.md) : Dofetilide c-QTc data set
 - [`find_inconsistent_rr_hr()`](find_inconsistent_rr_hr.md) : Identify
   entries with inconsistent RR and HR fields.
+- [`hr_by_time_plot()`](hr_by_time_plot.md) : Plot HR over time
 - [`is_hr_rr_consistent()`](is_hr_rr_consistent.md) : Test whether the
   HR and RR fields are consistent with each other
 - [`plot(`*`<cqtc>`*`)`](plot.cqtc.md) : Print function for cqtc object

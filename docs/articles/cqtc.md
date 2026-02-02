@@ -11,7 +11,7 @@ electrocardiogram.
 Investigation of the pro-arrhythmic potential of new drugs is an
 explicit regulatory concern, and the International Council for
 Harmonisation (ICH) has issued a dedicated guideline, [ICH
-E14](https://www.ema.europa.eu/en/ich-e14-clinical-evaluation-qt-qtc-interval-prolongation-proarrhythmic-potential-non-antiarrhythmic-drugs-scientific-guideline),
+E14](https://www.ema.europa.eu/en/documents/scientific-guideline/ich-e-14-clinical-evaluation-qtqts-interval-prolongation-and-proarrhythmic-potential-non-antiarrhythmic-drugs-step-5_en.pdf),
 that summarizes the expectations to such investigations.
 
 Typically, a dedicated trial to investigate the effect of the drug on
@@ -92,24 +92,23 @@ head(dofetilide_cqtc, 5)
 #> 5  1  FALSE   2.0    0 377.3333 394.0007  2.4907356 878.6667 68
 ```
 
-Note that this data set includes data from cross-over treatment with
-both active and placebo from the same subjects. This may have
-consequences on the further analysis strategy, i.e., it allows modeling
-of the intra-individual difference to placebo treatment,
-$`\Delta \Delta QTcF`$, rather than $`\Delta QTcF`$ only. Real-life data
-sets may include only data from active treatment, or placebo data from
-an independent group of subjects.
+Dedicated thorough QT studies will usually provide data from cross-over
+treatment with both active and placebo treatments in the same subjects.
+This allows modeling of the intra-individual difference to placebo
+treatment, $`\Delta
+\Delta QTcF`$, rather than $`\Delta QTcF`$ only. The dofetilide data set
+includes concentration-QTc data for active and placebo treatments from a
+parallel group design. The analysis endpoint is $`\Delta \Delta QTcF`$,
+where the placebo group mean $`\Delta QTc`$ for each time points is
+subtracted from the individual $`\Delta
+QTc`$ of the active group.
 
-For illustrative purposes, and somewhat arbitrarily, we will act in the
-data preprocessing part of this tutorial as if the placebo data in the
-dofetilide data set were coming from an independent cohort, i.e., not
-from cross-over treatment. In the linear mixed-effects modeling part of
-the tutorial, we will even discard the data from the placebo treatment
-entirely, and base the c-QTc analysis on $`\Delta QTc`$, i.e., the
-intra-individual difference to pre-treatment baseline, because this is a
-very common analysis type. Refer to the original publication by
-Parkinson, et al., 2025 to follow their full (and decidedly more
-appropriate) analysis strategy.
+In the linear mixed-effects modeling part of the tutorial, we will even
+discard the data from the placebo treatment entirely, and base the c-QTc
+analysis on $`\Delta QTc`$, i.e., the intra-individual difference to
+pre-treatment baseline, because this is a very common analysis type.
+Refer to the original publication by Parkinson, et al., 2025 to follow
+their full (and decidedly more appropriate) analysis strategy.
 
 To make the dofetilide data accessible for modeling using the
 aforementioned pre-specified model, is extended adding the following
