@@ -250,8 +250,9 @@ cqtc_plot <- function(
 #' @param lwd Line width for point range.
 #' @param loess Show LOESS, as logical.
 #' @param lm Show linear regression, as logical.
-#' @param refline Plot horizontal dashed reference lines at thse y axis values,
-#' dafaults to NULL (no lines).
+#' @param refline Plot horizontal dashed reference lines at these y axis values,
+#' defaults to NULL (no lines).
+#' @param errorbar The type of error bar, can be one of "CI" and "SD".
 #'
 #' @returns A ggplot object.
 #' @export
@@ -272,6 +273,7 @@ cqtc_ntile_plot <- function(
     loess = FALSE,
     lm = FALSE,
     refline = NULL,
+    errorbar = "sd",
     ...) {
   # input validation
   validate_cqtc(obj)
@@ -285,6 +287,11 @@ cqtc_ntile_plot <- function(
   validate_param("logical", loess)
   validate_param("logical", lm)
   validate_param("numeric", refline, allow_multiple = TRUE, allow_null = TRUE)
+  validate_param("character", errorbar)
+
+  errorbar <- tolower(errorbar)
+  if (!errorbar %in% c("sd", "ci"))
+    stop("errorbar must be one of 'SD' or 'CI'")
 
   individual <- obj |>
     filter(.data$CONC != 0) |>
@@ -296,7 +303,8 @@ cqtc_ntile_plot <- function(
   deciles <- obj |>
     filter(!is.na(.data[[param]])) |>
     filter(!is.na(.data[["CONC"]])) |>
-    filter(.data$CONC != 0) |>
+    # filter(.data$CONC != 0) |>
+    filter(.data$ACTIVE == TRUE) |>
     add_ntile("CONC", n = n) |>
     reframe(
       n = n(),
@@ -358,16 +366,35 @@ cqtc_ntile_plot <- function(
       size = size
     ) +
 
-    geom_pointrange(
-      aes(x = .data$mean_conc, y = .data$mean, ymin = .data$LCL, ymax = .data$UCL),
-      data = deciles,
-      lwd = lwd) +
+    {if (errorbar == "ci")
+      geom_pointrange(
+        aes(x = .data$mean_conc, y = .data$mean, ymin = .data$LCL, ymax = .data$UCL),
+        data = deciles,
+        lwd = lwd)} +
+
+    {if (errorbar == "sd")
+      geom_pointrange(
+        aes(x = .data$mean_conc,
+            y = .data$mean,
+            ymin = .data$mean - .data$sd,
+            ymax = .data$mean + .data$sd),
+        data = deciles,
+        lwd = lwd)} +
 
     labs(
       x = x_label,
       y = y_label,
-      title = title,
-      caption = "Quantiles shown at the median bin concentration as mean and 90% CI") +
+      title = title
+    ) +
+
+    {if (errorbar == "sd")
+      labs(caption = "Quantiles shown at the median bin concentration as mean and SD")
+    } +
+
+    {if (errorbar == "ci")
+      labs(caption = "Quantiles shown at the median bin concentration as mean with 90% CI")
+    } +
+
     theme_bw()
 
   return(out)
@@ -445,10 +472,10 @@ cqtc_hysteresis_plot <- function(
       dqtcf_mean = mean(.data[[param]], na.rm = T),
       dqtcf_sd = sd(.data[[param]], na.rm = T),
       n = n(),
-      .by = .data$NTIME) |>
+      .by = "NTIME") |>
     mutate(
-      dqtcf_lcl = .data$dqtcf_mean + stats::qnorm(0.05) * .data$dqtcf_sd/sqrt(.data$n),
-      dqtcf_ucl = .data$dqtcf_mean + stats::qnorm(0.95) * .data$dqtcf_sd/sqrt(.data$n)
+      dqtcf_lcl = lower_ci(.data$dqtcf_mean, .data$dqtcf_sd, .data$n),
+      dqtcf_ucl = upper_ci(.data$dqtcf_mean, .data$dqtcf_sd, .data$n)
     ) |>
     arrange("NTIME")
 
@@ -562,8 +589,10 @@ cqtc_model_plot <- function(
   emm <- summary(emmeans(rg, specs = "CONC", level = level))
 
   p <- obj %>%
-    cqtc_ntile_plot(param = "DQTCF", n = 10, size = size, alpha = alpha,
-                    lwd = lwd, loess = loess, refline = refline) +
+    cqtc_ntile_plot(
+      param = "DQTCF", n = 10, size = size, alpha = alpha,
+      lwd = lwd, loess = loess, refline = refline,
+      errorbar = "CI") +
     geom_line(
       data = emm,
       aes(x = .data$CONC, y = .data$emmean),
@@ -592,6 +621,7 @@ cqtc_model_plot <- function(
 #' Tabulate model parameters
 #'
 #' @param mod The linear mixed-effects model
+#' @param level The confidence interval level.
 #'
 #' @returns A data frame.
 #' @export
@@ -599,7 +629,8 @@ cqtc_model_plot <- function(
 #' @importFrom stats qt
 #'
 cqtc_model_table <- function(
-    mod
+    mod,
+    level = 0.95
 ) {
   # parameter estimates
   temp <- as.data.frame(coef(summary(mod, ddf = "Kenward-Roger")))
@@ -607,8 +638,8 @@ cqtc_model_table <- function(
   parameters <- temp %>%
     mutate(
       rse = .data$se/.data$estimate * 100,
-      lci = .data$estimate + qt(0.025, df = .data$df) * .data$se,
-      uci = .data$estimate + qt(0.975, df = .data$df) * .data$se,
+      lci = .data$estimate + qt((1-level)/2, df = .data$df) * .data$se,
+      uci = .data$estimate + qt(level + (1-level)/2, df = .data$df) * .data$se,
       p = ifelse(.data$p < 0.001, "< 0.001", signif(.data$p, 3))) %>%
     select("estimate", "lci", "uci", "rse", "p")
 
@@ -642,8 +673,13 @@ hr_by_time_plot <- function(
 
   # plot
   temp <- obj |>
-    reframe(mean = mean(.data[[param]]), sd = sd(.data[[param]]), n = n(),
-            .by = any_of(c("NTIME", group)))
+    reframe(
+      mean = mean(.data[[param]]),
+      sd = sd(.data[[param]]),
+      n = n(),
+      .by = any_of(c("NTIME", group))) |>
+    mutate(lower_ci = lower_ci(.data$mean, .data$sd, .data$n, 0.9)) |>
+    mutate(upper_ci = upper_ci(.data$mean, .data$sd, .data$n, 0.9))
 
   p <- if(!is.null(group)) {
     ggplot(temp, aes(
@@ -659,10 +695,12 @@ hr_by_time_plot <- function(
   p <- p +
     # geom_point(size = size, alpha = alpha) +
     geom_pointrange(
-      aes(ymin = .data$mean - .data$sd, ymax = .data$mean + .data$sd),
+      # aes(ymin = .data$mean - .data$sd, ymax = .data$mean + .data$sd),
+      aes(ymin = .data$lower_ci, ymax = .data$upper_ci),
       lwd = lwd, alpha = alpha, size = size) +
     geom_line(lwd = lwd) +
-    labs(y = param, color = group, title = title) +
+    labs(y = param, color = group, title = title,
+         caption = "mean with 90% CI") +
     theme_bw()
 
   if (!is.null(group)) {

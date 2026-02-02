@@ -17,6 +17,7 @@ cqtc_ntile_plot(
   loess = FALSE,
   lm = FALSE,
   refline = NULL,
+  errorbar = "sd",
   ...
 )
 }
@@ -43,8 +44,10 @@ cqtc_ntile_plot(
 
 \item{lm}{Show linear regression, as logical.}
 
-\item{refline}{Plot horizontal dashed reference lines at thse y axis values,
-dafaults to NULL (no lines).}
+\item{refline}{Plot horizontal dashed reference lines at these y axis values,
+defaults to NULL (no lines).}
+
+\item{errorbar}{The type of error bar, can be one of "CI" and "SD".}
 
 \item{...}{Further parameters to geom_point.}
 }

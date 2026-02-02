@@ -4,10 +4,12 @@
 \alias{cqtc_model_table}
 \title{Tabulate model parameters}
 \usage{
-cqtc_model_table(mod)
+cqtc_model_table(mod, level = 0.95)
 }
 \arguments{
 \item{mod}{The linear mixed-effects model}
+
+\item{level}{The confidence interval level.}
 }
 \value{
 A data frame.

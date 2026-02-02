@@ -39,8 +39,8 @@ cqtc_model_plot(
 
 \item{loess}{Show LOESS, as logical.}
 
-\item{refline}{Plot horizontal dashed reference lines at thse y axis values,
-dafaults to NULL (no lines).}
+\item{refline}{Plot horizontal dashed reference lines at these y axis values,
+defaults to NULL (no lines).}
 }
 \value{
 A ggplot2 object.
