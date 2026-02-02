@@ -1,6 +1,6 @@
 Package: cqtc
 Type: Package
-Title: Conduct concentration-QTc analysis
+Title: Conduct Concentration-QTc Analyses
 Version: 0.3.9
 Authors@R: 
     person("Rainer", "Strotmann", email = "rainer.strotmann@mailbox.org",
@@ -15,8 +15,8 @@ Imports:
     tidyr,
     stringr,
     lifecycle,
-    ggrepel,
     ggplot2,
+    ggrepel,
     utils,
     nif (>= 0.57.9),
     rlang,
