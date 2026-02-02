@@ -616,7 +616,65 @@ cqtc_model_table <- function(
 }
 
 
+#' Plot HR over time
+#'
+#' @param obj A cqtc object.
+#' @param param The parameter to plot.
+#' @param group The grouping variable.
+#' @param title The plot title.
+#' @param size Point size.
+#' @param alpha The alpha value for points.
+#' @param lwd The line width.
+#'
+#' @returns A ggplot2 object.
+#' @export
+hr_by_time_plot <- function(
+    obj,
+    param = "HR",
+    group = NULL,
+    title = "",
+    size = 0.5,
+    alpha = 1,
+    lwd = 0.6
+    ) {
+  # input validation
+  validate_cqtc(obj)
 
+  # plot
+  temp <- obj |>
+    reframe(mean = mean(.data[[param]]), sd = sd(.data[[param]]), n = n(),
+            .by = any_of(c("NTIME", group)))
+
+  p <- if(!is.null(group)) {
+    ggplot(temp, aes(
+      x = .data$NTIME,
+      y = .data$mean,
+      color = as.factor(.data[[group]])))
+    } else {
+        ggplot(temp, aes(
+          x = .data$NTIME,
+          y = .data$mean))
+    }
+
+  p <- p +
+    # geom_point(size = size, alpha = alpha) +
+    geom_pointrange(
+      aes(ymin = .data$mean - .data$sd, ymax = .data$mean + .data$sd),
+      lwd = lwd, alpha = alpha, size = size) +
+    geom_line(lwd = lwd) +
+    labs(y = param, color = group, title = title) +
+    theme_bw()
+
+  if (!is.null(group)) {
+    p <- p +
+      theme(legend.position = "bottom")
+  } else {
+    p <- p +
+      theme(legend.position = "non2")
+  }
+
+  return(p)
+}
 
 
 
