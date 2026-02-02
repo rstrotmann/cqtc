@@ -103,13 +103,6 @@ where the placebo group mean $`\Delta QTc`$ for each time points is
 subtracted from the individual $`\Delta
 QTc`$ of the active group.
 
-In the linear mixed-effects modeling part of the tutorial, we will even
-discard the data from the placebo treatment entirely, and base the c-QTc
-analysis on $`\Delta QTc`$, i.e., the intra-individual difference to
-pre-treatment baseline, because this is a very common analysis type.
-Refer to the original publication by Parkinson, et al., 2025 to follow
-their full (and decidedly more appropriate) analysis strategy.
-
 To make the dofetilide data accessible for modeling using the
 aforementioned pre-specified model, is extended adding the following
 columns:
@@ -241,7 +234,7 @@ rr_plot(dof, "QTCF", group = "ACTIVE")
 ### Assessment of hysteresis
 
 ``` r
-cqtc_time_course_plot(dof, "QTCF")
+cqtc_time_course_plot(dof, "DQTCF")
 ```
 
 ![](cqtc_files/figure-html/unnamed-chunk-7-1.png)
@@ -270,17 +263,7 @@ mod <- lmerTest::lmer(
   data = dof)
 
 # parameter estimates
-temp <- as.data.frame(coef(summary(mod, ddf="Kenward-Roger")))
-colnames(temp) <- c("estimate", "se", "df", "t", "p")
-parameters <- temp %>%
-  mutate(
-    rse = se/estimate * 100,
-      lci = estimate + qt(0.025, df = df) * se,
-      uci = estimate + qt(0.975, df = df) * se,
-      p = ifelse(p < 0.001, "< 0.001", signif(p, 3))) %>%
-  select(estimate, lci, uci, rse, p)
-
-parameters %>% 
+cqtc_model_table(mod) %>% 
   kable(caption = "Model parameters")
 ```
 
@@ -310,26 +293,8 @@ Model parameters
 
 ``` r
 
-grid <- ref.grid(
-  mod,
-  at = list(
-    CONC = seq(0, max(dof$CONC, na.rm = TRUE)),
-    ACTIVE = c(FALSE, TRUE),
-    DPM_BL_QTCF = 0))
-
-temp1 <- summary(lsmeans::lsmeans(
-  grid,
-  c("CONC", "ACTIVE"),
-  level = 0.9)) %>%
-  filter(ACTIVE == TRUE)
-
-dof %>%
-  cqtc_ntile_plot(param = "DQTCF", n = 10) +
-  geom_line(data = temp1, aes(x = CONC, y = lsmean)) +
-  geom_ribbon(
-    data = temp1,
-    aes(x = CONC, ymin = lower.CL, ymax = upper.CL, y = lsmean),
-    alpha = 0.2)
+# Model plot
+cqtc_model_plot(dof, mod, loess = T, refline = c(0, 10, 20))
 ```
 
 ![](cqtc_files/figure-html/unnamed-chunk-10-1.png)

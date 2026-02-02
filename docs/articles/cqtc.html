@@ -169,14 +169,6 @@ where the placebo group mean
 for each time points is subtracted from the individual
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">\Delta
 QTc</annotation></semantics></math> of the active group.</p>
-<p>In the linear mixed-effects modeling part of the tutorial, we will
-even discard the data from the placebo treatment entirely, and base the
-c-QTc analysis on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>Q</mi><mi>T</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">\Delta QTc</annotation></semantics></math>,
-i.e., the intra-individual difference to pre-treatment baseline, because
-this is a very common analysis type. Refer to the original publication
-by Parkinson, et al., 2025 to follow their full (and decidedly more
-appropriate) analysis strategy.</p>
 <p>To make the dofetilide data accessible for modeling using the
 aforementioned pre-specified model, is extended adding the following
 columns:</p>
@@ -289,7 +281,7 @@ automatically show only a summary of the data set:</p>
 <h3 id="assessment-of-hysteresis">Assessment of hysteresis<a class="anchor" aria-label="anchor" href="#assessment-of-hysteresis"></a>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cqtc_time_course_plot.html">cqtc_time_course_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"QTCF"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/cqtc_time_course_plot.html">cqtc_time_course_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"DQTCF"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="cqtc_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="480"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cqtc_hysteresis_plot.html">cqtc_hysteresis_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="st">"DDQTCF"</span><span class="op">)</span></span></code></pre></div>
@@ -315,17 +307,7 @@ automatically show only a summary of the data set:</p>
 <span>  data <span class="op">=</span> <span class="va">dof</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># parameter estimates</span></span>
-<span><span class="va">temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mod</span>, ddf<span class="op">=</span><span class="st">"Kenward-Roger"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">temp</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"estimate"</span>, <span class="st">"se"</span>, <span class="st">"df"</span>, <span class="st">"t"</span>, <span class="st">"p"</span><span class="op">)</span></span>
-<span><span class="va">parameters</span> <span class="op">&lt;-</span> <span class="va">temp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    rse <span class="op">=</span> <span class="va">se</span><span class="op">/</span><span class="va">estimate</span> <span class="op">*</span> <span class="fl">100</span>,</span>
-<span>      lci <span class="op">=</span> <span class="va">estimate</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">qt</a></span><span class="op">(</span><span class="fl">0.025</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span> <span class="op">*</span> <span class="va">se</span>,</span>
-<span>      uci <span class="op">=</span> <span class="va">estimate</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">qt</a></span><span class="op">(</span><span class="fl">0.975</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span> <span class="op">*</span> <span class="va">se</span>,</span>
-<span>      p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">p</span> <span class="op">&lt;</span> <span class="fl">0.001</span>, <span class="st">"&lt; 0.001"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">signif</a></span><span class="op">(</span><span class="va">p</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">estimate</span>, <span class="va">lci</span>, <span class="va">uci</span>, <span class="va">rse</span>, <span class="va">p</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">parameters</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span><span class="fu"><a href="../reference/cqtc_model_table.html">cqtc_model_table</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>caption <span class="op">=</span> <span class="st">"Model parameters"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Model parameters</caption>
@@ -502,26 +484,8 @@ automatically show only a summary of the data set:</p>
 </table>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lsmeans/man/ref.grid.html" class="external-link">ref.grid</a></span><span class="op">(</span></span>
-<span>  <span class="va">mod</span>,</span>
-<span>  at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    CONC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dof</span><span class="op">$</span><span class="va">CONC</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    ACTIVE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    DPM_BL_QTCF <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">temp1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu">lsmeans</span><span class="fu">::</span><span class="fu"><a href="https://rvlenth.github.io/emmeans/reference/wrappers.html" class="external-link">lsmeans</a></span><span class="op">(</span></span>
-<span>  <span class="va">grid</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CONC"</span>, <span class="st">"ACTIVE"</span><span class="op">)</span>,</span>
-<span>  level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ACTIVE</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">dof</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/cqtc_ntile_plot.html">cqtc_ntile_plot</a></span><span class="op">(</span>param <span class="op">=</span> <span class="st">"DQTCF"</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">temp1</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">CONC</span>, y <span class="op">=</span> <span class="va">lsmean</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">temp1</span>,</span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">CONC</span>, ymin <span class="op">=</span> <span class="va">lower.CL</span>, ymax <span class="op">=</span> <span class="va">upper.CL</span>, y <span class="op">=</span> <span class="va">lsmean</span><span class="op">)</span>,</span>
-<span>    alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Model plot</span></span>
+<span><span class="fu"><a href="../reference/cqtc_model_plot.html">cqtc_model_plot</a></span><span class="op">(</span><span class="va">dof</span>, <span class="va">mod</span>, loess <span class="op">=</span> <span class="cn">T</span>, refline <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="cqtc_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 <div class="section level3">
