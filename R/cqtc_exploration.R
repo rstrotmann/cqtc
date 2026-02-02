@@ -674,8 +674,8 @@ hr_by_time_plot <- function(
   # plot
   temp <- obj |>
     reframe(
-      mean = mean(.data[[param]]),
-      sd = sd(.data[[param]]),
+      mean = mean(.data[[param]], na.rm = T),
+      sd = sd(.data[[param]], na.rm = T),
       n = n(),
       .by = any_of(c("NTIME", group))) |>
     mutate(lower_ci = lower_ci(.data$mean, .data$sd, .data$n, 0.9)) |>
@@ -695,7 +695,6 @@ hr_by_time_plot <- function(
   p <- p +
     # geom_point(size = size, alpha = alpha) +
     geom_pointrange(
-      # aes(ymin = .data$mean - .data$sd, ymax = .data$mean + .data$sd),
       aes(ymin = .data$lower_ci, ymax = .data$upper_ci),
       lwd = lwd, alpha = alpha, size = size) +
     geom_line(lwd = lwd) +
