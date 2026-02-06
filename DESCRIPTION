@@ -23,14 +23,15 @@ Imports:
     broom.mixed,
     cli,
     rlang, 
-    emmeans
+    emmeans,
+    broom.mixed,
+    lmerTest
 Suggests: 
     testthat (>= 3.0.0),
     tibble,
     magrittr,
     knitr,
     rmarkdown, 
-    lmerTest,
     lsmeans,
     lme4,
     data.table

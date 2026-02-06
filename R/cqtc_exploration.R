@@ -253,6 +253,7 @@ cqtc_plot <- function(
 #' @param refline Plot horizontal dashed reference lines at these y axis values,
 #' defaults to NULL (no lines).
 #' @param errorbar The type of error bar, can be one of "CI" and "SD".
+#' @param level Confidence level.
 #'
 #' @returns A ggplot object.
 #' @export
@@ -274,6 +275,7 @@ cqtc_ntile_plot <- function(
     lm = FALSE,
     refline = NULL,
     errorbar = "sd",
+    level = 0.9,
     ...) {
   # input validation
   validate_cqtc(obj)
@@ -300,6 +302,8 @@ cqtc_ntile_plot <- function(
   baseline <- obj |>
     filter(.data$CONC == 0)
 
+  # level = 0.9
+
   deciles <- obj |>
     filter(!is.na(.data[[param]])) |>
     filter(!is.na(.data[["CONC"]])) |>
@@ -311,8 +315,10 @@ cqtc_ntile_plot <- function(
       mean_conc = stats::median(.data[["CONC"]]),
       mean = mean(.data[[param]], na.rm = TRUE),
       sd = sd(.data[[param]]), na.rm = TRUE,
-      UCL = .data$mean + qnorm(0.95)  * .data$sd/sqrt(.data$n),
-      LCL = .data$mean + qnorm(0.05)  * .data$sd/sqrt(.data$n),
+      UCL = upper_ci(.data$mean, .data$sd, .data$n, conf_level = level),
+      LCL = lower_ci(.data$mean, .data$sd, .data$n, conf_level = level),
+      # UCL = .data$mean + qnorm(0.95)  * .data$sd/sqrt(.data$n),
+      # LCL = .data$mean + qnorm(0.05)  * .data$sd/sqrt(.data$n),
       .by = "CONC_NTILE")
 
   y_label = ifelse(is.null(y_label), param, y_label)
@@ -350,6 +356,7 @@ cqtc_ntile_plot <- function(
         method = "lm",
         formula = y ~ x,
         data = deciles,
+        fullrange = TRUE,
         color = "black",
         se = FALSE,
         lwd = lwd,
@@ -618,7 +625,7 @@ cqtc_model_plot <- function(
 }
 
 
-#' Tabulate model parameters
+#' Fixed effects of model
 #'
 #' @param mod The linear mixed-effects model
 #' @param level The confidence interval level.
@@ -627,23 +634,57 @@ cqtc_model_plot <- function(
 #' @export
 #' @importFrom stats coef
 #' @importFrom stats qt
+#' @importFrom broom.mixed tidy
+#' @import lmerTest
+#'
+cqtc_model_fixed_effects <- function(
+    mod,
+    level = 0.9
+) {
+  # convert model to lmerModLmerTest
+  temp <- mod
+  # if (class(mod) == "lmerMod") {
+  if (!inherits(mod, "lmerModLmerTest")) {
+    temp <- as_lmerModLmerTest(mod)
+  }
+
+  # calculate CI
+  parameters <- temp |>
+    tidy() |>
+    mutate(
+      t_score = qt(p = (1- level) / 2, df = .data$df, lower.tail = FALSE),
+      moe = .data$t_score * .data$std.error,
+      lci = .data$estimate - .data$moe,
+      uci = .data$estimate + .data$moe
+    ) |>
+    filter(.data$effect == "fixed") |>
+    select(c("term", "estimate", "std.error", "df", "p.value", "lci", "uci"))
+
+  parameters
+}
+
+
+
+#' Tabulate model parameters
+#'
+#' @param mod The linear mixed-effects model
+#' @param level The confidence interval level.
+#' @param round Number of decimal places in output.
+#'
+#' @returns A data frame.
+#' @export
+#' @importFrom stats coef
+#' @importFrom stats qt
+#' @importFrom broom.mixed tidy
+#' @import lmerTest
 #'
 cqtc_model_table <- function(
     mod,
-    level = 0.95
+    level = 0.9,
+    round = 3
 ) {
-  # parameter estimates
-  temp <- as.data.frame(coef(summary(mod, ddf = "Kenward-Roger")))
-  colnames(temp) <- c("estimate", "se", "df", "t", "p")
-  parameters <- temp %>%
-    mutate(
-      rse = .data$se/.data$estimate * 100,
-      lci = .data$estimate + qt((1-level)/2, df = .data$df) * .data$se,
-      uci = .data$estimate + qt(level + (1-level)/2, df = .data$df) * .data$se,
-      p = ifelse(.data$p < 0.001, "< 0.001", signif(.data$p, 3))) %>%
-    select("estimate", "lci", "uci", "rse", "p")
-
-  parameters
+  cqtc_model_fixed_effects(mod, level) |>
+    mutate(across(where(is.numeric), function(x) round(x, round)))
 }
 
 

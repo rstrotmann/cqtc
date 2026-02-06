@@ -196,8 +196,12 @@ summary.cqtc <- function(object, ...) {
 
   out <- list(
     cqtc = as.data.frame(object),
-    subjects = distinct(as.data.frame(object), across(any_of(c("ID", "USUBJID", "SUBJID")))),
+
+    subjects = distinct(as.data.frame(object),
+                        across(any_of(c("ID", "USUBJID", "SUBJID")))),
+
     ntime = sort(unique(object$NTIME)),
+
     disposition = temp |>
       pivot_longer(
         cols = any_of(c("QT", "QTCF", "DQTCF", "RR", "HR")),
@@ -207,6 +211,7 @@ summary.cqtc <- function(object, ...) {
               .by = c("NTIME", "ACTIVE", "param")) |>
       pivot_wider(names_from = "param", values_from = "n") |>
       arrange(.data$ACTIVE, .data$NTIME),
+
     hash = rlang::hash(object)
   )
   class(out) <- "summary_cqtc"
