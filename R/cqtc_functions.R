@@ -390,13 +390,16 @@ is_hr_rr_consistent <- function(
 #' @param fit A model fit object.
 #' @param cqtc The qtcf object.
 #' @param level The confidence level.
+#' @param method The CI calculation method ("profile" or "boot").
 #'
 #' @returns A data frame.
+#'
 #' @importFrom lsmeans ref.grid
 #' @importFrom stats quantile
 #' @importFrom stats predict
 #' @importFrom lme4 bootMer
-#' @noRd
+#'
+#' @export
 cqtc_prediction_dataset <- function(
     fit,
     cqtc,

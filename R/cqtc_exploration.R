@@ -634,12 +634,12 @@ cqtc_model_plot <- function(
 #' @param level The confidence interval level.
 #'
 #' @returns A data frame.
-#' @export
 #' @importFrom stats coef
 #' @importFrom stats qt
 #' @importFrom broom.mixed tidy
 #' @import lmerTest
 #'
+#' @export
 cqtc_model_fixed_effects <- function(
     mod,
     method = "profile",
@@ -650,20 +650,6 @@ cqtc_model_fixed_effects <- function(
   # if (!inherits(mod, "lmerModLmerTest")) {
   #   temp <- as_lmerModLmerTest(mod)
   # }
-
-  # calculate CI
-  # parameters <- temp |>
-  #   tidy() |>
-  #   mutate(
-  #     t_score = qt(p = (1- level) / 2, df = .data$df, lower.tail = FALSE),
-  #     moe = .data$t_score * .data$std.error,
-  #     lci = .data$estimate - .data$moe,
-  #     uci = .data$estimate + .data$moe
-  #   ) |>
-  #   filter(.data$effect == "fixed") |>
-  #   select(c("term", "estimate", "std.error", "df", "p.value", "lci", "uci"))
-  #
-  # parameters
 
   temp |>
     tidy(
@@ -680,22 +666,25 @@ cqtc_model_fixed_effects <- function(
 #' Tabulate model parameters
 #'
 #' @param mod The linear mixed-effects model
+#' @param method The CI calculation method ("profile" or "boot")
 #' @param level The confidence interval level.
 #' @param round Number of decimal places in output.
 #'
 #' @returns A data frame.
-#' @export
+#'
 #' @importFrom stats coef
 #' @importFrom stats qt
 #' @importFrom broom.mixed tidy
 #' @import lmerTest
 #'
+#' @export
 cqtc_model_table <- function(
     mod,
+    method = "profile",
     level = 0.9,
     round = 3
 ) {
-  cqtc_model_fixed_effects(mod, level) |>
+  cqtc_model_fixed_effects(mod, method = method, level = level) |>
     mutate(across(where(is.numeric), function(x) round(x, round)))
 }
 

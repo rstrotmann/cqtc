@@ -4,10 +4,12 @@
 \alias{cqtc_model_table}
 \title{Tabulate model parameters}
 \usage{
-cqtc_model_table(mod, level = 0.9, round = 3)
+cqtc_model_table(mod, method = "profile", level = 0.9, round = 3)
 }
 \arguments{
 \item{mod}{The linear mixed-effects model}
+
+\item{method}{The CI calculation method ("profile" or "boot")}
 
 \item{level}{The confidence interval level.}
 
