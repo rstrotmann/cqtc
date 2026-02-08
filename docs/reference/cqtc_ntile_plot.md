@@ -19,6 +19,7 @@ cqtc_ntile_plot(
   lm = FALSE,
   refline = NULL,
   errorbar = "sd",
+  level = 0.9,
   ...
 )
 ```
@@ -77,6 +78,10 @@ cqtc_ntile_plot(
 - errorbar:
 
   The type of error bar, can be one of "CI" and "SD".
+
+- level:
+
+  Confidence level.
 
 - ...:
 

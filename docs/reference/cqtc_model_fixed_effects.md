@@ -1,11 +1,11 @@
-# Tabulate model parameters
+# Fixed effects of model
 
-Tabulate model parameters
+CI are likelihood profile CI
 
 ## Usage
 
 ``` r
-cqtc_model_table(mod, method = "profile", level = 0.9, round = 3)
+cqtc_model_fixed_effects(mod, method = "profile", level = 0.9)
 ```
 
 ## Arguments
@@ -21,10 +21,6 @@ cqtc_model_table(mod, method = "profile", level = 0.9, round = 3)
 - level:
 
   The confidence interval level.
-
-- round:
-
-  Number of decimal places in output.
 
 ## Value
 

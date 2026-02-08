@@ -57,5 +57,5 @@ average_triplicates(quinidine_cqtc)
 #>   1001   TRUE     5       1480   400.7   442.6   741.7   81      
 #> 326 more rows
 #> 
-#> Hash: 55a7fe892eb668907b5830c862191f4e
+#> Hash: 66ba85c94d93a03de559df884ca20f84
 ```

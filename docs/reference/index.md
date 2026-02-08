@@ -19,12 +19,16 @@
 - [`cqtc_gof_plot()`](cqtc_gof_plot.md) : Goodness of fit plots for
   linear mixed effects model
 - [`cqtc_hysteresis_plot()`](cqtc_hysteresis_plot.md) : Hysteresis plot
+- [`cqtc_model_fixed_effects()`](cqtc_model_fixed_effects.md) : Fixed
+  effects of model
 - [`cqtc_model_plot()`](cqtc_model_plot.md) : Plot predicted dQTcF over
   concentration
 - [`cqtc_model_table()`](cqtc_model_table.md) : Tabulate model
   parameters
 - [`cqtc_ntile_plot()`](cqtc_ntile_plot.md) : Exploratory decile plot.
 - [`cqtc_plot()`](cqtc_plot.md) : Exploratory c-QTc plot
+- [`cqtc_prediction_dataset()`](cqtc_prediction_dataset.md) : Prediction
+  data set
 - [`cqtc_time_course_plot()`](cqtc_time_course_plot.md) : Time course
   plot for QT parameter and drug concentration
 - [`derive_group_delta()`](derive_group_delta.md) : Add delta to

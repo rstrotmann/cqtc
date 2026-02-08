@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cqtc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -308,177 +308,242 @@ automatically show only a summary of the data set:</p>
 <span></span>
 <span><span class="co"># parameter estimates</span></span>
 <span><span class="fu"><a href="../reference/cqtc_model_table.html">cqtc_model_table</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>caption <span class="op">=</span> <span class="st">"Model parameters"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>caption <span class="op">=</span> <span class="st">"Model parameters"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in cifun(p, parm = "beta_", method = conf.method, level = conf.level, :</span></span>
+<span><span class="co">#&gt; ddf.method ignored when conf.method != "Wald"</span></span></code></pre></div>
 <table class="table">
 <caption>Model parameters</caption>
 <colgroup>
-<col width="17%">
-<col width="17%">
-<col width="17%">
-<col width="16%">
-<col width="17%">
-<col width="11%">
+<col width="8%">
+<col width="14%">
+<col width="10%">
+<col width="12%">
+<col width="12%">
+<col width="9%">
+<col width="9%">
+<col width="10%">
+<col width="12%">
 </colgroup>
 <thead><tr class="header">
-<th align="left"></th>
+<th align="left">effect</th>
+<th align="left">term</th>
 <th align="right">estimate</th>
-<th align="right">lci</th>
-<th align="right">uci</th>
-<th align="right">rse</th>
-<th align="left">p</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">df</th>
+<th align="right">p.value</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">(Intercept)</td>
-<td align="right">0.4306187</td>
-<td align="right">-3.2962263</td>
-<td align="right">4.1574636</td>
-<td align="right">438.395282</td>
-<td align="left">0.82</td>
+<td align="right">0.431</td>
+<td align="right">1.888</td>
+<td align="right">0.228</td>
+<td align="right">181.572</td>
+<td align="right">0.820</td>
+<td align="right">-2.690</td>
+<td align="right">3.552</td>
 </tr>
 <tr class="even">
+<td align="left">fixed</td>
 <td align="left">NTIME0.5</td>
-<td align="right">-13.8730718</td>
-<td align="right">-17.7969140</td>
-<td align="right">-9.9492296</td>
-<td align="right">-14.402955</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-13.873</td>
+<td align="right">1.998</td>
+<td align="right">-6.944</td>
+<td align="right">628.196</td>
+<td align="right">0.000</td>
+<td align="right">-17.164</td>
+<td align="right">-10.582</td>
 </tr>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">NTIME1</td>
-<td align="right">-13.4245003</td>
-<td align="right">-17.4376061</td>
-<td align="right">-9.4113944</td>
-<td align="right">-15.222989</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-13.425</td>
+<td align="right">2.043</td>
+<td align="right">-6.571</td>
+<td align="right">631.669</td>
+<td align="right">0.000</td>
+<td align="right">-16.790</td>
+<td align="right">-10.059</td>
 </tr>
 <tr class="even">
+<td align="left">fixed</td>
 <td align="left">NTIME1.5</td>
-<td align="right">-7.5243725</td>
-<td align="right">-11.6192256</td>
-<td align="right">-3.4295194</td>
-<td align="right">-27.712912</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-7.524</td>
+<td align="right">2.085</td>
+<td align="right">-3.609</td>
+<td align="right">629.253</td>
+<td align="right">0.000</td>
+<td align="right">-10.959</td>
+<td align="right">-4.090</td>
 </tr>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">NTIME2</td>
-<td align="right">-3.0368229</td>
-<td align="right">-7.2969280</td>
-<td align="right">1.2232821</td>
-<td align="right">-71.435238</td>
-<td align="left">0.162</td>
+<td align="right">-3.037</td>
+<td align="right">2.169</td>
+<td align="right">-1.400</td>
+<td align="right">627.494</td>
+<td align="right">0.162</td>
+<td align="right">-6.610</td>
+<td align="right">0.536</td>
 </tr>
 <tr class="even">
+<td align="left">fixed</td>
 <td align="left">NTIME2.5</td>
-<td align="right">0.4712304</td>
-<td align="right">-3.8611367</td>
-<td align="right">4.8035975</td>
-<td align="right">468.170053</td>
-<td align="left">0.831</td>
+<td align="right">0.471</td>
+<td align="right">2.206</td>
+<td align="right">0.214</td>
+<td align="right">627.493</td>
+<td align="right">0.831</td>
+<td align="right">-3.162</td>
+<td align="right">4.105</td>
 </tr>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">NTIME3</td>
-<td align="right">-3.1581633</td>
-<td align="right">-7.4340772</td>
-<td align="right">1.1177505</td>
-<td align="right">-68.945493</td>
-<td align="left">0.147</td>
+<td align="right">-3.158</td>
+<td align="right">2.177</td>
+<td align="right">-1.451</td>
+<td align="right">627.389</td>
+<td align="right">0.147</td>
+<td align="right">-6.745</td>
+<td align="right">0.428</td>
 </tr>
 <tr class="even">
+<td align="left">fixed</td>
 <td align="left">NTIME3.5</td>
-<td align="right">-7.8920967</td>
-<td align="right">-12.0581411</td>
-<td align="right">-3.7260523</td>
-<td align="right">-26.880806</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-7.892</td>
+<td align="right">2.121</td>
+<td align="right">-3.720</td>
+<td align="right">626.853</td>
+<td align="right">0.000</td>
+<td align="right">-11.386</td>
+<td align="right">-4.398</td>
 </tr>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">NTIME4</td>
-<td align="right">-6.8556219</td>
-<td align="right">-11.0126077</td>
-<td align="right">-2.6986361</td>
-<td align="right">-30.877506</td>
-<td align="left">0.00126</td>
+<td align="right">-6.856</td>
+<td align="right">2.117</td>
+<td align="right">-3.239</td>
+<td align="right">626.652</td>
+<td align="right">0.001</td>
+<td align="right">-10.342</td>
+<td align="right">-3.369</td>
 </tr>
 <tr class="even">
+<td align="left">fixed</td>
 <td align="left">NTIME5</td>
-<td align="right">-7.5582831</td>
-<td align="right">-11.6098136</td>
-<td align="right">-3.5067526</td>
-<td align="right">-27.296448</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-7.558</td>
+<td align="right">2.063</td>
+<td align="right">-3.664</td>
+<td align="right">626.404</td>
+<td align="right">0.000</td>
+<td align="right">-10.957</td>
+<td align="right">-4.160</td>
 </tr>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">NTIME6</td>
-<td align="right">-8.1181883</td>
-<td align="right">-12.1499920</td>
-<td align="right">-4.0863847</td>
-<td align="right">-25.290082</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-8.118</td>
+<td align="right">2.053</td>
+<td align="right">-3.954</td>
+<td align="right">626.260</td>
+<td align="right">0.000</td>
+<td align="right">-11.500</td>
+<td align="right">-4.736</td>
 </tr>
 <tr class="even">
+<td align="left">fixed</td>
 <td align="left">NTIME7</td>
-<td align="right">-8.6626845</td>
-<td align="right">-12.6402115</td>
-<td align="right">-4.6851575</td>
-<td align="right">-23.381391</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-8.663</td>
+<td align="right">2.025</td>
+<td align="right">-4.277</td>
+<td align="right">626.059</td>
+<td align="right">0.000</td>
+<td align="right">-11.999</td>
+<td align="right">-5.326</td>
 </tr>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">NTIME8</td>
-<td align="right">-9.5300836</td>
-<td align="right">-13.4748652</td>
-<td align="right">-5.5853021</td>
-<td align="right">-21.078317</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-9.530</td>
+<td align="right">2.009</td>
+<td align="right">-4.744</td>
+<td align="right">626.050</td>
+<td align="right">0.000</td>
+<td align="right">-12.839</td>
+<td align="right">-6.221</td>
 </tr>
 <tr class="even">
+<td align="left">fixed</td>
 <td align="left">NTIME12</td>
-<td align="right">-13.2972069</td>
-<td align="right">-17.1698703</td>
-<td align="right">-9.4245435</td>
-<td align="right">-14.830593</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-13.297</td>
+<td align="right">1.972</td>
+<td align="right">-6.743</td>
+<td align="right">625.682</td>
+<td align="right">0.000</td>
+<td align="right">-16.546</td>
+<td align="right">-10.049</td>
 </tr>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">NTIME14</td>
-<td align="right">-13.0735203</td>
-<td align="right">-16.9367363</td>
-<td align="right">-9.2103043</td>
-<td align="right">-15.047550</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">-13.074</td>
+<td align="right">1.967</td>
+<td align="right">-6.646</td>
+<td align="right">625.796</td>
+<td align="right">0.000</td>
+<td align="right">-16.314</td>
+<td align="right">-9.833</td>
 </tr>
 <tr class="even">
+<td align="left">fixed</td>
 <td align="left">NTIME24</td>
-<td align="right">-5.7817519</td>
-<td align="right">-9.6183265</td>
-<td align="right">-1.9451774</td>
-<td align="right">-33.790366</td>
-<td align="left">0.0032</td>
+<td align="right">-5.782</td>
+<td align="right">1.954</td>
+<td align="right">-2.959</td>
+<td align="right">625.318</td>
+<td align="right">0.003</td>
+<td align="right">-9.000</td>
+<td align="right">-2.563</td>
 </tr>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">ACTIVETRUE</td>
-<td align="right">-0.8612373</td>
-<td align="right">-4.9587716</td>
-<td align="right">3.2362969</td>
-<td align="right">-238.091700</td>
-<td align="left">0.676</td>
+<td align="right">-0.861</td>
+<td align="right">2.050</td>
+<td align="right">-0.420</td>
+<td align="right">69.016</td>
+<td align="right">0.676</td>
+<td align="right">-4.279</td>
+<td align="right">2.557</td>
 </tr>
 <tr class="even">
+<td align="left">fixed</td>
 <td align="left">DPM_BL_QTCF</td>
-<td align="right">-0.1707644</td>
-<td align="right">-0.2765497</td>
-<td align="right">-0.0649791</td>
-<td align="right">-30.604407</td>
-<td align="left">0.0023</td>
+<td align="right">-0.171</td>
+<td align="right">0.052</td>
+<td align="right">-3.278</td>
+<td align="right">41.760</td>
+<td align="right">0.002</td>
+<td align="right">-0.258</td>
+<td align="right">-0.083</td>
 </tr>
 <tr class="odd">
+<td align="left">fixed</td>
 <td align="left">CONC</td>
-<td align="right">26.7150455</td>
-<td align="right">23.4834793</td>
-<td align="right">29.9466116</td>
-<td align="right">5.916917</td>
-<td align="left">&lt; 0.001</td>
+<td align="right">26.715</td>
+<td align="right">1.580</td>
+<td align="right">16.905</td>
+<td align="right">29.313</td>
+<td align="right">0.000</td>
+<td align="right">24.031</td>
+<td align="right">29.399</td>
 </tr>
 </tbody>
 </table>
