@@ -627,6 +627,8 @@ cqtc_model_plot <- function(
 
 #' Fixed effects of model
 #'
+#' CI are likelihood profile CI
+#'
 #' @param mod The linear mixed-effects model
 #' @param level The confidence interval level.
 #'
@@ -639,28 +641,37 @@ cqtc_model_plot <- function(
 #'
 cqtc_model_fixed_effects <- function(
     mod,
+    method = "profile",
     level = 0.9
 ) {
   # convert model to lmerModLmerTest
   temp <- mod
-  # if (class(mod) == "lmerMod") {
-  if (!inherits(mod, "lmerModLmerTest")) {
-    temp <- as_lmerModLmerTest(mod)
-  }
+  # if (!inherits(mod, "lmerModLmerTest")) {
+  #   temp <- as_lmerModLmerTest(mod)
+  # }
 
   # calculate CI
-  parameters <- temp |>
-    tidy() |>
-    mutate(
-      t_score = qt(p = (1- level) / 2, df = .data$df, lower.tail = FALSE),
-      moe = .data$t_score * .data$std.error,
-      lci = .data$estimate - .data$moe,
-      uci = .data$estimate + .data$moe
-    ) |>
-    filter(.data$effect == "fixed") |>
-    select(c("term", "estimate", "std.error", "df", "p.value", "lci", "uci"))
+  # parameters <- temp |>
+  #   tidy() |>
+  #   mutate(
+  #     t_score = qt(p = (1- level) / 2, df = .data$df, lower.tail = FALSE),
+  #     moe = .data$t_score * .data$std.error,
+  #     lci = .data$estimate - .data$moe,
+  #     uci = .data$estimate + .data$moe
+  #   ) |>
+  #   filter(.data$effect == "fixed") |>
+  #   select(c("term", "estimate", "std.error", "df", "p.value", "lci", "uci"))
+  #
+  # parameters
 
-  parameters
+  temp |>
+    tidy(
+      mod,
+      effects="fixed",
+      conf.int = TRUE,
+      conf.method = method,
+      conf.level = level
+    )
 }
 
 

@@ -379,3 +379,67 @@ is_hr_rr_consistent <- function(
   return(nrow(temp) == 0)
 }
 
+
+#' Prediction data set
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
+#' This approach follows Parkinson et al.
+#'
+#' @param fit A model fit object.
+#' @param cqtc The qtcf object.
+#' @param level The confidence level.
+#'
+#' @returns A data frame.
+#' @noRd
+cqtc_prediction_dataset <- function(
+    fit,
+    cqtc,
+    level = 0.9,
+    method = "boot"
+) {
+  # the reference grid
+  # this is equal to nwdf1
+  rg <- ref.grid(
+    fit,
+    at = list(
+      CONC = seq(
+        min(cqtc$CONC, na.rm = T),
+        max(cqtc$CONC, na.rm = T),
+        length.out = 20
+      ),
+      DPM_BL_QTCF = 0
+    )
+  ) |>
+    as.data.frame()
+
+  # bootstrap function
+  temp <- bootMer(
+    fit,
+    function(.) {
+      predict(., newdata = mutate(rg, ID = NA), re.form = ~ 0)
+    },
+    nsim = 100,
+    seed = 513
+  )$t
+
+  out <- t(temp) |>
+    as.data.frame() |>
+    bind_cols(rg) |>
+    pivot_longer(cols = 1:100, names_to = "boot_i", values_to = "boot_value") |>
+    reframe(
+      CONC = CONC,
+      prediction = prediction,
+      SE = SE,
+      df = df,
+      boot_median = median(boot_value),
+      boot_lo = quantile(.data$boot_value, probs = 0.05, na.rm = TRUE),
+      boot_hi = quantile(.data$boot_value, probs = 0.95, na.rm = TRUE),
+      .by = "CONC"
+    ) |>
+    distinct()
+
+  out
+}
+

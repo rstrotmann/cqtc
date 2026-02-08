@@ -4,7 +4,7 @@
 \alias{cqtc_model_fixed_effects}
 \title{Fixed effects of model}
 \usage{
-cqtc_model_fixed_effects(mod, level = 0.9)
+cqtc_model_fixed_effects(mod, method = "profile", level = 0.9)
 }
 \arguments{
 \item{mod}{The linear mixed-effects model}
@@ -15,5 +15,5 @@ cqtc_model_fixed_effects(mod, level = 0.9)
 A data frame.
 }
 \description{
-Fixed effects of model
+CI are likelihood profile CI
 }
