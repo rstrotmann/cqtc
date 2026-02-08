@@ -630,6 +630,7 @@ cqtc_model_plot <- function(
 #' CI are likelihood profile CI
 #'
 #' @param mod The linear mixed-effects model
+#' @param method The CI calculation method ("profile" or "boot")
 #' @param level The confidence interval level.
 #'
 #' @returns A data frame.

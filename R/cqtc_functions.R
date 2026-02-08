@@ -392,6 +392,10 @@ is_hr_rr_consistent <- function(
 #' @param level The confidence level.
 #'
 #' @returns A data frame.
+#' @importFrom lsmeans ref.grid
+#' @importFrom stats quantile
+#' @importFrom stats predict
+#' @importFrom lme4 bootMer
 #' @noRd
 cqtc_prediction_dataset <- function(
     fit,
@@ -401,7 +405,7 @@ cqtc_prediction_dataset <- function(
 ) {
   # the reference grid
   # this is equal to nwdf1
-  rg <- ref.grid(
+  rg <- lsmeans::ref.grid(
     fit,
     at = list(
       CONC = seq(
@@ -429,13 +433,13 @@ cqtc_prediction_dataset <- function(
     bind_cols(rg) |>
     pivot_longer(cols = 1:100, names_to = "boot_i", values_to = "boot_value") |>
     reframe(
-      CONC = CONC,
-      prediction = prediction,
-      SE = SE,
-      df = df,
-      boot_median = median(boot_value),
-      boot_lo = quantile(.data$boot_value, probs = 0.05, na.rm = TRUE),
-      boot_hi = quantile(.data$boot_value, probs = 0.95, na.rm = TRUE),
+      CONC = .data$CONC,
+      prediction = .data$prediction,
+      SE = .data$SE,
+      df = .data$df,
+      boot_median = median(.data$boot_value),
+      boot_lo = stats::quantile(.data$boot_value, probs = 0.05, na.rm = TRUE),
+      boot_hi = stats::quantile(.data$boot_value, probs = 0.95, na.rm = TRUE),
       .by = "CONC"
     ) |>
     distinct()

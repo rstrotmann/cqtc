@@ -9,6 +9,8 @@ cqtc_model_fixed_effects(mod, method = "profile", level = 0.9)
 \arguments{
 \item{mod}{The linear mixed-effects model}
 
+\item{method}{The CI calculation method ("profile" or "boot")}
+
 \item{level}{The confidence interval level.}
 }
 \value{

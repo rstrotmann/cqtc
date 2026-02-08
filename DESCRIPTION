@@ -25,15 +25,15 @@ Imports:
     rlang, 
     emmeans,
     broom.mixed,
-    lmerTest
+    lmerTest,
+    lme4,
+    lsmeans
 Suggests: 
     testthat (>= 3.0.0),
     tibble,
     magrittr,
     knitr,
     rmarkdown, 
-    lsmeans,
-    lme4,
     data.table
 Config/testthat/edition: 3
 RoxygenNote: 7.3.3
