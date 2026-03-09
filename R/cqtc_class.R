@@ -185,7 +185,6 @@ print.cqtc <- function(x, ...) {
 #' @noRd
 #' @export
 #' @import tidyr
-#' @importFrom rlang hash
 summary.cqtc <- function(object, ...) {
   validate_cqtc(object)
 
